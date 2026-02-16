@@ -4,13 +4,11 @@ providers = ["php"]
 nixPkgs = ["php82", "php82Packages.composer", "nodejs-18_x"]
 
 [phases.install]
-run = """
-composer install --no-dev --optimize-autoloader
-"""
+run = "composer install --no-dev --optimize-autoloader"
 
 [phases.build]
 run = """
-npm install
+npm ci
 npm run build
 php artisan config:cache
 php artisan route:cache
