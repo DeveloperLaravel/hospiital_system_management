@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
@@ -34,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('departments', DepartmentController::class);
+    Route::resource('doctors', DoctorController::class);
 
 });
 Route::group(['middleware' => ['permission:department-list']], function () {
