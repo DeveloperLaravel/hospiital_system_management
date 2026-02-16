@@ -51,6 +51,9 @@
             إدارة المستشفى
         </p>
 
+          <a href="{{ route('departments.index') }}" class="block p-3 rounded hover:bg-blue-700 transition">
+            اقسام
+        </a>
         <a href="#" class="block p-3 rounded hover:bg-blue-700 transition">
             المرضى
         </a>

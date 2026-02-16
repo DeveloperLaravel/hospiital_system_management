@@ -4,22 +4,25 @@
       <main class="p-6 flex-1 overflow-auto">
     <!-- Cards الاحصائيات -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
-            <h2 class="text-xl font-semibold text-gray-700 mb-2">المرضى</h2>
-            <p class="text-3xl font-bold text-blue-600">120</p>
-        </div>
-        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
-            <h2 class="text-xl font-semibold text-gray-700 mb-2">الأطباء</h2>
-            <p class="text-3xl font-bold text-green-600">25</p>
-        </div>
-        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
-            <h2 class="text-xl font-semibold text-gray-700 mb-2">المواعيد</h2>
-            <p class="text-3xl font-bold text-yellow-500">43</p>
-        </div>
-        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center">
-            <h2 class="text-xl font-semibold text-gray-700 mb-2">الفواتير</h2>
-            <p class="text-3xl font-bold text-red-500">18</p>
-        </div>
+    
+            <div class="bg-gradient-to-r from-white-400 to-gray-400 rounded-xl shadow-lg p-6 flex flex-col items-center text-white hover:scale-105 transform transition duration-300">
+       <h2 class="text-xl font-semibold text-gray-700 mb-2">المرضى</h2>
+    <p class="text-3xl font-bold">120</p>
+</div>
+         <div class="bg-gradient-to-r from-green-400 to-gray-400 rounded-xl shadow-lg p-6 flex flex-col items-center text-white hover:scale-105 transform transition duration-300">
+       <h2 class="text-xl font-semibold text-gray-700 mb-2">المرضى</h2>
+    <p class="text-3xl font-bold">25</p>
+</div>
+
+ <div class="bg-gradient-to-r from-green-700 to-blue-400 rounded-xl shadow-lg p-6 flex flex-col items-center text-white hover:scale-105 transform transition duration-300">
+       <h2 class="text-xl font-semibold text-gray-700 mb-2">الأطباء</h2>
+    <p class="text-3xl font-bold">28</p>
+</div>
+   <div class="bg-gradient-to-r from-red-400 to-blue-600 rounded-xl shadow-lg p-6 flex flex-col items-center text-white hover:scale-105 transform transition duration-300">
+    <h2 class="text-xl font-semibold mb-2">الفواتير</h2>
+    <p class="text-3xl font-bold">18</p>
+</div>
+    
     </div>
 
     <br>
@@ -53,24 +56,24 @@
                     <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-700">{{ $user->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ $user->email }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ implode(', ', $user->getRoleNames()->toArray()) }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap flex space-x-2">
-                        <a href="{{ route('users.edit', $user) }}" class="flex items-center px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white rounded-lg shadow transition duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536L12 18H9v-5z"/>
-                            </svg>
-                            تعديل
-                        </a>
-                        <form action="{{ route('users.destroy', $user) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="flex items-center px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow transition duration-300" onclick="return confirm('هل أنت متأكد من الحذف؟')">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4"/>
-                                </svg>
-                                حذف
-                            </button>
-                        </form>
-                    </td>
+                   <td class="px-6 py-4 whitespace-nowrap flex gap-2">
+    <a href="{{ route('users.edit', $user) }}" class="p-2 bg-yellow-400 hover:bg-yellow-500 text-white rounded-lg shadow" title="تعديل">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536L12 18H9v-5z"/>
+        </svg>
+    </a>
+
+    <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow" title="حذف">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4"/>
+            </svg>
+        </button>
+    </form>
+</td>
+
                 </tr>
                 @endforeach
             </tbody>

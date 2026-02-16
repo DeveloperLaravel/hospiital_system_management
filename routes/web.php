@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
@@ -32,6 +33,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resource('departments', DepartmentController::class);
+
+});
+Route::group(['middleware' => ['permission:department-list']], function () {
+    // Route::get('/departments', [DepartmentController::class, 'index']);
 });
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {});
 require __DIR__.'/auth.php';
