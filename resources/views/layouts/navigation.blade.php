@@ -8,7 +8,7 @@
         </div>
 
         <nav class="p-4 space-y-2">
-            <a href="#" class="block p-3 rounded hover:bg-blue-700">Dashboard</a>
+            <a href="{{ route('dashboard') }}" class="block p-3 rounded hover:bg-blue-700">Dashboard</a>
             <a href="{{ route('users.index') }}" class="block p-3 rounded hover:bg-blue-700">المستخدمون</a>
             <a href="#" class="block p-3 rounded hover:bg-blue-700">المرضى</a>
             <a href="#" class="block p-3 rounded hover:bg-blue-700">الأطباء</a>
