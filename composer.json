@@ -1,6 +1,7 @@
 {
     "name": "laravel/laravel",
-    "type": "project",
+    "private": true,
+    "type": "module",
     "description": "The skeleton application for the Laravel framework.",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
@@ -11,6 +12,10 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8"
     },
+      "devDependencies": {
+    "vite": "^5.0.0",
+    "laravel-vite-plugin": "^1.0.0"
+  },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
         "laravel/breeze": "^1.29",
@@ -33,6 +38,7 @@
             "Tests\\": "tests/"
         }
     },
+
     "scripts": {
      "dev": "vite",
     "build": "vite build",
