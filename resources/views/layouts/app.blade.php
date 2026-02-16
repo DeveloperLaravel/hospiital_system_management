@@ -42,64 +42,31 @@
                     مرحبا، {{ auth()->user()->name ?? 'Admin' }}
                 </span>
 
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button 
-                        type="submit"
-                        class="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow transition duration-300"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5" />
-                        </svg>
-                        تسجيل خروج
-                    </button>
-                </form>
+             <form method="POST" action="{{ route('logout') }}">
+    @csrf
+    <button 
+        type="submit"
+        class="flex items-center gap-2 px-5 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md 
+               hover:bg-red-700 hover:shadow-lg transition duration-300 transform hover:-translate-y-0.5 active:scale-95"
+    >
+        <!-- أيقونة الخروج -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5" />
+        </svg>
+        تسجيل خروج
+    </button>
+</form>
+
             </div>
         </header>
 
                 {{ $slot }}
-            <div class="bg-white rounded-xl shadow p-6 mt-6">
-                <h2 class="font-bold mb-4">إحصائيات المستشفى</h2>
-                <canvas id="hospitalChart" class="w-full h-64"></canvas>
-            </div>
-
+           
         </main>
     </div>
 </div>
 
 
-        <!-- Alpine -->
-<script src="https://unpkg.com/alpinejs" defer></script>
-
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-const ctx = document.getElementById('hospitalChart');
-
-
-
-
-
-
-
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['المرضى', 'الأطباء', 'المواعيد', 'الفواتير'],
-        datasets: [{
-            label: 'إحصائيات',
-            data: [120, 25, 43, 18],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { display: false }
-        }
-    }
-});
-</script>
     </body>
 </html>
