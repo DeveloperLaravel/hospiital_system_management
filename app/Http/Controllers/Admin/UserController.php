@@ -28,10 +28,26 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
+            'email' => 'required|email|unique:users,email,',
+            'password' => 'nullable|string|min:6|confirmed',
             'roles' => 'required|array',
-        ]);
+        ],
+            [
+                'name.required' => 'الاسم مطلوب.',
+                'name.string' => 'الاسم يجب أن يكون نصًا.',
+                'name.max' => 'الاسم لا يمكن أن يزيد عن 255 حرفًا.',
+
+                'email.required' => 'البريد الإلكتروني مطلوب.',
+                'email.email' => 'البريد الإلكتروني يجب أن يكون بصيغة صحيحة.',
+                'email.unique' => 'البريد الإلكتروني مستخدم مسبقًا.',
+
+                'password.string' => 'كلمة المرور يجب أن تكون نصًا.',
+                'password.min' => 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.',
+                'password.confirmed' => 'تأكيد كلمة المرور غير مطابق.',
+
+                'roles.required' => 'يجب اختيار دور واحد على الأقل.',
+                'roles.array' => 'الأدوار يجب أن تكون على شكل قائمة.',
+            ]);
 
         $user = User::create([
             'name' => $request->name,
@@ -58,7 +74,23 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:6|confirmed',
             'roles' => 'required|array',
-        ]);
+        ],
+            [
+                'name.required' => 'الاسم مطلوب.',
+                'name.string' => 'الاسم يجب أن يكون نصًا.',
+                'name.max' => 'الاسم لا يمكن أن يزيد عن 255 حرفًا.',
+
+                'email.required' => 'البريد الإلكتروني مطلوب.',
+                'email.email' => 'البريد الإلكتروني يجب أن يكون بصيغة صحيحة.',
+                'email.unique' => 'البريد الإلكتروني مستخدم مسبقًا.',
+
+                'password.string' => 'كلمة المرور يجب أن تكون نصًا.',
+                'password.min' => 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.',
+                'password.confirmed' => 'تأكيد كلمة المرور غير مطابق.',
+
+                'roles.required' => 'يجب اختيار دور واحد على الأقل.',
+                'roles.array' => 'الأدوار يجب أن تكون على شكل قائمة.',
+            ]);
 
         $user->name = $request->name;
         $user->email = $request->email;
@@ -69,13 +101,13 @@ class UserController extends Controller
 
         $user->syncRoles($request->roles);
 
-        return redirect()->route('admin.users.index')->with('success', 'تم تحديث المستخدم بنجاح');
+        return redirect()->route('users.index')->with('success', 'تم تحديث المستخدم بنجاح');
     }
 
     public function destroy(User $user)
     {
         $user->delete();
 
-        return redirect()->route('admin.users.index')->with('success', 'تم حذف المستخدم بنجاح');
+        return redirect()->route('users.index')->with('success', 'تم حذف المستخدم بنجاح');
     }
 }
