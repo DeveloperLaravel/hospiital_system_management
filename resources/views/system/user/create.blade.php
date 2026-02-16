@@ -1,14 +1,22 @@
 <x-app-layout title="إضافة مستخدم جديد">
-    <main class="p-4 sm:p-6 flex-1 overflow-auto bg-gray-50 min-h-screen">
+    <main class="p-4 sm:p-6 flex-1 overflow-auto bg-gray-50 min-h-screen" dir="rtl">
 
         <div class="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-6 sm:p-8 mt-6">
             
-            <h2 class="text-3xl sm:text-2xl font-bold text-gray-800 mb-6 text-center sm:text-left">إضافة مستخدم جديد</h2>
+            <h2 class="text-3xl sm:text-2xl font-bold text-gray-800 mb-6 text-center sm:text-right">إضافة مستخدم جديد</h2>
 
             {{-- عرض الأخطاء --}}
-            <x-validation-errors class="mb-4"/>
+            @if($errors->any())
+                <div class="mb-4 p-4 bg-red-100 text-red-800 rounded-lg">
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-            <form action="{{ route('users.store') }}" method="POST" class="space-y-5">
+            <form action="{{ route('users.store') }}" method="POST" class="space-y-5 text-right">
                 @csrf
 
                 <!-- الاسم -->
@@ -45,17 +53,22 @@
 
                 <!-- اختيار الأدوار -->
                 <div>
-                    <label class="block text-gray-700 font-semibold mb-2">الأدوار</label>
-                    <div class="flex flex-wrap gap-3">
-                        @foreach($roles as $role)
-                            <label class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full cursor-pointer hover:bg-blue-100 transition">
-                                <input type="checkbox" name="roles[]" value="{{ $role->name }}"
-                                    class="form-checkbox h-5 w-5 text-blue-600" 
-                                    {{ in_array($role->name, old('roles', [])) ? 'checked' : '' }}>
-                                <span class="text-gray-800 font-medium">{{ $role->name }}</span>
-                            </label>
-                        @endforeach
-                    </div>
+                  <label class="block text-gray-700 font-semibold mb-1">الأدوار</label>
+<div class="flex flex-wrap gap-3 min-h-[40px] items-center border border-gray-200 rounded p-2">
+    @if($roles->isEmpty())
+        <span class="text-red-600 text-sm">يجب معرفة الأدوار</span>
+    @else
+        @foreach($roles as $role)
+            <label class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full cursor-pointer hover:bg-blue-100 transition">
+                <input type="checkbox" name="roles[]" value="{{ $role->name }}"
+                       class="form-checkbox h-4 w-4 text-blue-600"
+                       {{ in_array($role->name, old('roles', $userRoles)) ? 'checked' : '' }}>
+                <span class="text-gray-800">{{ $role->name }}</span>
+            </label>
+        @endforeach
+    @endif
+</div>
+
                 </div>
 
                 <!-- أزرار -->
