@@ -34,7 +34,7 @@ node -v
 npm -v
 
 # تثبيت باقات Node
-npm ci
+npm install
 
 # بناء الواجهة الأمامية باستخدام Vite
 npm run build
