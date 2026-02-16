@@ -20,8 +20,9 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::all();
+        $userRoles = [];
 
-        return view('system.user.create', compact('roles'));
+        return view('system.user.create', compact('roles', 'userRoles'));
     }
 
     public function store(Request $request)
@@ -57,14 +58,18 @@ class UserController extends Controller
 
         $user->syncRoles($request->roles);
 
-        return redirect()->route('system.user.index')->with('success', 'تم إنشاء المستخدم بنجاح');
+        return redirect()->route('users.index')->with('success', 'تم إنشاء المستخدم بنجاح');
     }
 
     public function edit(User $user)
     {
         $roles = Role::all();
 
-        return view('system.user.edit', compact('user', 'roles'));
+        // نجلب أدوار المستخدم الحالية
+        $userRoles = $user->roles->pluck('name')->toArray();
+
+        return view('system.user.edit', compact('user', 'roles', 'userRoles'));
+
     }
 
     public function update(Request $request, User $user)
