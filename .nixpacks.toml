@@ -1,19 +1,56 @@
+# ===========================
+# Railway Configuration File
+# Laravel 10+ with Vite
+# ===========================
+
 providers = ["php"]
 
+# ---------------------------
+# Setup Phase
+# ---------------------------
+# تثبيت PHP، Composer و Node
 [phases.setup]
-nixPkgs = ["php82", "php82Packages.composer", "nodejs-18_x"]
+nixPkgs = [
+    "php82",                     # PHP 8.2
+    "php82Packages.composer",     # Composer
+    "nodejs-18_x"                 # Node.js 18 (Vite requires Node)
+]
 
+# ---------------------------
+# Install Phase
+# ---------------------------
+# تثبيت باقات PHP (بدون dev)
 [phases.install]
 run = "composer install --no-dev --optimize-autoloader"
 
+# ---------------------------
+# Build Phase
+# ---------------------------
+# تثبيت باقات Node وبناء assets عبر Vite
 [phases.build]
 run = """
+# تأكيد تثبيت Node و npm
+node -v
+npm -v
+
+# تثبيت باقات Node
 npm ci
+
+# بناء الواجهة الأمامية باستخدام Vite
 npm run build
+
+# تخزين إعدادات Laravel لتسريع الأداء
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+
+# التحقق من ملفات build
+ls -l public/build
 """
 
+# ---------------------------
+# Start Phase
+# ---------------------------
+# تشغيل خادم Laravel على Railway
 [start]
 cmd = "php artisan serve --host=0.0.0.0 --port=$PORT"
