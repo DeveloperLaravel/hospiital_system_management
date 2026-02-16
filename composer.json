@@ -1,10 +1,4 @@
 {
-    "name": "laravel/laravel",
-    "private": true,
-    "type": "module",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
-    "license": "MIT",
     "require": {
         "php": "^8.1",
         "guzzlehttp/guzzle": "^7.2",
@@ -13,8 +7,14 @@
         "laravel/tinker": "^2.8"
     },
       "devDependencies": {
-    "vite": "^5.0.0",
-    "laravel-vite-plugin": "^1.0.0"
+        "@tailwindcss/forms": "^0.5.2",
+        "alpinejs": "^3.4.2",
+        "autoprefixer": "^10.4.2",
+        "axios": "^1.1.2",
+        "laravel-vite-plugin": "^0.7.2",
+        "postcss": "^8.4.31",
+        "tailwindcss": "^3.1.0",
+        "vite": "^4.0.0"
   },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -38,6 +38,7 @@
             "Tests\\": "tests/"
         }
     },
+    "private": true,
 
     "scripts": {
      "dev": "vite",
