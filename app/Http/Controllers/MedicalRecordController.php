@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Doctor;
 use App\Models\MedicalRecord;
 use App\Models\Patient;
-use App\Models\User;
 use Illuminate\Http\Request;
 
 class MedicalRecordController extends Controller
@@ -20,11 +19,11 @@ class MedicalRecordController extends Controller
 
     public function index()
     {
-        $records = MedicalRecord::with(['patient', 'doctor'])->latest()->get();
+        $records = MedicalRecord::with(['patient', 'doctor'])
+            ->latest()
+            ->paginate(5); // pagination
         $patients = Patient::all();
         $doctors = Doctor::with('department')->get();
-        // $patients = User::role('patient')->get();
-        // $doctors = User::role('doctor')->get();
 
         return view('hospital.medical_records.index', compact('records', 'patients', 'doctors'));
     }

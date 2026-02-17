@@ -25,11 +25,11 @@ class UserController extends Controller
         return view('system.user.create', compact('roles', 'userRoles'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, User $user)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,',
+            'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:6|confirmed',
             'roles' => 'required|array',
         ],
@@ -49,7 +49,10 @@ class UserController extends Controller
                 'roles.required' => 'يجب اختيار دور واحد على الأقل.',
                 'roles.array' => 'الأدوار يجب أن تكون على شكل قائمة.',
             ]);
-
+        if ($user->id === 1) {
+            return redirect()->route('users.index')
+                ->with('error', 'هذا المستخدم لا يمكن حذفه.');
+        }
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -63,6 +66,10 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        if ($user->id === 1) {
+            return redirect()->route('users.index')
+                ->with('error', 'هذا المستخدم لا يمكن تعديله.');
+        }
         $roles = Role::all();
 
         // نجلب أدوار المستخدم الحالية
@@ -96,7 +103,10 @@ class UserController extends Controller
                 'roles.required' => 'يجب اختيار دور واحد على الأقل.',
                 'roles.array' => 'الأدوار يجب أن تكون على شكل قائمة.',
             ]);
-
+        if ($user->id === 1) {
+            return redirect()->route('users.index')
+                ->with('error', 'هذا المستخدم لا يمكن حذفه.');
+        }
         $user->name = $request->name;
         $user->email = $request->email;
         if ($request->password) {
@@ -111,6 +121,10 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        if ($user->id === 1) {
+            return redirect()->route('users.index')
+                ->with('error', 'هذا المستخدم لا يمكن حذفه.');
+        }
         $user->delete();
 
         return redirect()->route('users.index')->with('success', 'تم حذف المستخدم بنجاح');

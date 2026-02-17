@@ -30,8 +30,8 @@ class Doctor extends Model
     }
 
     // العلاقة مع السجلات الطبية
-    // public function medicalRecords()
-    // {
-    //     return $this->hasMany(MedicalRecord::class);
-    // }
+    public function medicalRecords()
+    {
+        return $this->hasMany(MedicalRecord::class);
+    }
 }

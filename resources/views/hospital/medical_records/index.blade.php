@@ -45,8 +45,8 @@
 
 @foreach($records as $record)
 <tr class="border-t">
-<td class="p-2">{{ $record->patient?->name }}</td>
-<td class="p-2">{{ $record->doctor?->name }}</td>
+  <td class="p-2">{{ $record->patient?->name ?? '-' }}</td>
+    <td class="p-2">{{ $record->doctor?->name ?? '-' }}</td>
 <td class="p-2">{{ $record->diagnosis }}</td>
 
 <td class="p-2 flex justify-end gap-2">
