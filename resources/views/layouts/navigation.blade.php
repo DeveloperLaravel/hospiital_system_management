@@ -1,81 +1,85 @@
-    <!-- Sidebar -->
-    <aside
-        class="fixed md:static z-30 w-64 bg-blue-900 text-white min-h-screen transform md:translate-x-0 transition"
-        :class="open ? 'translate-x-0' : 'translate-x-full md:translate-x-0'"
-    >
-        <div class="p-6 text-xl font-bold border-b border-blue-700">
-            🏥 إدارة المستشفى
-        </div>
+<!-- Sidebar -->
+<aside
+    class="fixed md:static z-30 w-64 bg-blue-900 text-white min-h-screen transform md:translate-x-0 transition"
+    :class="open ? 'translate-x-0' : 'translate-x-full md:translate-x-0'"
+>
+    <div class="p-6 text-xl font-bold border-b border-blue-700">
+        🏥 إدارة المستشفى
+    </div>
 
 <nav class="p-4 space-y-4">
 
-    <!-- القسم العام -->
+    <!-- النظام -->
     <div>
         <p class="text-xs uppercase text-blue-200 mb-2 tracking-wider">
             النظام
         </p>
 
-        <a href="{{ route('dashboard') }}" class="block p-3 rounded hover:bg-blue-700 transition">
+        <a href="{{ route('dashboard') }}" class="block p-3 rounded hover:bg-blue-700">
             Dashboard
         </a>
     </div>
 
-    <!-- فاصل -->
+    <!-- إدارة المستخدمين (Admin فقط أو من لديه صلاحيات) -->
+    @can('manage users')
     <div class="border-t border-blue-500/40"></div>
 
-    <!-- إدارة المستخدمين -->
     <div>
         <p class="text-xs uppercase text-blue-200 mb-2 tracking-wider">
             إدارة المستخدمين
         </p>
 
-        <a href="{{ route('users.index') }}" class="block p-3 rounded hover:bg-blue-700 transition">
+        <a href="{{ route('users.index') }}" class="block p-3 rounded hover:bg-blue-700">
             المستخدمون
         </a>
-
-        <a href="{{ route('roles.index') }}" class="block p-3 rounded hover:bg-blue-700 transition">
-            الأدوار
-        </a>
-
-        <a href="{{ route('permissions.index') }}" class="block p-3 rounded hover:bg-blue-700 transition">
-            الصلاحيات
-        </a>
     </div>
+    @endcan
 
-    <!-- فاصل -->
-    <div class="border-t border-blue-500/40"></div>
+    @can('manage roles')
+    <a href="{{ route('roles.index') }}" class="block p-3 rounded hover:bg-blue-700">
+        الأدوار
+    </a>
+    @endcan
+
+    @can('manage permissions')
+    <a href="{{ route('permissions.index') }}" class="block p-3 rounded hover:bg-blue-700">
+        الصلاحيات
+    </a>
+    @endcan
+
 
     <!-- إدارة المستشفى -->
+    <div class="border-t border-blue-500/40"></div>
+
     <div>
         <p class="text-xs uppercase text-blue-200 mb-2 tracking-wider">
             إدارة المستشفى
         </p>
 
-          <a href="{{ route('departments.index') }}" class="block p-3 rounded hover:bg-blue-700 transition">
-            اقسام
-              </a>
-              <a href="{{ route('doctors.index') }}" class="block p-3 rounded hover:bg-blue-700 transition">
+        @can('department-list')
+        <a href="{{ route('departments.index') }}" class="block p-3 rounded hover:bg-blue-700">
+            الأقسام
+        </a>
+        @endcan
 
+        @can('view doctors')
+        <a href="{{ route('doctors.index') }}" class="block p-3 rounded hover:bg-blue-700">
             الأطباء
         </a>
-        </a>
-        <a href="{{ route('patients.index') }}" class="block p-3 rounded hover:bg-blue-700 transition">
+        @endcan
+
+        @can('patient-list')
+        <a href="{{ route('patients.index') }}" class="block p-3 rounded hover:bg-blue-700">
             المرضى
         </a>
+        @endcan
 
-        <a href="{{ route('appointments.index') }}" class="block p-3 rounded hover:bg-blue-700 transition">
+        @can('view appointments')
+        <a href="{{ route('appointments.index') }}" class="block p-3 rounded hover:bg-blue-700">
             المواعيد
         </a>
-
-        <a href="#" class="block p-3 rounded hover:bg-blue-700 transition">
-            المواعيد
-        </a>
-
-        <a href="#" class="block p-3 rounded hover:bg-blue-700 transition">
-            الفواتير
-        </a>
+        @endcan
     </div>
 
 </nav>
-
-    </aside>
+</aside>

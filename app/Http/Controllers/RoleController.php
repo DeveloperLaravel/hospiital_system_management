@@ -8,18 +8,18 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('auth');
-    //     $this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['index', 'show']]);
-    //     $this->middleware('permission:role-create', ['only' => ['create', 'store']]);
-    //     $this->middleware('permission:role-edit', ['only' => ['edit', 'update']]);
-    //     $this->middleware('permission:role-delete', ['only' => ['destroy']]);
-    // }
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:role-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:role-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:role-delete', ['only' => ['destroy']]);
+    }
 
     public function index()
     {
-        $roles = Role::all();
+        $roles = Role::with('permissions')->paginate(10);
 
         return view('system.roles.index', compact('roles'));
     }
@@ -33,7 +33,7 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(
+        $data = $request->validate(
             [
                 'name' => 'required|unique:roles,name',
                 'permissions' => 'required|array',
@@ -50,8 +50,14 @@ class RoleController extends Controller
             ]
         );
 
-        $role = Role::create(['name' => $request->name]);
-        $role->syncPermissions($request->permissions);
+        // $role = Role::create(['name' => $request->name]);
+        // $role->syncPermissions($request->permissions);
+
+        $role = Role::create(['name' => $data['name']]);
+
+        if (isset($data['permissions'])) {
+            $role->syncPermissions($data['permissions']);
+        }
 
         return redirect()->route('roles.index')->with('success', 'Role created successfully');
     }

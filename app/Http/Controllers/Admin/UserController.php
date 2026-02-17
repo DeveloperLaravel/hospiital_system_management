@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('roles')->paginate(10);
+        $users = User::with('roles', 'permissions')->paginate(10);
 
         return view('system.user.index', compact('users'));
     }

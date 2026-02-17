@@ -21,42 +21,79 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
+// الصفحة الرئيسية
 Route::get('/', function () {
     return view('welcome');
 });
-Route::group(['middleware' => ['auth', 'permission:role-list']], function () {});
+
+// Dashboard
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-Route::resource('users', UserController::class)->middleware(['auth', 'verified']);
-Route::resource('roles', RoleController::class)->middleware(['auth', 'verified']);
-Route::resource('permissions', PermissionController::class)->middleware(['auth', 'verified']);
 
-// Route::middleware(['auth', 'role:admin|receptionist'])->group(function () {
-
-//     Route::get('/appointments/create', [Appointments::class, 'create'])->name('appointments.create');
-//     Route::get('/appointments/list', [Appointments::class, 'index'])->name('appointments.list');
-//     Route::post('/appointments/store', [Appointments::class, 'store'])->name('appointments.store');
-//     Route::get('/appointments/{appointment}/edit', [Appointments::class, 'edit'])->name('appointments.edit');
-//     Route::put('/appointments/{appointment}', [Appointments::class, 'update'])->name('appointments.update');
-//     Route::delete('/appointments/{appointment}', [Appointments::class, 'destroy'])->name('appointments.destroy');
-// });
-
+// ==============================
+// 🔐 جميع الصفحات المحمية
+// ==============================
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::resource('departments', DepartmentController::class);
-    Route::resource('doctors', DoctorController::class);
-    Route::resource('patients', PatientController::class);
-    Route::resource('appointments', AppointmentController::class);
-    // Route::get('/appointments', Appointments::class)->name('appointments.index');
-    // Optional: Controller Routes
+
+    // ==============================
+    // 👤 Profile
+    // ==============================
+    Route::controller(ProfileController::class)->group(function () {
+        Route::get('/profile', 'edit')->name('profile.edit');
+        Route::patch('/profile', 'update')->name('profile.update');
+        Route::delete('/profile', 'destroy')->name('profile.destroy');
+    });
+
+    // ==============================
+    // 🏥 إدارة المستشفى
+    // ==============================
+
+    // الأقسام
+    Route::middleware('permission:department-list')->group(function () {
+        Route::resource('departments', DepartmentController::class);
+    });
+
+    // المرضى
+    Route::middleware('permission:patient-list')->group(function () {
+        Route::resource('patients', PatientController::class);
+    });
+
+    // الأطباء
+    Route::middleware('permission:view doctors')->group(function () {
+        Route::resource('doctors', DoctorController::class);
+    });
+
+    // المواعيد
+    Route::middleware('permission:view appointments')->group(function () {
+        Route::resource('appointments', AppointmentController::class);
+    });
+
+    // ==============================
+    // 👑 إدارة النظام (Admin Panel)
+    // ==============================
+
+    // المستخدمين
+    Route::middleware('permission:manage users')->group(function () {
+        Route::resource('users', UserController::class);
+    });
+
+    // الأدوار
+    Route::middleware('permission:manage roles')->group(function () {
+        Route::resource('roles', RoleController::class);
+    });
+
+    // الصلاحيات
+    Route::middleware('permission:manage permissions')->group(function () {
+        Route::resource('permissions', PermissionController::class);
+    });
 
 });
-Route::group(['middleware' => ['permission:department-list']], function () {
-    // Route::get('/departments', [DepartmentController::class, 'index']);
-});
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {});
+
 require __DIR__.'/auth.php';

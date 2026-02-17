@@ -8,13 +8,13 @@ use Illuminate\Http\Request;
 
 class DoctorController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('permission:view doctors')->only('index');
-    //     $this->middleware('permission:create doctors')->only(['create', 'store']);
-    //     $this->middleware('permission:edit doctors')->only(['edit', 'update']);
-    //     $this->middleware('permission:delete doctors')->only('destroy');
-    // }
+    public function __construct()
+    {
+        $this->middleware('permission:view doctors')->only('index');
+        $this->middleware('permission:create doctors')->only(['create', 'store']);
+        $this->middleware('permission:edit doctors')->only(['edit', 'update']);
+        $this->middleware('permission:delete doctors')->only('destroy');
+    }
 
     public function index(Request $request)
     {
