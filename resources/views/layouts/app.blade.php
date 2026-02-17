@@ -26,44 +26,64 @@
     <!-- Sidebar -->
     @include('layouts.navigation')
      <!-- Main content -->
-    <div class="flex-1 flex flex-col">
+<div class="flex-1 flex flex-col">
 
-        <!-- Navbar -->
-        <div class="bg-white shadow p-4 flex justify-between items-center sticky top-0 z-10">
-            <!-- زر فتح sidebar للموبايل -->
-            <button @click="open=true" class="md:hidden bg-blue-900 text-white px-3 py-1 rounded">
+    <!-- Navbar -->
+    <header class="bg-white border-b px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-10">
+
+        <!-- اليسار -->
+        <div class="flex items-center gap-3">
+            <!-- زر الموبايل -->
+            <button
+                @click="open=true"
+                class="md:hidden bg-blue-800 text-white px-3 py-1.5 rounded-lg shadow-sm hover:bg-blue-900 transition"
+            >
                 ☰
             </button>
 
-            <h1 class="font-bold text-lg">Dashboard</h1>
-
-            <!-- الترحيب + زر خروج -->
-            <div class="flex items-center space-x-4">
-
-                <span class="text-gray-700 font-semibold">
-                    مرحبا، {{ auth()->user()->name ?? 'Admin' }}
-                </span>
-
-             <form method="POST" action="{{ route('logout') }}">
-    @csrf
-    <button
-        type="submit"
-        class="flex items-center gap-2 px-5 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md
-               hover:bg-red-700 hover:shadow-lg transition duration-300 transform hover:-translate-y-0.5 active:scale-95"
-    >
-        <!-- أيقونة الخروج -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5" />
-        </svg>
-        تسجيل خروج
-    </button>
-</form>
-
-            </div>
+            <!-- عنوان الصفحة -->
+            <h1 class="font-semibold text-gray-700 text-base md:text-lg">
+                Dashboard
+            </h1>
         </div>
 
+        <!-- اليمين -->
+        <div class="flex items-center gap-2 md:gap-4">
 
+            <!-- اسم المستخدم -->
+            <div class="hidden sm:block text-gray-600 font-medium text-sm md:text-base">
+                مرحبا، {{ auth()->user()->name ?? 'Admin' }}
+            </div>
+
+            <!-- Logout -->
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button
+                    type="submit"
+                    class="flex items-center gap-2 px-3 md:px-4 py-2
+                           bg-red-500 text-white text-sm font-semibold
+                           rounded-lg shadow-sm hover:bg-red-600
+                           transition duration-200"
+                >
+                    <!-- icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-4 w-4 md:h-5 md:w-5"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M17 16l4-4m0 0l-4-4m4 4H7" />
+                    </svg>
+
+                    <span class="hidden md:inline">تسجيل خروج</span>
+                </button>
+            </form>
+
+        </div>
+
+    </header>
                 {{ $slot }}
 
     </div>
