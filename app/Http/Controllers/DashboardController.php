@@ -2,37 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Appointment;
-use App\Models\Doctor;
-use App\Models\Patient;
+use App\Services\DashboardService;
 
 class DashboardController extends Controller
 {
+    protected DashboardService $dashboardService;
+
+    public function __construct(DashboardService $dashboardService)
+    {
+        $this->dashboardService = $dashboardService;
+    }
+
     public function __invoke()
     {
-        $patientsCount = Patient::count();
-        $doctorsCount = Doctor::count();
-        $appointmentsCount = Appointment::count();
+        $stats = $this->dashboardService->getStats();
 
-        // المرضى الجدد شهريًا
-        $patientsMonthly = Patient::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
-            ->whereYear('created_at', date('Y'))
-            ->groupBy('month')
-            ->pluck('total', 'month');
-
-        // المواعيد خلال الأسبوع
-        $appointmentsWeekly = Appointment::selectRaw('DAYNAME(date) as day, COUNT(*) as total')
-            ->whereBetween('date', [now()->startOfWeek(), now()->endOfWeek()])
-            ->groupBy('day')
-            ->pluck('total', 'day');
-
-        return view('dashboard', compact(
-            'patientsCount',
-            'doctorsCount',
-            'appointmentsCount',
-            'patientsMonthly',
-            'appointmentsWeekly'
-            // 'billsCount'
-        ));
+        return view('dashboard', $stats);
     }
 }
