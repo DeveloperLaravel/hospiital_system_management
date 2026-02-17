@@ -1,7 +1,6 @@
 <x-app-layout title="إضافة مستخدم جديد">
-    <main class="p-6 flex-1 overflow-auto bg-gray-50 min-h-screen" dir="rtl">
         <div class="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-8 mt-8">
-            
+
             <!-- العنوان -->
             <h2 class="text-3xl font-extrabold text-gray-800 mb-8 text-right">إضافة مستخدم جديد</h2>
 
@@ -84,5 +83,4 @@
                 </div>
             </form>
         </div>
-    </main>
 </x-app-layout>

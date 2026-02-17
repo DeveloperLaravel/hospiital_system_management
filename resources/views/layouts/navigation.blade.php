@@ -55,7 +55,7 @@
             اقسام
               </a>
               <a href="{{ route('doctors.index') }}" class="block p-3 rounded hover:bg-blue-700 transition">
-                
+
             الأطباء
         </a>
         </a>
@@ -63,7 +63,7 @@
             المرضى
         </a>
 
-        <a href="#" class="block p-3 rounded hover:bg-blue-700 transition">
+        <a href="{{ route('appointments.index') }}" class="block p-3 rounded hover:bg-blue-700 transition">
             المواعيد
         </a>
 

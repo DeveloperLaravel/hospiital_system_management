@@ -95,6 +95,7 @@
             </button>
         </form>
     </div>
+{{-- <livewire:appointments /> --}}
 
 </div>
 

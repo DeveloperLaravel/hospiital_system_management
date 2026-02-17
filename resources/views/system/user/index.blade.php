@@ -4,7 +4,7 @@
       <main class="p-6 flex-1 overflow-auto">
     <!-- Cards الاحصائيات -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-    
+
             <div class="bg-gradient-to-r from-white-400 to-gray-400 rounded-xl shadow-lg p-6 flex flex-col items-center text-white hover:scale-105 transform transition duration-300">
        <h2 class="text-xl font-semibold text-gray-700 mb-2">المرضى</h2>
     <p class="text-3xl font-bold">120</p>
@@ -22,7 +22,7 @@
     <h2 class="text-xl font-semibold mb-2">الفواتير</h2>
     <p class="text-3xl font-bold">18</p>
 </div>
-    
+
     </div>
 
     <br>

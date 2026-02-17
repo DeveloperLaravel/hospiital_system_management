@@ -21,4 +21,16 @@ class Doctor extends Model
     {
         return $this->belongsTo(Department::class);
     }
+
+    // العلاقة مع المواعيد
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+    // العلاقة مع السجلات الطبية
+    // public function medicalRecords()
+    // {
+    //     return $this->hasMany(MedicalRecord::class);
+    // }
 }
