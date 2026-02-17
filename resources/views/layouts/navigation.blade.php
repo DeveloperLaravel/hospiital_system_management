@@ -1,19 +1,11 @@
-<aside
-    class="fixed md:static z-30 w-64 bg-gradient-to-b from-blue-900 to-blue-800 text-white
-           min-h-screen transform md:translate-x-0 transition duration-200 shadow-xl"
-    :class="open ? 'translate-x-0' : 'translate-x-full md:translate-x-0'"
->
 
-    <div class="p-6 text-xl font-bold border-b border-blue-700 tracking-wide">
-        🏥 إدارة المستشفى
-    </div>
 
-    <nav class="p-4 space-y-2 text-sm">
+    <nav class="flex-1 p-3 space-y-2 text-sm">
 
         <p class="text-xs uppercase text-blue-200 mt-2 mb-1">النظام</p>
 
         <a href="{{ route('dashboard') }}"
-           class="block px-4 py-2 rounded-lg hover:bg-blue-700/70 transition">
+           class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-700 transition">
             Dashboard
         </a>
 
@@ -78,4 +70,3 @@
         @endcan
 
     </nav>
-</aside>
