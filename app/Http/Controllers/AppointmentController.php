@@ -10,13 +10,13 @@ use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('permission:view appointments')->only('index');
-    //     $this->middleware('permission:create appointments')->only(['create', 'store']);
-    //     $this->middleware('permission:edit appointments')->only(['edit', 'update']);
-    //     $this->middleware('permission:delete appointments')->only('destroy');
-    // }
+    public function __construct()
+    {
+        $this->middleware('permission:view appointments')->only('index');
+        $this->middleware('permission:create appointments')->only(['create', 'store']);
+        $this->middleware('permission:edit appointments')->only(['edit', 'update']);
+        $this->middleware('permission:delete appointments')->only('destroy');
+    }
 
     public function index(Request $request)
     {
@@ -33,6 +33,8 @@ class AppointmentController extends Controller
     {
         $patients = Patient::all();
         $doctors = Doctor::all();
+        // $patients = User::role('patient')->get();
+        // $doctors = User::role('doctor')->get();
 
         return view('hospital.appointments.create', compact('patients', 'doctors'));
     }

@@ -79,6 +79,12 @@
             المواعيد
         </a>
         @endcan
+              @can('medical_records.view')
+        <a href="{{ route('medical_records.index') }}" class="block p-3 rounded hover:bg-blue-700">
+           للسجل الطبي
+        </a>
+      
+        @endcan
     </div>
 
 </nav>

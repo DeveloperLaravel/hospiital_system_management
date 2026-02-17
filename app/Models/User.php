@@ -11,7 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, HasRoles,  Notifiable;
+    use HasApiTokens, HasFactory, HasRoles,   Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -29,6 +29,9 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    // تأكد أن guard متطابق مع guard الافتراضي
+    protected $guard_name = 'web';
+
     protected $hidden = [
         'password',
         'remember_token',
@@ -43,4 +46,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function patientRecords()
+    {
+        return $this->hasMany(MedicalRecord::class, 'patient_id');
+    }
+
+    public function doctorRecords()
+    {
+        return $this->hasMany(MedicalRecord::class, 'doctor_id');
+    }
 }

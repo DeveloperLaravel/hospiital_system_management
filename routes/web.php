@@ -4,10 +4,11 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\ProfileController;
 // use App\Http\Livewire\Appointments;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +42,7 @@ Route::get('/dashboard', function () {
 // 🔐 جميع الصفحات المحمية
 // ==============================
 Route::middleware('auth')->group(function () {
+    Route::resource('medical_records', MedicalRecordController::class);
 
     // ==============================
     // 👤 Profile

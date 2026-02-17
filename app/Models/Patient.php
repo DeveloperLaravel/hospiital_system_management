@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Traits\HasRoles;
 
 class Patient extends Model
 {
-    use HasFactory;
+    use HasFactory ,HasRoles;
 
     protected $fillable = [
         'name',
@@ -20,16 +21,16 @@ class Patient extends Model
     ];
 
     // علاقة المرضى بالمواعيد
-    // public function appointments()
-    // {
-    //     return $this->hasMany(Appointment::class);
-    // }
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
 
     // علاقة المرضى بالسجلات الطبية
-    // public function medicalRecords()
-    // {
-    //     return $this->hasMany(MedicalRecord::class);
-    // }
+    public function medicalRecords()
+    {
+        return $this->hasMany(MedicalRecord::class);
+    }
 
     // // علاقة المرضى بالفواتير
     // public function invoices()
