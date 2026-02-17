@@ -8,6 +8,13 @@ use Illuminate\Http\Request;
 
 class DoctorController extends Controller
 {
+    //     public function __construct()
+    // {
+    //     $this->middleware('permission:doctor-list', ['only' => ['index']]);
+    //     $this->middleware('permission:doctor-create', ['only' => ['create','store']]);
+    //     $this->middleware('permission:doctor-edit', ['only' => ['edit','update']]);
+    //     $this->middleware('permission:doctor-delete', ['only' => ['destroy']]);
+    // }
     public function index(Request $request)
     {
         $doctors = Doctor::with('department')->get();

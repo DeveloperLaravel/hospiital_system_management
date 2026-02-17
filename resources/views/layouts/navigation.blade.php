@@ -56,15 +56,15 @@
               </a>
               <a href="{{ route('doctors.index') }}" class="block p-3 rounded hover:bg-blue-700 transition">
                 
-            دكتور
+            الأطباء
         </a>
         </a>
-        <a href="#" class="block p-3 rounded hover:bg-blue-700 transition">
+        <a href="{{ route('patients.index') }}" class="block p-3 rounded hover:bg-blue-700 transition">
             المرضى
         </a>
 
         <a href="#" class="block p-3 rounded hover:bg-blue-700 transition">
-            الأطباء
+            المواعيد
         </a>
 
         <a href="#" class="block p-3 rounded hover:bg-blue-700 transition">

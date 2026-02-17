@@ -29,7 +29,7 @@
                                class="text-yellow-600 font-semibold">
                                 تعديل
                             </a>
-
+@can('doctor-delete')
                             <form method="POST"
                                   action="{{ route('doctors.destroy', $doctor) }}"
                                   class="inline">
@@ -37,6 +37,7 @@
                                 @method('DELETE')
                                 <button class="text-red-600">حذف</button>
                             </form>
+                            @endcan
                         </td>
                     </tr>
                 @endforeach
