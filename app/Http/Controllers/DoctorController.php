@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use App\Models\Doctor;
+use App\Services\DoctorService;
 use Illuminate\Http\Request;
 
 class DoctorController extends Controller
 {
-    public function __construct()
+    protected $doctorService;
+
+    public function __construct(DoctorService $doctorService)
     {
+        $this->doctorService = $doctorService;
+
         $this->middleware('permission:view doctors')->only('index');
         $this->middleware('permission:create doctors')->only(['create', 'store']);
         $this->middleware('permission:edit doctors')->only(['edit', 'update']);
@@ -18,13 +23,13 @@ class DoctorController extends Controller
 
     public function index(Request $request)
     {
-        $doctors = Doctor::with('department')->get();
+        $doctors = $this->doctorService->getAll();
         $departments = Department::pluck('name', 'id');
 
         $editDoctor = null;
 
         if ($request->edit) {
-            $editDoctor = Doctor::find($request->edit);
+            $editDoctor = $this->doctorService->find($request->edit);
         }
 
         return view('hospital.doctors.index', compact(
@@ -43,13 +48,13 @@ class DoctorController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required',
             'department_id' => 'required',
             'specialization' => 'required',
         ]);
 
-        Doctor::create($request->all());
+        $this->doctorService->store($data);
 
         return redirect()->route('doctors.index')
             ->with('success', 'تم إضافة الطبيب بنجاح');
@@ -64,13 +69,13 @@ class DoctorController extends Controller
 
     public function update(Request $request, Doctor $doctor)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required',
             'department_id' => 'required',
             'specialization' => 'required',
         ]);
 
-        $doctor->update($request->all());
+        $this->doctorService->update($doctor, $data);
 
         return redirect()->route('doctors.index')
             ->with('success', 'تم تحديث بيانات الطبيب');
@@ -78,7 +83,7 @@ class DoctorController extends Controller
 
     public function destroy(Doctor $doctor)
     {
-        $doctor->delete();
+        $this->doctorService->delete($doctor);
 
         return back()->with('success', 'تم حذف الطبيب');
     }
