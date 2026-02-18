@@ -3,56 +3,54 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
+use App\Services\DepartmentService;
 use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
+    public function __construct(private DepartmentService $departmentService)
+    {
+        $this->middleware('permission:department-view')->only('index');
+        $this->middleware('permission:department-create')->only('store');
+        $this->middleware('permission:department-edit')->only('update');
+        $this->middleware('permission:department-delete')->only('destroy');
+    }
+
     public function index()
     {
-        $departments = Department::latest()->paginate(10);
+        $departments = $this->departmentService->paginate();
 
         return view('hospital.departments.index', compact('departments'));
     }
 
-    public function create()
-    {
-        return view('hospital.departments.create');
-    }
-
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
         ]);
 
-        Department::create($request->all());
+        $this->departmentService->store($data);
 
-        return redirect()->route('departments.index')
-            ->with('success', 'تم إنشاء القسم');
-    }
-
-    public function edit(Department $department)
-    {
-        return view('hospital.departments.edit', compact('department'));
+        return back()->with('success', 'تم إنشاء القسم بنجاح');
     }
 
     public function update(Request $request, Department $department)
     {
-        $request->validate([
-            'name' => 'required',
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
         ]);
 
-        $department->update($request->all());
+        $this->departmentService->update($department, $data);
 
-        return redirect()->route('departments.index')
-            ->with('success', 'تم التحديث');
+        return back()->with('success', 'تم تحديث القسم بنجاح');
     }
 
     public function destroy(Department $department)
     {
-        $department->delete();
+        $this->departmentService->delete($department);
 
-        return redirect()->route('departments.index')
-            ->with('success', 'تم الحذف');
+        return back()->with('success', 'تم حذف القسم بنجاح');
     }
 }

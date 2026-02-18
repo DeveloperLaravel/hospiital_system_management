@@ -1,56 +1,110 @@
 <x-app-layout>
-    <main class="p-6 flex-1 overflow-auto" dir="rtl" lang="ar">
-        <div class="p-6">
+<main class="min-h-screen bg-gray-50 p-6 flex-1 overflow-auto"
+      dir="rtl"
+      x-data="{ open:false, isEdit:false, id:null, name:'', description:'' }">
 
-            @can('department-create')
-            <a href="{{ route('departments.create') }}"
-               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mb-4 inline-block transition">
-               إضافة قسم
-            </a>
-            @endcan
+<div class="max-w-7xl mx-auto">
 
-            <table class="w-full mt-4 border border-gray-200 text-right">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="p-2 border-b">الاسم</th>
-                        <th class="p-2 border-b">الوصف</th>
-                        <th class="p-2 border-b flex gap-2">التحكم</th>
-                    </tr>
-                </thead>
-                <tbody>
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">إدارة الأقسام</h1>
+
+        @can('department-create')
+        <button
+            @click="open=true; isEdit=false; name=''; description=''; id=null"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow">
+            إضافة قسم
+        </button>
+        @endcan
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white shadow rounded-xl overflow-hidden">
+        <table class="w-full text-right">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="p-3">الاسم</th>
+                    <th class="p-3">الوصف</th>
+                    <th class="p-3 text-center">التحكم</th>
+                </tr>
+            </thead>
+
+            <tbody>
                 @foreach($departments as $department)
-                    <tr class="hover:bg-gray-50">
-                        <td class="p-2 border-b">{{ $department->name }}</td>
-                        <td class="p-2 border-b">{{ $department->description }}</td>
-                        <td class="p-2 border-b flex gap-2">
+                <tr class="border-t">
+                    <td class="p-3">{{ $department->name }}</td>
+                    <td class="p-3">{{ $department->description }}</td>
+                    <td class="p-3 flex justify-center gap-2">
 
-                            @can('department-edit')
-                            <a href="{{ route('departments.edit',$department->id) }}"
-                               class="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded transition">
-                               تعديل
-                            </a>
-                            @endcan
+                        @can('department-edit')
+                        <button
+                            @click="
+                                open=true;
+                                isEdit=true;
+                                id={{ $department->id }};
+                                name={{ json_encode($department->name) }};
+                                description={{ json_encode($department->description) }};
+                            "
+                            class="bg-yellow-400 px-3 py-1 rounded text-white">
+                            تعديل
+                        </button>
+                        @endcan
 
-                            @can('department-delete')
-                            <form method="POST" action="{{ route('departments.destroy',$department->id) }}">
-                                @csrf
-                                @method('DELETE')
-                                <button class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded transition">
-                                    حذف
-                                </button>
-                            </form>
-                            @endcan
+                        @can('department-delete')
+                        <form method="POST" action="{{ route('departments.destroy',$department->id) }}">
+                            @csrf
+                            @method('DELETE')
+                            <button class="bg-red-500 px-3 py-1 rounded text-white">
+                                حذف
+                            </button>
+                        </form>
+                        @endcan
 
-                        </td>
-                    </tr>
+                    </td>
+                </tr>
                 @endforeach
-                </tbody>
-            </table>
+            </tbody>
+        </table>
+    </div>
+</div>
 
-            <div class="mt-4">
-                {{ $departments->links() }}
+<!-- Modal -->
+<div x-show="open" class="fixed inset-0 bg-black/40 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-xl w-full max-w-md">
+
+        <h2 class="text-lg font-bold mb-4"
+            x-text="isEdit ? 'تعديل القسم' : 'إضافة قسم'"></h2>
+
+        <form :action="isEdit ? `/departments/${id}` : '{{ route('departments.store') }}'" method="POST">
+            @csrf
+
+            <template x-if="isEdit">
+                <input type="hidden" name="_method" value="PUT">
+            </template>
+
+            <div class="mb-3">
+                <label>اسم القسم</label>
+                <input type="text" name="name" x-model="name" class="w-full border rounded p-2">
             </div>
 
-        </div>
-    </main>
+            <div class="mb-3">
+                <label>الوصف</label>
+                <textarea name="description" x-model="description" class="w-full border rounded p-2"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <button type="button" @click="open=false" class="bg-gray-300 px-3 py-1 rounded">
+                    إلغاء
+                </button>
+                <button class="bg-blue-600 text-white px-3 py-1 rounded">
+                    حفظ
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script src="//unpkg.com/alpinejs" defer></script>
+</main>
 </x-app-layout>
