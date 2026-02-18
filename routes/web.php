@@ -40,8 +40,6 @@ Route::get('dashboard', DashboardController::class, 'index')->middleware(['auth'
 // 🔐 جميع الصفحات المحمية
 // ==============================
 Route::middleware('auth')->group(function () {
-    Route::resource('medical_records', MedicalRecordController::class);
-    Route::resource('medicines', MedicineController::class);
 
     // ==============================
     // 👤 Profile
@@ -57,26 +55,15 @@ Route::middleware('auth')->group(function () {
     // ==============================
 
     // الأقسام
-    Route::middleware('permission:department-list')->group(function () {
-        Route::resource('departments', DepartmentController::class);
-    });
+    Route::middleware('permission:department-list')->group(function () {});
 
     // المرضى
-    Route::middleware('permission:patients.list')->group(function () {
-        Route::get('/patients/search', [PatientController::class, 'search'])->name('patients.search');
-        Route::resource('patients', PatientController::class);
-
-    });
+    Route::middleware('permission:patients.list')->group(function () {});
 
     // الأطباء
-    Route::middleware('permission:doctors-view')->group(function () {
-        Route::resource('doctors', DoctorController::class);
-    });
+    Route::middleware('permission:doctors-view')->group(function () {});
 
     // المواعيد
-    Route::middleware('permission:view appointments')->group(function () {
-        Route::resource('appointments', AppointmentController::class);
-    });
 
     // ==============================
     // 👑 إدارة النظام (Admin Panel)
@@ -85,24 +72,16 @@ Route::middleware('auth')->group(function () {
     // المستخدمين
     Route::middleware('permission:manage users')->group(function () {
         Route::resource('users', UserController::class);
-
-    });
-
-    // الأدوار
-    // Route::middleware(['auth', 'role:|admin'])->group(function () {
-    //     Route::resource('roles', RoleController::class);
-    // });
-
-    Route::middleware('permission:manage roles')->group(function () {
         Route::resource('roles', RoleController::class);
-    });
-
-    // الصلاحيات
-    Route::middleware('permission:manage permissions')->group(function () {
         Route::resource('permissions', PermissionController::class);
+        Route::resource('appointments', AppointmentController::class);
+        Route::resource('doctors', DoctorController::class);
+        Route::get('/patients/search', [PatientController::class, 'search'])->name('patients.search');
+        Route::resource('patients', PatientController::class);
+        Route::resource('departments', DepartmentController::class);
+        Route::resource('medical_records', MedicalRecordController::class);
+        Route::resource('medicines', MedicineController::class);
     });
-    // Route::resource('permissions', PermissionController::class);
-
 });
 
 require __DIR__.'/auth.php';

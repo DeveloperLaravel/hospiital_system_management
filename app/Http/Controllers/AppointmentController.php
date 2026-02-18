@@ -5,89 +5,85 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Patient;
-use App\Models\User;
+use App\Services\AppointmentService;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
-    public function __construct()
+    protected $appointmentService;
+
+    public function __construct(AppointmentService $appointmentService)
     {
-        $this->middleware('permission:view appointments')->only('index');
-        $this->middleware('permission:create appointments')->only(['create', 'store']);
-        $this->middleware('permission:edit appointments')->only(['edit', 'update']);
-        $this->middleware('permission:delete appointments')->only('destroy');
+        $this->appointmentService = $appointmentService;
+
+        $this->middleware('permission:appointments.view')->only('index');
+        $this->middleware('permission:appointments.create')->only(['create', 'store']);
+        $this->middleware('permission:appointments.edit')->only(['edit', 'update']);
+        $this->middleware('permission:appointments.delete')->only('destroy');
     }
 
     public function index(Request $request)
     {
-        $search = $request->query('search', '');
-        $appointments = Appointment::with(['patient', 'doctor'])
-            ->whereHas('patient', fn ($q) => $q->where('name', 'like', "%{$search}%"))
-            ->latest()
-            ->paginate(5);
+        $search = $request->query('search');
+
+        $appointments = $this->appointmentService->getAll($search);
 
         return view('hospital.appointments.index', compact('appointments', 'search'));
     }
 
     public function create()
     {
-        $patients = Patient::all();
-        $doctors = Doctor::all();
-        // $patients = User::role('patient')->get();
-        // $doctors = User::role('doctor')->get();
-
-        return view('hospital.appointments.create', compact('patients', 'doctors'));
+        return view('hospital.appointments.create', [
+            'patients' => Patient::all(),
+            'doctors' => Doctor::all(),
+        ]);
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'patient_id' => 'required|exists:users,id',
-            'doctor_id' => 'required|exists:users,id',
-            'date' => 'required|date',
-            'time' => 'required',
-            'status' => 'required|in:pending,confirmed,completed,cancelled',
-        ], [
-            'patient_id.required' => 'اختر المريض',
-            'doctor_id.required' => 'اختر الطبيب',
-            'date.required' => 'حدد تاريخ الموعد',
-            'time.required' => 'حدد وقت الموعد',
-        ]);
+        $validated = $this->validateAppointment($request);
 
-        Appointment::create($validated);
+        $this->appointmentService->create($validated);
 
-        return redirect()->route('appointments.index')->with('message', 'تم إضافة الموعد بنجاح');
+        return redirect()->route('appointments.index')
+            ->with('message', 'تم إضافة الموعد بنجاح');
     }
 
     public function edit(Appointment $appointment)
     {
-        // $patients = User::role('patient')->get();
-        // $doctors = User::role('doctor')->get();
-        $patients = Patient::all();
-        $doctors = Doctor::all();
-
-        return view('hospital.appointments.create', compact('appointment', 'patients', 'doctors'));
+        return view('hospital.appointments.create', [
+            'appointment' => $appointment,
+            'patients' => Patient::all(),
+            'doctors' => Doctor::all(),
+        ]);
     }
 
     public function update(Request $request, Appointment $appointment)
     {
-        $validated = $request->validate([
-            'patient_id' => 'required|exists:users,id',
-            'doctor_id' => 'required|exists:users,id',
-            'date' => 'required|date',
-            'time' => 'required',
-            'status' => 'required|in:pending,confirmed,completed,cancelled',
-        ]);
+        $validated = $this->validateAppointment($request);
 
-        $appointment->update($validated);
+        $this->appointmentService->update($appointment, $validated);
 
-        return redirect()->route('appointments.index')->with('message', 'تم تحديث الموعد بنجاح');
+        return redirect()->route('appointments.index')
+            ->with('message', 'تم تحديث الموعد بنجاح');
     }
 
     public function destroy(Appointment $appointment)
     {
-        $appointment->delete();
+        $this->appointmentService->delete($appointment);
 
-        return redirect()->route('appointments.index')->with('message', 'تم حذف الموعد بنجاح');
+        return redirect()->route('appointments.index')
+            ->with('message', 'تم حذف الموعد بنجاح');
+    }
+
+    private function validateAppointment(Request $request)
+    {
+        return $request->validate([
+            'patient_id' => 'required|exists:patients,id',
+            'doctor_id' => 'required|exists:doctors,id',
+            'date' => 'required|date',
+            'time' => 'required',
+            'status' => 'required|in:pending,confirmed,completed,cancelled',
+        ]);
     }
 }

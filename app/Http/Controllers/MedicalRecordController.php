@@ -2,54 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Doctor;
 use App\Models\MedicalRecord;
-use App\Models\Patient;
+use App\Services\MedicalRecordService;
 use Illuminate\Http\Request;
 
 class MedicalRecordController extends Controller
 {
-    public function __construct()
+    protected $medicalRecordService;
+
+    public function __construct(MedicalRecordService $medicalRecordService)
     {
-        $this->middleware('permission:medical_records.view')->only('index');
-        $this->middleware('permission:medical_records.create')->only('store');
-        $this->middleware('permission:medical_records.edit')->only('update');
-        $this->middleware('permission:medical_records.delete')->only('destroy');
+        $this->medicalRecordService = $medicalRecordService;
+
+        $this->middleware('permission:medical-records.view')->only('index');
+        $this->middleware('permission:medical-records.create')->only('store');
+        $this->middleware('permission:medical-records.edit')->only('update');
+        $this->middleware('permission:medical-records.delete')->only('destroy');
     }
 
     public function index()
     {
-        $records = MedicalRecord::with(['patient', 'doctor'])
-            ->latest()
-            ->paginate(5); // pagination
-        $patients = Patient::all();
-        $doctors = Doctor::with('department')->get();
+        $records = $this->medicalRecordService->getAll();
+        $patients = $this->medicalRecordService->getPatients();
+        $doctors = $this->medicalRecordService->getDoctors();
 
         return view('hospital.medical_records.index', compact('records', 'patients', 'doctors'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'patient_id' => 'required',
-            'doctor_id' => 'required',
+        $validated = $request->validate([
+            'patient_id' => 'required|exists:patients,id',
+            'doctor_id' => 'required|exists:doctors,id',
         ]);
 
-        MedicalRecord::create($request->all());
+        $this->medicalRecordService->store($validated);
 
         return back()->with('success', 'تم الإضافة');
     }
 
     public function update(Request $request, MedicalRecord $medicalRecord)
     {
-        $medicalRecord->update($request->all());
+        $validated = $request->validate([
+            'patient_id' => 'required|exists:patients,id',
+            'doctor_id' => 'required|exists:doctors,id',
+        ]);
+
+        $this->medicalRecordService->update($medicalRecord, $validated);
 
         return back()->with('success', 'تم التعديل');
     }
 
     public function destroy(MedicalRecord $medicalRecord)
     {
-        $medicalRecord->delete();
+        $this->medicalRecordService->delete($medicalRecord);
 
         return back()->with('success', 'تم الحذف');
     }
