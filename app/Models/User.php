@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'status',
     ];
 
     /**
@@ -55,5 +56,12 @@ class User extends Authenticatable
     public function doctorRecords()
     {
         return $this->hasMany(MedicalRecord::class, 'doctor_id');
+    }
+
+    public function getAllUsers($perPage = 10)
+    {
+        return User::with('roles')
+            ->latest()
+            ->paginate($perPage);
     }
 }

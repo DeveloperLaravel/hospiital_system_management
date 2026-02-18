@@ -6,8 +6,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\MedicalRecordController;
-use App\Http\Controllers\PatientController;
+use App\Http\Controllers\MedicineController;
 // use App\Http\Livewire\Appointments;
+use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
@@ -40,6 +41,7 @@ Route::get('dashboard', DashboardController::class, 'index')->middleware(['auth'
 // ==============================
 Route::middleware('auth')->group(function () {
     Route::resource('medical_records', MedicalRecordController::class);
+    Route::resource('medicines', MedicineController::class);
 
     // ==============================
     // 👤 Profile
@@ -81,9 +83,14 @@ Route::middleware('auth')->group(function () {
     // المستخدمين
     Route::middleware('permission:manage users')->group(function () {
         Route::resource('users', UserController::class);
+
     });
 
     // الأدوار
+    // Route::middleware(['auth', 'role:|admin'])->group(function () {
+    //     Route::resource('roles', RoleController::class);
+    // });
+
     Route::middleware('permission:manage roles')->group(function () {
         Route::resource('roles', RoleController::class);
     });
@@ -92,6 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:manage permissions')->group(function () {
         Route::resource('permissions', PermissionController::class);
     });
+    // Route::resource('permissions', PermissionController::class);
 
 });
 

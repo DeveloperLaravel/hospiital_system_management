@@ -16,7 +16,7 @@
     </a>
 
     <!-- Users -->
-    @can('manage users')
+    {{-- @can('manage users') --}}
     <a href="{{ route('users.index') }}"
        class="flex items-center gap-3 px-4 py-2 rounded-lg transition
               text-gray-100 font-medium
@@ -30,10 +30,10 @@
         </svg>
         <span x-show="!sidebarCollapsed">المستخدمون</span>
     </a>
-    @endcan
+    {{-- @endcan --}}
 
     <!-- Roles -->
-    @can('manage roles')
+    {{-- @can('manage roles') --}}
     <a href="{{ route('roles.index') }}"
        class="flex items-center gap-3 px-4 py-2 rounded-lg transition
               text-gray-100 font-medium
@@ -47,10 +47,10 @@
         </svg>
         <span x-show="!sidebarCollapsed">الأدوار</span>
     </a>
-    @endcan
+    {{-- @endcan --}}
 
     <!-- Permissions -->
-    @can('manage permissions')
+    {{-- @can('manage permissions') --}}
     <a href="{{ route('permissions.index') }}"
        class="flex items-center gap-3 px-4 py-2 rounded-lg transition
               text-gray-100 font-medium
@@ -64,7 +64,7 @@
         </svg>
         <span x-show="!sidebarCollapsed">الصلاحيات</span>
     </a>
-    @endcan
+    {{-- @endcan --}}
 
     <!-- Departments -->
     @can('department-list')
@@ -151,4 +151,20 @@
     </a>
     @endcan
 
+
+       @can('medicine-list')
+    <a href="{{ route('medicines.index') }}"
+       class="flex items-center gap-3 px-4 py-2 rounded-lg transition
+              text-gray-100 font-medium
+              hover:bg-blue-600 hover:text-white
+              {{ request()->routeIs('medicines.*') ? 'bg-blue-700 text-white shadow-lg' : '' }}"
+       :title="'للأدوية'">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-300" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3M3 21h18" />
+        </svg>
+        <span x-show="!sidebarCollapsed">للأدوية</span>
+    </a>
+    @endcan
 </nav>

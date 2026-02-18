@@ -2,58 +2,77 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\PermissionService;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
+    protected $permissionService;
+
+    public function __construct(PermissionService $permissionService)
+    {
+        $this->permissionService = $permissionService;
+        $this->middleware('permission:permission-list|permission-view', ['only' => ['index']]);
+        $this->middleware('permission:permission-create', ['only' => ['store']]);
+        $this->middleware('permission:permission-edit', ['only' => ['update']]);
+        $this->middleware('permission:permission-delete', ['only' => ['destroy']]);
+    }
+
+    /**
+     * عرض جميع الصلاحيات
+     */
     public function index()
     {
-        $permissions = Permission::latest()->get();
+        $permissions = $this->permissionService->all();
 
         return view('system.permissions.index', compact('permissions'));
     }
 
-    public function create()
-    {
-        return view('system.permissions.create');
-    }
-
+    /**
+     * إنشاء صلاحية جديدة
+     */
     public function store(Request $request)
     {
-        $request->validate(
-            ['name' => 'required|unique:permissions,name'],
-            ['name.required' => 'يرجى إدخال اسم الصلاحية']
-        );
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
 
-        Permission::create(['name' => $request->name]);
+        $this->permissionService->create($request->only('name'));
 
-        return redirect()->route('permissions.index')
-            ->with('success', 'تم إنشاء الصلاحية بنجاح');
+        return redirect()->back()->with('success', 'تم إنشاء الصلاحية بنجاح');
     }
 
-    public function edit(Permission $permission)
+    /**
+     * تحديث صلاحية موجودة
+     */
+    public function update(Request $request, $id)
     {
-        return view('system.permissions.edit', compact('permission'));
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $permission = $this->permissionService->find($id);
+        if (! $permission) {
+            return redirect()->back()->with('error', 'الصلاحية غير موجودة');
+        }
+
+        $this->permissionService->update($permission, $request->only('name'));
+
+        return redirect()->back()->with('success', 'تم تحديث الصلاحية بنجاح');
     }
 
-    public function update(Request $request, Permission $permission)
+    /**
+     * حذف صلاحية
+     */
+    public function destroy($id)
     {
-        $request->validate(
-            ['name' => 'required|unique:permissions,name,'.$permission->id],
-            ['name.required' => 'يرجى إدخال اسم الصلاحية']
-        );
+        $permission = $this->permissionService->find($id);
+        if (! $permission) {
+            return redirect()->back()->with('error', 'الصلاحية غير موجودة');
+        }
 
-        $permission->update(['name' => $request->name]);
+        $this->permissionService->delete($permission);
 
-        return redirect()->route('permissions.index')
-            ->with('success', 'تم تحديث الصلاحية');
-    }
-
-    public function destroy(Permission $permission)
-    {
-        $permission->delete();
-
-        return back()->with('success', 'تم حذف الصلاحية');
+        return redirect()->back()->with('success', 'تم حذف الصلاحية بنجاح');
     }
 }

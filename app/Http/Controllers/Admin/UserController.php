@@ -3,16 +3,30 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Services\UserService;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    protected $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+
+        $this->middleware('permission:user-view|user-list|manage users')->only('index');
+        $this->middleware('permission:user-create')->only(['create', 'store']);
+        $this->middleware('permission:user-edit')->only(['edit', 'update']);
+        $this->middleware('permission:user-delete')->only('destroy');
+    }
+
     public function index()
     {
-        $users = User::with('roles', 'permissions')->paginate(10);
+        $users = $this->userService->getAllUsers();
 
         return view('system.user.index', compact('users'));
     }
@@ -20,113 +34,39 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::all();
-        $userRoles = [];
+        $permissions = Permission::all();
 
-        return view('system.user.create', compact('roles', 'userRoles'));
+        return view('system.user.form', compact('roles', 'permissions'));
     }
 
-    public function store(Request $request, User $user)
+    public function store(StoreUserRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$user->id,
-            'password' => 'nullable|string|min:6|confirmed',
-            'roles' => 'required|array',
-        ],
-            [
-                'name.required' => 'الاسم مطلوب.',
-                'name.string' => 'الاسم يجب أن يكون نصًا.',
-                'name.max' => 'الاسم لا يمكن أن يزيد عن 255 حرفًا.',
+        $this->userService->createUser($request->validated());
 
-                'email.required' => 'البريد الإلكتروني مطلوب.',
-                'email.email' => 'البريد الإلكتروني يجب أن يكون بصيغة صحيحة.',
-                'email.unique' => 'البريد الإلكتروني مستخدم مسبقًا.',
-
-                'password.string' => 'كلمة المرور يجب أن تكون نصًا.',
-                'password.min' => 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.',
-                'password.confirmed' => 'تأكيد كلمة المرور غير مطابق.',
-
-                'roles.required' => 'يجب اختيار دور واحد على الأقل.',
-                'roles.array' => 'الأدوار يجب أن تكون على شكل قائمة.',
-            ]);
-        if ($user->id === 1) {
-            return redirect()->route('users.index')
-                ->with('error', 'هذا المستخدم لا يمكن حذفه.');
-        }
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $user->syncRoles($request->roles);
-
-        return redirect()->route('users.index')->with('success', 'تم إنشاء المستخدم بنجاح');
+        return redirect()->route('users.index')
+            ->with('success', 'تم إنشاء المستخدم بنجاح.');
     }
 
     public function edit(User $user)
     {
-        if ($user->id === 1) {
-            return redirect()->route('users.index')
-                ->with('error', 'هذا المستخدم لا يمكن تعديله.');
-        }
         $roles = Role::all();
+        $permissions = Permission::all();
 
-        // نجلب أدوار المستخدم الحالية
-        $userRoles = $user->roles->pluck('name')->toArray();
-
-        return view('system.user.edit', compact('user', 'roles', 'userRoles'));
-
+        return view('system.user.form', compact('user', 'roles', 'permissions'));
     }
 
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$user->id,
-            'password' => 'nullable|string|min:6|confirmed',
-            'roles' => 'required|array',
-        ],
-            [
-                'name.required' => 'الاسم مطلوب.',
-                'name.string' => 'الاسم يجب أن يكون نصًا.',
-                'name.max' => 'الاسم لا يمكن أن يزيد عن 255 حرفًا.',
+        $this->userService->updateUser($request->validated(), $user);
 
-                'email.required' => 'البريد الإلكتروني مطلوب.',
-                'email.email' => 'البريد الإلكتروني يجب أن يكون بصيغة صحيحة.',
-                'email.unique' => 'البريد الإلكتروني مستخدم مسبقًا.',
-
-                'password.string' => 'كلمة المرور يجب أن تكون نصًا.',
-                'password.min' => 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.',
-                'password.confirmed' => 'تأكيد كلمة المرور غير مطابق.',
-
-                'roles.required' => 'يجب اختيار دور واحد على الأقل.',
-                'roles.array' => 'الأدوار يجب أن تكون على شكل قائمة.',
-            ]);
-        if ($user->id === 1) {
-            return redirect()->route('users.index')
-                ->with('error', 'هذا المستخدم لا يمكن حذفه.');
-        }
-        $user->name = $request->name;
-        $user->email = $request->email;
-        if ($request->password) {
-            $user->password = Hash::make($request->password);
-        }
-        $user->save();
-
-        $user->syncRoles($request->roles);
-
-        return redirect()->route('users.index')->with('success', 'تم تحديث المستخدم بنجاح');
+        return redirect()->route('users.index')
+            ->with('success', 'تم تحديث المستخدم.');
     }
 
     public function destroy(User $user)
     {
-        if ($user->id === 1) {
-            return redirect()->route('users.index')
-                ->with('error', 'هذا المستخدم لا يمكن حذفه.');
-        }
-        $user->delete();
+        $this->userService->deleteUser($user);
 
-        return redirect()->route('users.index')->with('success', 'تم حذف المستخدم بنجاح');
+        return back()->with('success', 'تم حذف المستخدم.');
     }
 }

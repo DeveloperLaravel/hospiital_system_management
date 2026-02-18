@@ -2,104 +2,63 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\RoleService;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-    public function __construct()
+    protected RoleService $roleService;
+
+    public function __construct(RoleService $roleService)
     {
-        $this->middleware('auth');
+        $this->roleService = $roleService;
+
+        // حماية العمليات باستخدام صلاحيات Spatie
         $this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['index', 'show']]);
-        $this->middleware('permission:role-create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:role-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:role-create', ['only' => ['store']]);
+        $this->middleware('permission:role-edit', ['only' => ['update']]);
         $this->middleware('permission:role-delete', ['only' => ['destroy']]);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $roles = Role::with('permissions')->paginate(10);
+        $roles = $this->roleService->getAllRoles();
+        $permissions = $this->roleService->getAllPermissions();
+        $editRole = $request->editRole ? $this->roleService->getRoleById($request->editRole) : null;
 
-        return view('system.roles.index', compact('roles'));
-    }
-
-    public function create()
-    {
-        $permissions = Permission::all();
-
-        return view('system.roles.create', compact('permissions'));
+        return view('system.roles.index', compact('roles', 'permissions', 'editRole'));
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate(
-            [
-                'name' => 'required|unique:roles,name',
-                'permissions' => 'required|array',
-            ],
-            [
-                'name.required' => 'يرجى إدخال اسم الدور.',
-                'name.unique' => 'اسم الدور موجود بالفعل.',
-                'permissions.required' => 'يجب اختيار صلاحية واحدة على الأقل.',
-                'permissions.array' => 'قيمة الصلاحيات غير صحيحة.',
-            ],
-            [
-                'name' => 'اسم الدور',
-                'permissions' => 'الصلاحيات',
-            ]
-        );
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'permissions' => 'nullable|array',
+        ]);
 
-        // $role = Role::create(['name' => $request->name]);
-        // $role->syncPermissions($request->permissions);
+        $this->roleService->createRole($request->only(['name', 'permissions']));
 
-        $role = Role::create(['name' => $data['name']]);
-
-        if (isset($data['permissions'])) {
-            $role->syncPermissions($data['permissions']);
-        }
-
-        return redirect()->route('roles.index')->with('success', 'Role created successfully');
-    }
-
-    public function edit(Role $role)
-    {
-        $permissions = Permission::all();
-        $rolePermissions = $role->permissions->pluck('name')->toArray();
-
-        return view('system.roles.edit', compact('role', 'permissions', 'rolePermissions'));
+        return redirect()->back()->with('success', 'تم إنشاء الدور بنجاح');
     }
 
     public function update(Request $request, Role $role)
     {
-        $request->validate(
-            [
-                'name' => 'required|unique:roles,name',
-                'permissions' => 'required|array',
-            ],
-            [
-                'name.required' => 'يرجى إدخال اسم الدور.',
-                'name.unique' => 'اسم الدور موجود بالفعل.',
-                'permissions.required' => 'يجب اختيار صلاحية واحدة على الأقل.',
-                'permissions.array' => 'قيمة الصلاحيات غير صحيحة.',
-            ],
-            [
-                'name' => 'اسم الدور',
-                'permissions' => 'الصلاحيات',
-            ]
-        );
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'permissions' => 'nullable|array',
+        ]);
 
-        $role->name = $request->name;
-        $role->save();
-        $role->syncPermissions($request->permissions);
+        $this->roleService->updateRole($role, $request->only(['name', 'permissions']));
 
-        return redirect()->route('roles.index')->with('success', 'Role updated successfully');
+        return redirect()->back()->with('success', 'تم تحديث الدور بنجاح');
     }
 
     public function destroy(Role $role)
     {
-        $role->delete();
 
-        return redirect()->route('roles.index')->with('success', 'Role deleted successfully');
+        $this->roleService->deleteRole($role);
+
+        return redirect()->route('roles.index')->with('success', 'تم حذف الدور بنجاح');
     }
 }
