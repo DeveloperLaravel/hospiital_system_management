@@ -62,12 +62,14 @@ Route::middleware('auth')->group(function () {
     });
 
     // المرضى
-    Route::middleware('permission:patient-list')->group(function () {
+    Route::middleware('permission:patients.list')->group(function () {
+        Route::get('/patients/search', [PatientController::class, 'search'])->name('patients.search');
         Route::resource('patients', PatientController::class);
+
     });
 
     // الأطباء
-    Route::middleware('permission:view doctors')->group(function () {
+    Route::middleware('permission:doctors-view')->group(function () {
         Route::resource('doctors', DoctorController::class);
     });
 

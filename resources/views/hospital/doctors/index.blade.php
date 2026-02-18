@@ -29,7 +29,7 @@
                                class="text-yellow-600 font-semibold">
                                 تعديل
                             </a>
-@can('doctor-delete')
+@can('doctors-delete')
                             <form method="POST"
                                   action="{{ route('doctors.destroy', $doctor) }}"
                                   class="inline">

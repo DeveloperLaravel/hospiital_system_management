@@ -84,7 +84,7 @@
     @endcan
 
     <!-- Doctors -->
-    @can('view doctors')
+    @can('doctors-view')
     <a href="{{ route('doctors.index') }}"
        class="flex items-center gap-3 px-4 py-2 rounded-lg transition
               text-gray-100 font-medium
@@ -101,7 +101,7 @@
     @endcan
 
     <!-- Patients -->
-    @can('patient-list')
+    @can('patients.list')
     <a href="{{ route('patients.index') }}"
        class="flex items-center gap-3 px-4 py-2 rounded-lg transition
               text-gray-100 font-medium

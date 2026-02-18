@@ -15,10 +15,10 @@ class DoctorController extends Controller
     {
         $this->doctorService = $doctorService;
 
-        $this->middleware('permission:view doctors')->only('index');
-        $this->middleware('permission:create doctors')->only(['create', 'store']);
-        $this->middleware('permission:edit doctors')->only(['edit', 'update']);
-        $this->middleware('permission:delete doctors')->only('destroy');
+        $this->middleware('permission:doctors-view')->only('index');
+        $this->middleware('permission:doctors-create')->only(['create', 'store']);
+        $this->middleware('permission:doctors-edit')->only(['edit', 'update']);
+        $this->middleware('permission:doctors-delete')->only('destroy');
     }
 
     public function index(Request $request)
