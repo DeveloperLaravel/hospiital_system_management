@@ -10,60 +10,48 @@ class MedicineController extends Controller
     public function __construct()
     {
         $this->middleware('permission:medicine-list')->only('index');
-        $this->middleware('permission:medicine-create')->only(['create', 'store']);
-        $this->middleware('permission:medicine-edit')->only(['edit', 'update']);
+        $this->middleware('permission:medicine-create')->only('store');
+        $this->middleware('permission:medicine-edit')->only('update');
         $this->middleware('permission:medicine-delete')->only('destroy');
     }
 
     public function index()
     {
-        $medicines = Medication::latest()->paginate(10);
+        $medicines = Medication::latest()->get();
 
         return view('hospital.medication.index', compact('medicines'));
     }
 
-    public function create()
-    {
-        return view('hospital.medication.form');
-    }
-
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required',
-            'quantity' => 'required|integer',
+        $request->validate([
+            'name' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'expiry_date' => 'nullable|date',
+            'quantity' => 'required|integer',
         ]);
 
-        Medication::create($data);
+        Medication::create($request->all());
 
-        return redirect()->route('medication.index')->with('success', 'تمت الإضافة');
+        return back()->with('success', 'Medicine created successfully');
     }
 
-    public function edit(Medication $medication)
+    public function update(Request $request, Medication $medicine)
     {
-        return view('hospital.medication.form', compact('medication'));
-    }
-
-    public function update(Request $request, Medication $medication)
-    {
-        $data = $request->validate([
-            'name' => 'required',
-            'quantity' => 'required|integer',
+        $request->validate([
+            'name' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'expiry_date' => 'nullable|date',
+            'quantity' => 'required|integer',
         ]);
 
-        $medication->update($data);
+        $medicine->update($request->all());
 
-        return redirect()->route('medicines.index')->with('success', 'تم التحديث');
+        return back()->with('success', 'Medicine updated successfully');
     }
 
-    public function destroy(Medication $medication)
+    public function destroy(Medication $medicine)
     {
-        $medication->delete();
+        $medicine->delete();
 
-        return back()->with('success', 'تم الحذف');
+        return back()->with('success', 'Medicine deleted successfully');
     }
 }

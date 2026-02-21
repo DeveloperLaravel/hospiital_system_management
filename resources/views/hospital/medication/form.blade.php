@@ -2,14 +2,14 @@
 <main class="p-6">
 
 <form method="POST"
-action="{{ isset($medication) ? route('medicines.update',$medicine) : route('medicines.store') }}"
+action="{{ isset($medicine) ? route('medicines.update',$medicine) : route('medicines.store') }}"
 class="bg-white p-4 rounded shadow">
 
 @csrf
-@if(isset($medication)) @method('PUT') @endif
+@if(isset($medicine)) @method('PUT') @endif
 
 <input name="name" placeholder="اسم الدواء"
-value="{{ $medication->name ?? '' }}" class="border p-2 w-full mb-2">
+value="{{ $medicine->name ?? '' }}" class="border p-2 w-full mb-2">
 
 <input name="quantity" type="number"
 value="{{ $Medication->quantity ?? 0 }}"

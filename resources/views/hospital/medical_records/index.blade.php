@@ -29,7 +29,7 @@
 
 
     <!-- نموذج الإضافة -->
-    @can('medical-records.create')
+    @can('medical-records-create')
     <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
 
         <h3 class="text-lg font-semibold mb-4 text-gray-700">
@@ -141,7 +141,7 @@
                             <td class="p-4 text-center">
                                 <div class="flex justify-center gap-2">
 
-                                    @can('medical-records.delete')
+                                    @can('medical-records-delete')
                                     <form method="POST"
                                           action="{{ route('medical_records.destroy',$record) }}"
                                           onsubmit="return confirm('هل أنت متأكد من الحذف؟')">
