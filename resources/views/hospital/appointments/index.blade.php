@@ -43,7 +43,7 @@
             </form>
 
             {{-- زر إضافة --}}
-            @can('appointments.create')
+            @can('appointments-create')
             <a href="{{ route('appointments.create') }}"
                class="flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-xl shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-200">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
@@ -121,14 +121,14 @@
                         <td class="p-4">
                             <div class="flex justify-center gap-2">
 
-                                @can('appointments.edit')
+                                @can('appointments-edit')
                                 <a href="{{ route('appointments.edit', $appointment) }}"
                                    class="px-3 py-1.5 text-sm bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition shadow-sm">
                                     تعديل
                                 </a>
                                 @endcan
 
-                                @can('appointments.delete')
+                                @can('appointments-delete')
                                 <form method="POST" action="{{ route('appointments.destroy', $appointment) }}">
                                     @csrf
                                     @method('DELETE')
