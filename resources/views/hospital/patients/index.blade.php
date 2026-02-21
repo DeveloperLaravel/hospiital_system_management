@@ -35,7 +35,7 @@
             <input type="text" id="search" placeholder="ابحث عن المريض..."
                    class="w-full sm:w-1/3 border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm"
             > --}}
-        </div>       
+        </div>
 
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm text-right">
@@ -73,14 +73,14 @@
                     <td class="px-4 py-3">{{ $patient->phone ?? '-' }}</td>
 
                     <td class="px-4 py-3 flex gap-2 justify-end">
-                        @can('patients.edit')
+                        @can('patients-edit')
                         <button onclick='openEditModal(@json($patient))'
                             class="px-3 py-2 bg-yellow-400 hover:bg-yellow-500 text-white rounded-xl shadow-md transition flex items-center gap-1">
                             <i class="fa-solid fa-pen"></i>
                         </button>
                         @endcan
 
-                        @can('patients.delete')
+                        @can('patients-delete')
                         <form action="{{ route('patients.destroy', $patient->id) }}" method="POST"
                               onsubmit="return confirm('هل أنت متأكد من حذف هذا المريض؟')">
                             @csrf
@@ -112,7 +112,7 @@
     </div>
 
     <!-- نموذج الإضافة / التعديل -->
-    @can('patients.create')
+    @can('patients-create')
     <div class="bg-white rounded-3xl shadow-xl p-8">
 
         <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">

@@ -13,10 +13,10 @@ class PatientController extends Controller
     public function __construct(PatientService $patientService)
     {
         $this->patientService = $patientService;
-        $this->middleware('permission:permission-list|permission-view', ['only' => ['index']]);
-        $this->middleware('permission:permission-create', ['only' => ['store']]);
-        $this->middleware('permission:permission-edit', ['only' => ['update']]);
-        $this->middleware('permission:permission-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:patients-list|patients-view', ['only' => ['index']]);
+        $this->middleware('permission:patients-create', ['only' => ['store']]);
+        $this->middleware('permission:patients-edit', ['only' => ['update']]);
+        $this->middleware('permission:patients-delete', ['only' => ['destroy']]);
     }
 
     // عرض قائمة المرضى
