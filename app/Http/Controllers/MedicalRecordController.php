@@ -14,10 +14,10 @@ class MedicalRecordController extends Controller
     {
         $this->medicalRecordService = $medicalRecordService;
 
-        $this->middleware('permission:medical-records.view')->only('index');
-        $this->middleware('permission:medical-records.create')->only('store');
-        $this->middleware('permission:medical-records.edit')->only('update');
-        $this->middleware('permission:medical-records.delete')->only('destroy');
+        $this->middleware('permission:medical-records-view')->only('index');
+        $this->middleware('permission:medical-records-create')->only('store');
+        $this->middleware('permission:medical-records-edit')->only('update');
+        $this->middleware('permission:medical-records-delete')->only('destroy');
     }
 
     public function index()

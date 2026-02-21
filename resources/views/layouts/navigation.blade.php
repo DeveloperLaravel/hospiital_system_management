@@ -135,7 +135,7 @@
     @endcan
 
     <!-- Medical Records -->
-    @can('medical-records.view')
+    @can('medical-records-view')
     <a href="{{ route('medical_records.index') }}"
        class="flex items-center gap-3 px-4 py-2 rounded-lg transition
               text-gray-100 font-medium
