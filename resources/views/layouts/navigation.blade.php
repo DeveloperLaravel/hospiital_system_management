@@ -50,7 +50,7 @@
     @endcan
 
     <!-- Permissions -->
-    @can('manage permissions')
+    @can('permission manage')
     <a href="{{ route('permissions.index') }}"
        class="flex items-center gap-3 px-4 py-2 rounded-lg transition
               text-gray-100 font-medium

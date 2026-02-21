@@ -13,14 +13,10 @@ return new class extends Migration
     {
         Schema::create('medications', function (Blueprint $table) {
             $table->id();
-            Schema::create('medicines', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->integer('quantity')->default(0);
-                $table->decimal('price', 8, 2)->default(0);
-                $table->date('expiry_date')->nullable();
-                $table->timestamps();
-            });
+            $table->string('name');
+            $table->integer('quantity')->default(0);
+            $table->decimal('price', 8, 2)->default(0);
+            $table->date('expiry_date')->nullable();
             $table->timestamps();
         });
     }

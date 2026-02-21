@@ -16,10 +16,10 @@ class AppointmentController extends Controller
     {
         $this->appointmentService = $appointmentService;
 
-        $this->middleware('permission:appointments.view')->only('index');
-        $this->middleware('permission:appointments.create')->only(['create', 'store']);
-        $this->middleware('permission:appointments.edit')->only(['edit', 'update']);
-        $this->middleware('permission:appointments.delete')->only('destroy');
+        $this->middleware('permission:appointments-view')->only('index');
+        $this->middleware('permission:appointments-create')->only(['create', 'store']);
+        $this->middleware('permission:appointments-edit')->only(['edit', 'update']);
+        $this->middleware('permission:appointments-delete')->only('destroy');
     }
 
     public function index(Request $request)

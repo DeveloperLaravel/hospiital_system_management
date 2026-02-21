@@ -12,7 +12,7 @@ class PermissionController extends Controller
     public function __construct(PermissionService $permissionService)
     {
         $this->permissionService = $permissionService;
-        $this->middleware('permission:permission-list|permission-view', ['only' => ['index']]);
+        $this->middleware('permission:permission-list|permission-view|permission manage', ['only' => ['index']]);
         $this->middleware('permission:permission-create', ['only' => ['store']]);
         $this->middleware('permission:permission-edit', ['only' => ['update']]);
         $this->middleware('permission:permission-delete', ['only' => ['destroy']]);
