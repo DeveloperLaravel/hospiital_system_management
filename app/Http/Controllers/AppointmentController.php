@@ -6,15 +6,19 @@ use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Services\AppointmentService;
+use App\Services\PatientService;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
     protected $appointmentService;
 
-    public function __construct(AppointmentService $appointmentService)
+    protected $patientService;
+
+    public function __construct(AppointmentService $appointmentService, PatientService $patientService)
     {
         $this->appointmentService = $appointmentService;
+        $this->patientService = $patientService;
 
         $this->middleware('permission:appointments-view')->only('index');
         $this->middleware('permission:appointments-create')->only(['create', 'store']);
@@ -24,17 +28,31 @@ class AppointmentController extends Controller
 
     public function index(Request $request)
     {
-        $search = $request->query('search');
+        // $search = $request->query('search');
 
-        $appointments = $this->appointmentService->getAll($search);
+        // $appointments = $this->appointmentService->getAll($search);
+        $search = $request->input('search');
 
-        return view('hospital.appointments.index', compact('appointments', 'search'));
+        $appointments = Appointment::with(['patient', 'doctor'])
+            ->when($search, function ($q) use ($search) {
+                $q->whereHas('patient', fn ($q) => $q->where('name', 'like', "%$search%"));
+            })
+            ->latest()
+            ->paginate(10);
+
+        // المرضى الذين لا يملكون موعد بالفعل
+        $takenPatientIds = Appointment::pluck('patient_id')->toArray();
+        $patients = Patient::whereNotIn('id', $takenPatientIds)->get();
+
+        $doctors = Doctor::all();
+
+        return view('hospital.appointments.index', compact('appointments', 'patients', 'doctors', 'search'));
     }
 
     public function create()
     {
         return view('hospital.appointments.create', [
-            'patients' => Patient::all(),
+            'patients' => \App\Models\Patient::orderBy('name', 'asc')->get(),
             'doctors' => Doctor::all(),
         ]);
     }
@@ -53,7 +71,7 @@ class AppointmentController extends Controller
     {
         return view('hospital.appointments.create', [
             'appointment' => $appointment,
-            'patients' => Patient::all(),
+            'patients' => \App\Models\Patient::orderBy('name', 'asc')->get(),
             'doctors' => Doctor::all(),
         ]);
     }

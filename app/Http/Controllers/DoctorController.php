@@ -23,13 +23,15 @@ class DoctorController extends Controller
 
     public function index(Request $request)
     {
-        $doctors = $this->doctorService->getAll();
+        // جلب الأطباء مع القسم وعمل Pagination
+        $doctors = Doctor::with('department')->latest()->paginate(10);
+
+        // جلب الأقسام لاستخدامها في الفورم
         $departments = Department::pluck('name', 'id');
-
+        // إذا كان هناك طلب تعديل
         $editDoctor = null;
-
-        if ($request->edit) {
-            $editDoctor = $this->doctorService->find($request->edit);
+        if ($request->has('edit')) {
+            $editDoctor = Doctor::find($request->edit);
         }
 
         return view('hospital.doctors.index', compact(
@@ -39,19 +41,14 @@ class DoctorController extends Controller
         ));
     }
 
-    public function create()
-    {
-        $departments = Department::pluck('name', 'id');
-
-        return view('hospital.doctors.create', compact('departments'));
-    }
-
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required',
-            'department_id' => 'required',
-            'specialization' => 'required',
+            'name' => 'required|string|max:255',
+            'department_id' => 'required|exists:departments,id',
+            'specialization' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'license_number' => 'nullable|string|max:100',
         ]);
 
         $this->doctorService->store($data);
@@ -60,19 +57,14 @@ class DoctorController extends Controller
             ->with('success', 'تم إضافة الطبيب بنجاح');
     }
 
-    public function edit(Doctor $doctor)
-    {
-        $departments = Department::pluck('name', 'id');
-
-        return view('hospital.doctors.edit', compact('doctor', 'departments'));
-    }
-
     public function update(Request $request, Doctor $doctor)
     {
         $data = $request->validate([
-            'name' => 'required',
-            'department_id' => 'required',
-            'specialization' => 'required',
+            'name' => 'required|string|max:255',
+            'department_id' => 'required|exists:departments,id',
+            'specialization' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'license_number' => 'nullable|string|max:100',
         ]);
 
         $this->doctorService->update($doctor, $data);

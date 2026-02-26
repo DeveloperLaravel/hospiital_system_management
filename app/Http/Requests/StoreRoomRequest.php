@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateMedicalRecordRequest extends FormRequest
+class StoreRoomRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,9 @@ class UpdateMedicalRecordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'room_number' => 'required|string|max:50|unique:rooms,room_number',
+            'type' => 'required|in:single,double,ICU',
+            'status' => 'required|in:available,occupied',
         ];
     }
 }

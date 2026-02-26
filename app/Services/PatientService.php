@@ -15,6 +15,14 @@ class PatientService
     }
 
     /**
+     * الحصول على جميع المرضى بدون ترقيم (للاستخدام في القوائم المنسدلة)
+     */
+    public function getAllPatientsForSelect()
+    {
+        return Patient::orderBy('name', 'asc')->get();
+    }
+
+    /**
      * إنشاء مريض جديد
      */
     public function createPatient(array $data): Patient

@@ -27,4 +27,9 @@ class MedicalRecord extends Model
     {
         return $this->belongsTo(Doctor::class, 'doctor_id'); // مهم تحديد الـ foreign key
     }
+
+    public function prescriptions()
+    {
+        return $this->hasMany(Prescription::class);
+    }
 }

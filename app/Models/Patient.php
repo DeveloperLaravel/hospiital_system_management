@@ -32,10 +32,25 @@ class Patient extends Model
         return $this->hasMany(MedicalRecord::class);
     }
 
-    // // علاقة المرضى بالفواتير
-    // public function invoices()
-    // {
-    //     return $this->hasMany(Invoice::class);
-    // }
+    // علاقة المرضى بالفواتير
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
 
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class, 'patient_rooms', 'patient_id', 'room_id')
+            ->using(RoomPatient::class)
+            ->withPivot(['admitted_at', 'discharged_at'])
+            ->withTimestamps();
+    }
+
+    /**
+     * الغرفة الحالية للمريض (إذا كان موجود)
+     */
+    public function currentRoom()
+    {
+        return $this->rooms()->wherePivotNull('discharged_at')->first();
+    }
 }

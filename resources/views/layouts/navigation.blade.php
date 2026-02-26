@@ -1,170 +1,201 @@
-<nav class="flex-1 p-3 space-y-2 text-sm overflow-y-auto">
+<nav class="flex-1 p-4 space-y-6 text-sm overflow-y-auto">
 
-    <!-- Dashboard -->
-    <a href="{{ route('dashboard') }}"
-       class="flex items-center gap-3 px-4 py-2 rounded-lg transition
-              text-gray-100 font-medium
-              hover:bg-blue-600 hover:text-white
-              {{ request()->routeIs('dashboard') ? 'bg-blue-700 text-white shadow-lg' : '' }}"
-       :title="'Dashboard'">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-300" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M3 3h18v18H3V3z" />
-        </svg>
-        <span x-show="!sidebarCollapsed">Dashboard</span>
-    </a>
+    {{-- Dashboard --}}
+    <div>
 
-    <!-- Users -->
-    {{-- @can('manage users') --}}
-    <a href="{{ route('users.index') }}"
-       class="flex items-center gap-3 px-4 py-2 rounded-lg transition
-              text-gray-100 font-medium
-              hover:bg-blue-600 hover:text-white
-              {{ request()->routeIs('users.*') ? 'bg-blue-700 text-white shadow-lg' : '' }}"
-       :title="'المستخدمون'">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-300" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M5.121 17.804A5 5 0 0112 12m0 0a5 5 0 016.879 5.804M12 12v1m0 0H6m6 0h6" />
-        </svg>
-        <span x-show="!sidebarCollapsed">المستخدمون</span>
-    </a>
-    {{-- @endcan --}}
+        <a href="{{ route('dashboard') }}"
+           class="sidebar-item {{ request()->routeIs('dashboard') ? 'sidebar-active' : '' }}">
 
-    <!-- Roles -->
-    @can('manage roles')
-    <a href="{{ route('roles.index') }}"
-       class="flex items-center gap-3 px-4 py-2 rounded-lg transition
-              text-gray-100 font-medium
-              hover:bg-blue-600 hover:text-white
-              {{ request()->routeIs('roles.*') ? 'bg-blue-700 text-white shadow-lg' : '' }}"
-       :title="'الأدوار'">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-300" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 4v16m8-8H4" />
-        </svg>
-        <span x-show="!sidebarCollapsed">الأدوار</span>
-    </a>
-    @endcan
+            {{-- icon --}}
+            <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-width="2" d="M3 12l2-2 4 4 8-8 4 4"/>
+            </svg>
 
-    <!-- Permissions -->
-    @can('permission manage')
-    <a href="{{ route('permissions.index') }}"
-       class="flex items-center gap-3 px-4 py-2 rounded-lg transition
-              text-gray-100 font-medium
-              hover:bg-blue-600 hover:text-white
-              {{ request()->routeIs('permissions.*') ? 'bg-blue-700 text-white shadow-lg' : '' }}"
-       :title="'الصلاحيات'">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-pink-300" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 8v4l3 3m6 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span x-show="!sidebarCollapsed">الصلاحيات</span>
-    </a>
-    @endcan
+            <span x-show="!sidebarCollapsed">
+                لوحة التحكم
+            </span>
 
-    <!-- Departments -->
-    @can('department-list')
-    <a href="{{ route('departments.index') }}"
-       class="flex items-center gap-3 px-4 py-2 rounded-lg transition
-              text-gray-100 font-medium
-              hover:bg-blue-600 hover:text-white
-              {{ request()->routeIs('departments.*') ? 'bg-blue-700 text-white shadow-lg' : '' }}"
-       :title="'الأقسام'">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-300" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14" />
-        </svg>
-        <span x-show="!sidebarCollapsed">الأقسام</span>
-    </a>
-    @endcan
+        </a>
 
-    <!-- Doctors -->
-    @can('doctors-view')
-    <a href="{{ route('doctors.index') }}"
-       class="flex items-center gap-3 px-4 py-2 rounded-lg transition
-              text-gray-100 font-medium
-              hover:bg-blue-600 hover:text-white
-              {{ request()->routeIs('doctors.*') ? 'bg-blue-700 text-white shadow-lg' : '' }}"
-       :title="'الأطباء'">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-teal-300" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 14l9-5-9-5-9 5 9 5z" />
-        </svg>
-        <span x-show="!sidebarCollapsed">الأطباء</span>
-    </a>
-    @endcan
-
-    <!-- Patients -->
-    @can('patients-list')
-    <a href="{{ route('patients.index') }}"
-       class="flex items-center gap-3 px-4 py-2 rounded-lg transition
-              text-gray-100 font-medium
-              hover:bg-blue-600 hover:text-white
-              {{ request()->routeIs('patients.*') ? 'bg-blue-700 text-white shadow-lg' : '' }}"
-       :title="'المرضى'">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-300" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M5 3v18h14V3H5z" />
-        </svg>
-        <span x-show="!sidebarCollapsed">المرضى</span>
-    </a>
-    @endcan
-
-    <!-- Appointments -->
-    @can('appointments-view')
-    <a href="{{ route('appointments.index') }}"
-       class="flex items-center gap-3 px-4 py-2 rounded-lg transition
-              text-gray-100 font-medium
-              hover:bg-blue-600 hover:text-white
-              {{ request()->routeIs('appointments.*') ? 'bg-blue-700 text-white shadow-lg' : '' }}"
-       :title="'المواعيد'">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-300" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 7V3m8 4V3M3 21h18" />
-        </svg>
-        <span x-show="!sidebarCollapsed">المواعيد</span>
-    </a>
-    @endcan
-
-    <!-- Medical Records -->
-    @can('medical-records-view')
-    <a href="{{ route('medical_records.index') }}"
-       class="flex items-center gap-3 px-4 py-2 rounded-lg transition
-              text-gray-100 font-medium
-              hover:bg-blue-600 hover:text-white
-              {{ request()->routeIs('medical_records.*') ? 'bg-blue-700 text-white shadow-lg' : '' }}"
-       :title="'السجل الطبي'">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-300" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 12h6m2 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span x-show="!sidebarCollapsed">السجل الطبي</span>
-    </a>
-    @endcan
+    </div>
 
 
-       @can('medicine-list')
-    <a href="{{ route('medicines.index') }}"
-       class="flex items-center gap-3 px-4 py-2 rounded-lg transition
-              text-gray-100 font-medium
-              hover:bg-blue-600 hover:text-white
-              {{ request()->routeIs('medicines.*') ? 'bg-blue-700 text-white shadow-lg' : '' }}"
-       :title="'للأدوية'">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-300" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 7V3m8 4V3M3 21h18" />
-        </svg>
-        <span x-show="!sidebarCollapsed">للأدوية</span>
-    </a>
-    @endcan
+    {{-- إدارة النظام --}}
+    <div>
+
+        <p class="sidebar-section" x-show="!sidebarCollapsed">
+            إدارة النظام
+        </p>
+
+
+        @can('manage users')
+        <a href="{{ route('users.index') }}"
+           class="sidebar-item {{ request()->routeIs('users.*') ? 'sidebar-active' : '' }}">
+
+            <svg class="sidebar-icon" fill="none" stroke="currentColor">
+                <path stroke-width="2"
+                      d="M17 20h5v-1a4 4 0 00-5-3.87M9 20H4v-1a4 4 0 015-3.87"/>
+            </svg>
+
+            <span x-show="!sidebarCollapsed">
+                المستخدمون
+            </span>
+
+        </a>
+        @endcan
+
+
+        @can('manage roles')
+        <a href="{{ route('roles.index') }}"
+           class="sidebar-item {{ request()->routeIs('roles.*') ? 'sidebar-active' : '' }}">
+
+            <svg class="sidebar-icon" fill="none" stroke="currentColor">
+                <path stroke-width="2"
+                      d="M12 15l-3.5 2 1-4L6 10l4-.5L12 6l2 3.5 4 .5-3.5 3 1 4z"/>
+            </svg>
+
+            <span x-show="!sidebarCollapsed">
+                الأدوار
+            </span>
+
+        </a>
+        @endcan
+
+
+        @can('permission manage')
+        <a href="{{ route('permissions.index') }}"
+           class="sidebar-item {{ request()->routeIs('permissions.*') ? 'sidebar-active' : '' }}">
+
+            <svg class="sidebar-icon" fill="none" stroke="currentColor">
+                <path stroke-width="2"
+                      d="M12 11c0-3 2-5 5-5s5 2 5 5"/>
+            </svg>
+
+            <span x-show="!sidebarCollapsed">
+                الصلاحيات
+            </span>
+
+        </a>
+        @endcan
+
+    </div>
+
+
+    {{-- الإدارة الطبية --}}
+    <div>
+
+        <p class="sidebar-section" x-show="!sidebarCollapsed">
+            الإدارة الطبية
+        </p>
+
+
+        <a href="{{ route('departments.index') }}"
+           class="sidebar-item {{ request()->routeIs('departments.*') ? 'sidebar-active' : '' }}">
+
+            🏥
+            <span x-show="!sidebarCollapsed">
+                الأقسام
+            </span>
+
+        </a>
+
+
+        <a href="{{ route('doctors.index') }}"
+           class="sidebar-item {{ request()->routeIs('doctors.*') ? 'sidebar-active' : '' }}">
+
+            👨‍⚕️
+            <span x-show="!sidebarCollapsed">
+                الأطباء
+            </span>
+
+        </a>
+
+
+        <a href="{{ route('nurses.index') }}"
+           class="sidebar-item {{ request()->routeIs('nurses.*') ? 'sidebar-active' : '' }}">
+
+            👩‍⚕️
+            <span x-show="!sidebarCollapsed">
+                الممرضون
+            </span>
+
+        </a>
+
+
+        <a href="{{ route('patients.index') }}"
+           class="sidebar-item {{ request()->routeIs('patients.*') ? 'sidebar-active' : '' }}">
+
+            🧑‍🦽
+            <span x-show="!sidebarCollapsed">
+                المرضى
+            </span>
+
+        </a>
+
+
+        <a href="{{ route('appointments.index') }}"
+           class="sidebar-item {{ request()->routeIs('appointments.*') ? 'sidebar-active' : '' }}">
+
+            📅
+            <span x-show="!sidebarCollapsed">
+                المواعيد
+            </span>
+
+        </a>
+
+
+        <a href="{{ route('rooms.index') }}"
+           class="sidebar-item {{ request()->routeIs('rooms.*') ? 'sidebar-active' : '' }}">
+
+            🛏
+            <span x-show="!sidebarCollapsed">
+                الغرف
+            </span>
+
+        </a>
+
+
+        <a href="{{ route('prescriptions.index') }}"
+           class="sidebar-item {{ request()->routeIs('prescriptions.*') ? 'sidebar-active' : '' }}">
+
+            💊
+            <span x-show="!sidebarCollapsed">
+                الوصفات
+            </span>
+
+        </a>
+
+
+        <a href="{{ route('medical_records.index') }}"
+           class="sidebar-item {{ request()->routeIs('medical_records.*') ? 'sidebar-active' : '' }}">
+
+            📋
+            <span x-show="!sidebarCollapsed">
+                السجل الطبي
+            </span>
+
+        </a>
+
+    </div>
+
+
+    {{-- المالية --}}
+    <div>
+
+        <p class="sidebar-section" x-show="!sidebarCollapsed">
+            الإدارة المالية
+        </p>
+
+        <a href="{{ route('invoices.index') }}"
+           class="sidebar-item {{ request()->routeIs('invoices.*') ? 'sidebar-active' : '' }}">
+
+            💰
+            <span x-show="!sidebarCollapsed">
+                الفواتير
+            </span>
+
+        </a>
+
+    </div>
+
 </nav>

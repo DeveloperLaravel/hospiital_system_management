@@ -1,138 +1,162 @@
 <x-app-layout>
-<div class="p-6">
+<div class="p-6 space-y-10" dir="rtl" lang="ar">
 
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-blue-700">Medicines Management</h1>
+    {{-- ===================== --}}
+    {{-- نموذج إضافة / تعديل --}}
+    {{-- ===================== --}}
+    <div class="bg-white shadow-xl rounded-2xl p-6 border border-gray-200 max-w-4xl mx-auto">
 
-        @can('medicine-create')
-        <button onclick="openModal()"
-            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-            + Add Medicine
-        </button>
-        @endcan
-    </div>
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">
+            {{ isset($medication) ? 'تعديل دواء' : 'إضافة دواء جديد' }}
+        </h2>
 
-    @if(session('success'))
-        <div class="bg-green-100 text-green-700 p-3 rounded mb-4">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    <div class="bg-white shadow rounded-lg overflow-hidden">
-        <table class="w-full text-sm text-left">
-            <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
-                <tr>
-                    <th class="px-4 py-3">Name</th>
-                    <th class="px-4 py-3">Type</th>
-                    <th class="px-4 py-3">Price</th>
-                    <th class="px-4 py-3">Qty</th>
-                    <th class="px-4 py-3">Expiry</th>
-                    <th class="px-4 py-3 text-center">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($medicines as $medicine)
-                <tr class="border-b">
-                    <td class="px-4 py-3">{{ $medicine->name }}</td>
-                    <td class="px-4 py-3">{{ $medicine->type }}</td>
-                    <td class="px-4 py-3">{{ $medicine->price }}</td>
-                    <td class="px-4 py-3">{{ $medicine->quantity }}</td>
-                    <td class="px-4 py-3">{{ $medicine->expiry_date }}</td>
-                    <td class="px-4 py-3 text-center flex gap-2 justify-center">
-
-                        @can('medicine-edit')
-                        <button onclick="editMedicine({{ $medicine }})"
-                            class="bg-yellow-500 text-white px-3 py-1 rounded">
-                            Edit
-                        </button>
-                        @endcan
-
-                        @can('medicine-delete')
-                        <form method="POST" action="{{ route('medicines.destroy',$medicine) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button class="bg-red-600 text-white px-3 py-1 rounded">
-                                Delete
-                            </button>
-                        </form>
-                        @endcan
-
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-
-</div>
-
-<!-- Modal -->
-<div id="medicineModal" class="fixed inset-0 bg-black/50 hidden justify-center items-center">
-    <div class="bg-white p-6 rounded-lg w-full max-w-lg">
-        <h2 class="text-xl font-bold mb-4" id="modalTitle">Add Medicine</h2>
-
-        <form method="POST" id="medicineForm">
+        <form method="POST"
+              action="{{ isset($medication)
+                ? route('medications.update',$medication)
+                : route('medications.store') }}">
             @csrf
-            <input type="hidden" id="methodField" name="_method">
+            @if(isset($medication)) @method('PUT') @endif
 
-            <input type="text" name="name" id="name" placeholder="Name"
-                class="w-full border p-2 rounded mb-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            <input type="text" name="type" id="type" placeholder="Type"
-                class="w-full border p-2 rounded mb-3">
+                <div>
+                    <label class="block mb-2 font-medium text-gray-700">اسم الدواء</label>
+                    <input type="text" name="name"
+                        value="{{ old('name',$medication->name ?? '') }}"
+                        class="border border-gray-300 w-full p-3 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400">
+                </div>
 
-            <input type="number" name="price" id="price" placeholder="Price"
-                class="w-full border p-2 rounded mb-3">
+                <div>
+                    <label class="block mb-2 font-medium text-gray-700">نوع الدواء</label>
+                    <select name="type"
+                        class="border border-gray-300 w-full p-3 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400">
+                        <option value="">اختر النوع</option>
+                        <option value="tablet" {{ old('type',$medication->type ?? '')=='tablet'?'selected':'' }}>أقراص</option>
+                        <option value="capsule" {{ old('type',$medication->type ?? '')=='capsule'?'selected':'' }}>كبسولات</option>
+                        <option value="syrup" {{ old('type',$medication->type ?? '')=='syrup'?'selected':'' }}>شراب</option>
+                        <option value="injection" {{ old('type',$medication->type ?? '')=='injection'?'selected':'' }}>حقن</option>
+                    </select>
+                </div>
 
-            <input type="number" name="quantity" id="quantity" placeholder="Quantity"
-                class="w-full border p-2 rounded mb-3">
+                <div>
+                    <label class="block mb-2 font-medium text-gray-700">الكمية</label>
+                    <input type="number" name="quantity"
+                        value="{{ old('quantity',$medication->quantity ?? 0) }}"
+                        class="border border-gray-300 w-full p-3 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400">
+                </div>
 
-            <input type="date" name="expiry_date" id="expiry_date"
-                class="w-full border p-2 rounded mb-3">
+                <div>
+                    <label class="block mb-2 font-medium text-gray-700">السعر</label>
+                    <input type="number" step="0.01" name="price"
+                        value="{{ old('price',$medication->price ?? 0) }}"
+                        class="border border-gray-300 w-full p-3 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400">
+                </div>
 
-            <textarea name="description" id="description"
-                class="w-full border p-2 rounded mb-3"
-                placeholder="Description"></textarea>
+                <div>
+                    <label class="block mb-2 font-medium text-gray-700">تاريخ الانتهاء</label>
+                    <input type="date" name="expiry_date"
+                        value="{{ old('expiry_date',$medication->expiry_date ?? '') }}"
+                        class="border border-gray-300 w-full p-3 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400">
+                </div>
 
-            <div class="flex justify-end gap-3">
-                <button type="button" onclick="closeModal()"
-                    class="bg-gray-400 text-white px-4 py-2 rounded">
-                    Cancel
-                </button>
-                <button type="submit"
-                    class="bg-blue-600 text-white px-4 py-2 rounded">
-                    Save
-                </button>
+                <div class="md:col-span-2">
+                    <label class="block mb-2 font-medium text-gray-700">الوصف</label>
+                    <textarea name="description"
+                        class="border border-gray-300 w-full p-3 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400"
+                        rows="3">{{ old('description',$medication->description ?? '') }}</textarea>
+                </div>
+
             </div>
+
+            <div class="mt-6 flex gap-4 justify-start flex-wrap">
+                <button class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg shadow-md transition">
+                    حفظ
+                </button>
+
+                @if(isset($medication))
+                    <a href="{{ route('medications.index') }}"
+                       class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg shadow-md transition">
+                        إلغاء
+                    </a>
+                @endif
+            </div>
+
         </form>
     </div>
+
+    {{-- ===================== --}}
+    {{-- جدول عرض الأدوية --}}
+    {{-- ===================== --}}
+    <div class="bg-white shadow-xl rounded-2xl p-6 border border-gray-200 max-w-6xl mx-auto">
+
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <form method="GET" class="w-full md:w-1/3">
+                <input type="text" name="search"
+                    value="{{ request('search') }}"
+                    placeholder="بحث..."
+                    class="border border-gray-300 w-full p-3 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400">
+            </form>
+
+            @if(session('success'))
+                <div class="bg-green-500 text-white p-3 rounded shadow-md w-full md:w-auto text-center">
+                    {{ session('success') }}
+                </div>
+            @endif
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full border rounded-lg text-right min-w-[700px]">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="p-4 text-right">الاسم</th>
+                        <th class="p-4">الكمية</th>
+                        <th class="p-4">السعر</th>
+                        <th class="p-4">النوع</th>
+                        <th class="p-4">التحكم</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    @foreach($medications as $item)
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-4">{{ $item->name }}</td>
+                            <td class="p-4">{{ $item->quantity }}</td>
+                            <td class="p-4">{{ number_format($item->price,2) }} ر.س</td>
+                            <td class="p-4 capitalize">{{ $item->type }}</td>
+                            <td class="p-4 flex gap-2 flex-wrap">
+
+                                {{-- صلاحيات التعديل --}}
+                                @can('medications-edit', $item)
+                                    <a href="{{ route('medications.index', ['edit' => $item->id]) }}"
+                                       class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded-lg shadow-sm transition">
+                                       تعديل
+                                    </a>
+                                @endcan
+
+                                {{-- صلاحيات الحذف --}}
+                                @can('medications-delete', $item)
+                                    <form method="POST"
+                                          action="{{ route('medications.destroy', $item) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button onclick="return confirm('هل أنت متأكد من حذف هذا الدواء؟')"
+                                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded-lg shadow-sm transition">
+                                            حذف
+                                        </button>
+                                    </form>
+                                @endcan
+
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-6">
+            {{ $medications->links() }}
+        </div>
+
+    </div>
+
 </div>
-
-<script>
-function openModal(){
-    document.getElementById('medicineForm').action = "{{ route('medicines.store') }}";
-    document.getElementById('methodField').value = "";
-    document.getElementById('modalTitle').innerText = "Add Medicine";
-    document.getElementById('medicineModal').classList.remove('hidden');
-}
-
-function editMedicine(medicine){
-    openModal();
-    document.getElementById('medicineForm').action = `/medicines/${medicine.id}`;
-    document.getElementById('methodField').value = "PUT";
-    document.getElementById('modalTitle').innerText = "Edit Medicine";
-
-    name.value = medicine.name;
-    type.value = medicine.type;
-    price.value = medicine.price;
-    quantity.value = medicine.quantity;
-    expiry_date.value = medicine.expiry_date;
-    description.value = medicine.description;
-}
-
-function closeModal(){
-    document.getElementById('medicineModal').classList.add('hidden');
-}
-</script>
-
 </x-app-layout>
