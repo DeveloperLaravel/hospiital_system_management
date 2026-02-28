@@ -13,9 +13,24 @@ return new class extends Migration
     {
         Schema::create('stock_alerts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('medication_id')->constrained()->cascadeOnDelete();
-            $table->enum('type', ['low_stock', 'expiry_warning']);
-            $table->boolean('is_read')->default(false);
+            $table->foreignId('medication_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->integer('current_stock');
+
+            $table->integer('min_stock');
+
+            $table->enum('status', [
+                'low',
+                'out',
+                'resolved',
+            ])->default('low');
+
+            $table->timestamp('alert_date');
+
+            $table->text('notes')->nullable();
+
             $table->timestamps();
         });
     }

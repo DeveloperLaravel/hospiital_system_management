@@ -13,9 +13,22 @@ return new class extends Migration
     {
         Schema::create('invoice_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('invoice_id')->constrained()->cascadeOnDelete();
-            $table->string('service');
-            $table->decimal('price', 8, 2);
+            $table->foreignId('invoice_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->string('name');
+            // مثال:
+            // Consultation
+            // X-Ray
+            // Paracetamol
+
+            $table->integer('quantity')->default(1);
+
+            $table->decimal('price', 10, 2);
+
+            $table->decimal('total', 10, 2);
+
             $table->timestamps();
         });
     }

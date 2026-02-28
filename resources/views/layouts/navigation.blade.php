@@ -28,7 +28,7 @@
         </p>
 
 
-        @can('manage users')
+        {{-- @can('manage users') --}}
         <a href="{{ route('users.index') }}"
            class="sidebar-item {{ request()->routeIs('users.*') ? 'sidebar-active' : '' }}">
 
@@ -42,10 +42,10 @@
             </span>
 
         </a>
-        @endcan
+        {{-- @endcan --}}
 
 
-        @can('manage roles')
+        {{-- @can('manage roles') --}}
         <a href="{{ route('roles.index') }}"
            class="sidebar-item {{ request()->routeIs('roles.*') ? 'sidebar-active' : '' }}">
 
@@ -59,10 +59,10 @@
             </span>
 
         </a>
-        @endcan
+        {{-- @endcan --}}
 
 
-        @can('permission manage')
+        {{-- @can('permission manage') --}}
         <a href="{{ route('permissions.index') }}"
            class="sidebar-item {{ request()->routeIs('permissions.*') ? 'sidebar-active' : '' }}">
 
@@ -76,7 +76,7 @@
             </span>
 
         </a>
-        @endcan
+        {{-- @endcan --}}
 
     </div>
 
@@ -144,6 +144,15 @@
         </a>
 
 
+      <a href="{{ route('medical-records.index') }}"
+           class="sidebar-item {{ request()->routeIs('medical_records.*') ? 'sidebar-active' : '' }}">
+
+            📋
+            <span x-show="!sidebarCollapsed">
+                السجل الطبي
+            </span>
+
+        </a>
         <a href="{{ route('rooms.index') }}"
            class="sidebar-item {{ request()->routeIs('rooms.*') ? 'sidebar-active' : '' }}">
 
@@ -153,6 +162,17 @@
             </span>
 
         </a>
+  <a href="{{ route('medications.index') }}"
+           class="sidebar-item {{ request()->routeIs('medications.*') ? 'sidebar-active' : '' }}">
+
+
+            💊
+            <span x-show="!sidebarCollapsed">
+                ادوية
+            </span>
+
+        </a>
+
 
 
         <a href="{{ route('prescriptions.index') }}"
@@ -166,15 +186,7 @@
         </a>
 
 
-        <a href="{{ route('medical_records.index') }}"
-           class="sidebar-item {{ request()->routeIs('medical_records.*') ? 'sidebar-active' : '' }}">
 
-            📋
-            <span x-show="!sidebarCollapsed">
-                السجل الطبي
-            </span>
-
-        </a>
 
     </div>
 
@@ -185,6 +197,7 @@
         <p class="sidebar-section" x-show="!sidebarCollapsed">
             الإدارة المالية
         </p>
+
 
         <a href="{{ route('invoices.index') }}"
            class="sidebar-item {{ request()->routeIs('invoices.*') ? 'sidebar-active' : '' }}">

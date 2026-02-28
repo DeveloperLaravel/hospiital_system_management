@@ -22,6 +22,8 @@
                     </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap flex gap-2">
+                      @can('users-edit')
+
                     <a href="{{ route('users.edit', $user) }}"
                        class="p-2 bg-yellow-400 hover:bg-yellow-500 text-white rounded-lg shadow transition duration-300"
                        title="تعديل">

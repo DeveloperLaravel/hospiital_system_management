@@ -18,3 +18,17 @@
 .sidebar-icon{
     @apply w-5 h-5;
 }
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #print-content, #print-content * {
+        visibility: visible;
+    }
+    #print-content {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+}

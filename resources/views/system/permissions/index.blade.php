@@ -17,6 +17,7 @@
                     </svg>
                     إدارة الصلاحيات
                 </h2>
+                  @can('permission-create')
                 <button
                     @click="open = true; isEdit=false; permissionName=''; permissionId=null"
                     class="bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-yellow-600 transition flex items-center gap-2">
@@ -25,6 +26,7 @@
                     </svg>
                     إضافة صلاحية
                 </button>
+                 @endcan
             </div>
 
             <!-- الرسائل -->
@@ -55,6 +57,7 @@
                                 <td class="p-3 text-center flex flex-wrap justify-center gap-2">
 
                                     <!-- تعديل -->
+                                     @can('permission-edit')
                                     <button
                                         @click="open=true; isEdit=true; permissionId={{ $permission->id }}; permissionName={{ json_encode($permission->name) }}"
                                         class="bg-yellow-400 text-white px-3 py-1 rounded-lg flex items-center gap-1 hover:bg-yellow-500 transition shadow-sm">
@@ -63,8 +66,9 @@
                                         </svg>
                                         تعديل
                                     </button>
-
+  @endcan
                                     <!-- حذف -->
+                                        @can('permission-delete')
                                     <form method="POST" action="{{ route('permissions.destroy', $permission) }}" class="inline" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
                                         @csrf
                                         @method('DELETE')
@@ -75,7 +79,7 @@
                                             حذف
                                         </button>
                                     </form>
-
+  @endcan
                                 </td>
                             </tr>
                         @empty

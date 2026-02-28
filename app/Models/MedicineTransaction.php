@@ -16,8 +16,15 @@ class MedicineTransaction extends Model
         'user_id',
     ];
 
-    public function medicine()
+    // العلاقة مع الدواء
+    public function medication()
     {
         return $this->belongsTo(Medication::class);
+    }
+
+    // العلاقة مع المستخدم
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

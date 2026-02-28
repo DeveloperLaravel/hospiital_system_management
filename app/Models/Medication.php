@@ -17,7 +17,10 @@ class Medication extends Model
         'expiry_date',
         'description',
         'type',
+        'barcode',
         'qr_code',
+        'min_stock',
+        'is_active',
     ];
 
     protected $casts = [
@@ -50,8 +53,16 @@ class Medication extends Model
         return $this->hasMany(MedicineTransaction::class);
     }
 
+    public function prescriptionItems()
+    {
+        return $this->hasMany(PrescriptionItems::class);
+    }
+
     public function prescriptions()
     {
-        return $this->hasMany(Prescription::class);
+        return $this->belongsToMany(
+            Prescription::class,
+            'prescription_items'
+        );
     }
 }

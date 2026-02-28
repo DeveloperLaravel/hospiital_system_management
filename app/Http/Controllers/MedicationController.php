@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MedicationRequest;
 use App\Models\Medication;
-use App\Models\MedicineTransaction;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class MedicationController extends Controller
 {
@@ -20,111 +18,49 @@ class MedicationController extends Controller
     /**
      * عرض الصفحة + البحث + وضع التعديل
      */
-    public function index(Request $request)
+    public function index()
     {
-        $query = Medication::query();
+        $medications = Medication::latest()->paginate(10);
 
-        // 🔎 البحث
-        if ($request->filled('search')) {
-            $query->where('name', 'like', '%'.$request->search.'%')
-                ->orWhere('type', 'like', '%'.$request->search.'%');
-        }
-
-        $medications = $query->latest()->paginate(10);
-
-        // ✏️ وضع التعديل
-        $medication = null;
-        if ($request->filled('edit')) {
-            $medication = Medication::findOrFail($request->edit);
-        }
-
-        return view('hospital.medication.index', compact('medications', 'medication'));
+        return view('hospital.medications.index', compact('medications'));
     }
 
-    /**
-     * تخزين دواء جديد
-     */
-    public function store(Request $request)
+    public function create()
     {
-        $data = $this->validateData($request);
-
-        $data['qr_code'] = Str::uuid();
-
-        Medication::create($data);
-
-        return redirect()
-            ->route('medications.index')
-            ->with('success', 'تم إضافة الدواء بنجاح');
+        return view('medications.create');
     }
 
-    /**
-     * تحديث دواء
-     */
-    public function update(Request $request, Medication $medication)
+    public function store(MedicationRequest $request)
     {
-        $data = $this->validateData($request);
+        Medication::create($request->validated());
 
-        $medication->update($data);
-
-        return redirect()
-            ->route('medications.index')
-            ->with('success', 'تم تحديث الدواء بنجاح');
+        return redirect()->route('medications.index')
+            ->with('message', 'تم إضافة الدواء بنجاح!');
     }
 
-    /**
-     * حذف دواء
-     */
+    public function show(Medication $medication)
+    {
+        return view('hospital.medications.show', compact('medication'));
+    }
+
+    public function edit(Medication $medication)
+    {
+        return view('medications.edit', compact('medication'));
+    }
+
+    public function update(MedicationRequest $request, Medication $medication)
+    {
+        $medication->update($request->validated());
+
+        return redirect()->route('medications.index')
+            ->with('message', 'تم تحديث الدواء بنجاح!');
+    }
+
     public function destroy(Medication $medication)
     {
         $medication->delete();
 
-        return redirect()
-            ->route('medications.index')
-            ->with('success', 'تم حذف الدواء بنجاح');
-    }
-
-    /**
-     * قواعد التحقق
-     */
-    private function validateData(Request $request)
-    {
-        return $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'nullable|string|max:100',
-            'quantity' => 'required|integer|min:0',
-            'price' => 'required|numeric|min:0',
-            'expiry_date' => 'nullable|date',
-            'description' => 'nullable|string',
-        ]);
-    }
-
-    public function scan($qr)
-    {
-        $medicine = Medication::where('qr_code', $qr)->firstOrFail();
-
-        return view('hospital.medication.scan', compact('medicine'));
-    }
-
-    public function transaction(Request $request)
-    {
-        $medicine = Medication::findOrFail($request->medicine_id);
-
-        if ($request->type == 'in') {
-            $medicine->increment('quantity', $request->quantity);
-        } else {
-            if ($medicine->quantity < $request->quantity) {
-                return response()->json(['error' => 'Not enough stock'], 422);
-            }
-            $medicine->decrement('quantity', $request->quantity);
-        }
-
-        MedicineTransaction::create([
-            'medication_id' => $medicine->id,
-            'type' => $request->type,
-            'quantity' => $request->quantity,
-            'user_id' => auth()->id(),
-        ]);
-
-        return response()->json(['success' => true]);
+        return redirect()->route('medications.index')
+            ->with('message', 'تم حذف الدواء بنجاح!');
     }
 }

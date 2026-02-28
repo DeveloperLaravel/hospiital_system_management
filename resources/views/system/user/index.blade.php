@@ -19,7 +19,7 @@
             <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white drop-shadow-lg">
                 إدارة المستخدمين
             </h1>
-
+  @can('users-create')
             <a href="{{ route('users.create') }}"
                class="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-3 bg-blue-600 text-white font-semibold rounded-2xl shadow-xl
                       hover:bg-blue-700 hover:shadow-2xl transition duration-300 transform hover:-translate-y-1 active:scale-95">
@@ -28,6 +28,7 @@
                 </svg>
                 إضافة مستخدم
             </a>
+             @endcan
         </div>
 
         <!-- بطاقة شفافة للجدول -->

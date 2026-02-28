@@ -13,16 +13,24 @@ class MedicalRecord extends Model
     protected $fillable = [
         'patient_id',
         'doctor_id',
+        'appointment_id',
+        'visit_date',
         'diagnosis',
         'treatment',
         'notes',
     ];
 
+    protected $casts = [
+        'visit_date' => 'date',
+    ];
+
+    // السجل الطبي يخص مريض واحد
     public function patient()
     {
         return $this->belongsTo(Patient::class, 'patient_id'); // مهم تحديد الـ foreign key
     }
 
+    // السجل الطبي يخص طبيب واحد
     public function doctor()
     {
         return $this->belongsTo(Doctor::class, 'doctor_id'); // مهم تحديد الـ foreign key
@@ -31,5 +39,11 @@ class MedicalRecord extends Model
     public function prescriptions()
     {
         return $this->hasMany(Prescription::class);
+    }
+
+    // السجل الطبي قد يكون مرتبط بموعد
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class);
     }
 }

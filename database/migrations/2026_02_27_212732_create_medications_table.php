@@ -13,10 +13,29 @@ return new class extends Migration
     {
         Schema::create('medications', function (Blueprint $table) {
             $table->id();
+
+            // المعلومات الأساسية
             $table->string('name');
-            $table->integer('quantity')->default(0);
+            $table->string('type')->nullable();
+            $table->text('description')->nullable();
+
+            // المخزون
+            $table->unsignedInteger('quantity')->default(0);
+            $table->unsignedInteger('min_stock')->default(10);
+
+            // السعر
             $table->decimal('price', 8, 2)->default(0);
+
+            // التتبع
+            $table->string('barcode')->unique()->nullable();
+            $table->string('qr_code')->unique()->nullable();
+
+            // السلامة
             $table->date('expiry_date')->nullable();
+
+            // الحالة
+            $table->boolean('is_active')->default(true);
+
             $table->timestamps();
         });
     }
