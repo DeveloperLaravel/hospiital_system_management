@@ -83,8 +83,6 @@ Route::middleware('auth')->group(function () {
         Route::resource('roles', RoleController::class);
         Route::resource('permissions', PermissionController::class);
 
-
-        
         Route::resource('appointments', AppointmentController::class);
         Route::resource('doctors', DoctorController::class);
         Route::get('/patients/search', [PatientController::class, 'search'])->name('patients.search');
