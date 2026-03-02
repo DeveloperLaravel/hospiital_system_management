@@ -8,7 +8,7 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">إدارة الأقسام</h1>
-
+  @role('Admin')
         @can('department-create')
         <button
             @click="open=true; isEdit=false; name=''; description=''; id=null"
@@ -16,6 +16,7 @@
             إضافة قسم
         </button>
         @endcan
+        @endrole
     </div>
 
     <!-- Table -->

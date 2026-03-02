@@ -22,13 +22,11 @@
 
     {{-- إدارة النظام --}}
     <div>
-
         <p class="sidebar-section" x-show="!sidebarCollapsed">
             إدارة النظام
         </p>
-
-
-        {{-- @can('manage users') --}}
+ @can('manage user')
+<br>
         <a href="{{ route('users.index') }}"
            class="sidebar-item {{ request()->routeIs('users.*') ? 'sidebar-active' : '' }}">
 
@@ -42,10 +40,11 @@
             </span>
 
         </a>
-        {{-- @endcan --}}
+<br>
 
+        @endcan
 
-        {{-- @can('manage roles') --}}
+        @can('manage roles')
         <a href="{{ route('roles.index') }}"
            class="sidebar-item {{ request()->routeIs('roles.*') ? 'sidebar-active' : '' }}">
 
@@ -59,10 +58,11 @@
             </span>
 
         </a>
-        {{-- @endcan --}}
+<br>
 
+        @endcan
 
-        {{-- @can('permission manage') --}}
+        @can('permission manage')
         <a href="{{ route('permissions.index') }}"
            class="sidebar-item {{ request()->routeIs('permissions.*') ? 'sidebar-active' : '' }}">
 
@@ -76,8 +76,8 @@
             </span>
 
         </a>
-        {{-- @endcan --}}
-
+        @endcan
+<br>
     </div>
 
 
@@ -99,7 +99,7 @@
 
         </a>
 
-
+<br>
         <a href="{{ route('doctors.index') }}"
            class="sidebar-item {{ request()->routeIs('doctors.*') ? 'sidebar-active' : '' }}">
 
@@ -111,16 +111,7 @@
         </a>
 
 
-        <a href="{{ route('nurses.index') }}"
-           class="sidebar-item {{ request()->routeIs('nurses.*') ? 'sidebar-active' : '' }}">
-
-            👩‍⚕️
-            <span x-show="!sidebarCollapsed">
-                الممرضون
-            </span>
-
-        </a>
-
+<br>
 
         <a href="{{ route('patients.index') }}"
            class="sidebar-item {{ request()->routeIs('patients.*') ? 'sidebar-active' : '' }}">
@@ -131,6 +122,7 @@
             </span>
 
         </a>
+<br>
 
 
         <a href="{{ route('appointments.index') }}"
@@ -142,7 +134,18 @@
             </span>
 
         </a>
+        <br>
 
+    {{-- <a href="{{ route('rooms.index') }}"
+           class="sidebar-item {{ request()->routeIs('rooms.*') ? 'sidebar-active' : '' }}">
+
+            🛏
+            <span x-show="!sidebarCollapsed">
+                الغرف
+            </span>
+
+        </a> --}}
+<br>
 
       <a href="{{ route('medical-records.index') }}"
            class="sidebar-item {{ request()->routeIs('medical_records.*') ? 'sidebar-active' : '' }}">
@@ -153,15 +156,18 @@
             </span>
 
         </a>
-        <a href="{{ route('rooms.index') }}"
-           class="sidebar-item {{ request()->routeIs('rooms.*') ? 'sidebar-active' : '' }}">
+        <br>
 
-            🛏
+            <a href="{{ route('prescriptions.index') }}"
+           class="sidebar-item {{ request()->routeIs('prescriptions.*') ? 'sidebar-active' : '' }}">
+
+            💊
             <span x-show="!sidebarCollapsed">
-                الغرف
+                الوصفات
             </span>
-
         </a>
+<br>
+
   <a href="{{ route('medications.index') }}"
            class="sidebar-item {{ request()->routeIs('medications.*') ? 'sidebar-active' : '' }}">
 
@@ -173,17 +179,11 @@
 
         </a>
 
+<br>
 
 
-        <a href="{{ route('prescriptions.index') }}"
-           class="sidebar-item {{ request()->routeIs('prescriptions.*') ? 'sidebar-active' : '' }}">
 
-            💊
-            <span x-show="!sidebarCollapsed">
-                الوصفات
-            </span>
 
-        </a>
 
 
 
@@ -197,8 +197,9 @@
         <p class="sidebar-section" x-show="!sidebarCollapsed">
             الإدارة المالية
         </p>
+<br>
 
-
+{{--
         <a href="{{ route('invoices.index') }}"
            class="sidebar-item {{ request()->routeIs('invoices.*') ? 'sidebar-active' : '' }}">
 
@@ -207,7 +208,8 @@
                 الفواتير
             </span>
 
-        </a>
+        </a> --}}
+<br>
 
     </div>
 

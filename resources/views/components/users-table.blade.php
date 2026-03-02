@@ -22,7 +22,7 @@
                     </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap flex gap-2">
-                      @can('users-edit')
+                      @can('user-edit')
 
                     <a href="{{ route('users.edit', $user) }}"
                        class="p-2 bg-yellow-400 hover:bg-yellow-500 text-white rounded-lg shadow transition duration-300"
@@ -31,7 +31,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536L12 18H9v-5z"/>
                         </svg>
                     </a>
-
+ @endcan
+   @can('user-delete')
                     <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
                         @csrf
                         @method('DELETE')
@@ -43,6 +44,7 @@
                             </svg>
                         </button>
                     </form>
+        @endcan
                 </td>
             </tr>
             @endforeach

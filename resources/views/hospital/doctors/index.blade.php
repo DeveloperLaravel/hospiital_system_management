@@ -53,6 +53,8 @@
             </div>
 
             <!-- الفورم -->
+        @role('Admin')
+
             <div class="bg-white shadow-lg rounded-lg p-4 md:p-6">
                 <h2 class="text-2xl font-bold mb-6 text-gray-800">
                     {{ isset($editDoctor) ? 'تعديل الطبيب' : 'إضافة طبيب' }}
@@ -101,6 +103,7 @@
                     </button>
                 </form>
             </div>
+            @endrole
 
         </div>
     </main>
