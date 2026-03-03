@@ -70,12 +70,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/patients/search', [PatientController::class, 'search'])
             ->name('patients.search');
 
+        Route::resource('rooms', RoomController::class);
         Route::resource('appointments', AppointmentController::class);
         Route::resource('medical-records', MedicalRecordController::class);
         Route::resource('prescriptions', PrescriptionController::class);
         Route::resource('prescription-items', PrescriptionItemController::class);
         Route::resource('medications', MedicationController::class);
+        Route::post('/rooms/{room}/admit', [RoomController::class, 'admit'])
+            ->name('rooms.admit');
 
+        Route::post('/rooms/{room}/discharge', [RoomController::class, 'discharge'])
+            ->name('rooms.discharge');
     });
 
     /*
