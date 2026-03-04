@@ -138,7 +138,6 @@
             <p class="mb-4">هل أنت متأكد أنك تريد إخراج المريض من الغرفة؟</p>
             <form :action="dischargeFormAction" method="POST">
                 @csrf
-                @method('PUT')
                 <div class="flex justify-end space-x-2">
                     <button type="button" @click="closeDischargeModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">إلغاء</button>
                     <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">إخراج</button>
