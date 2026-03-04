@@ -1,0 +1,104 @@
+@props(['name'])
+
+@switch($name)
+
+    {{-- Dashboard --}}
+    @case('home')
+        <svg {{ $attributes->merge(['class' => 'w-5 h-5']) }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 12l2-2m0 0l7-7 7 7m-9 14V9m0 0L5 12m7-3l7 7" />
+        </svg>
+    @break
+
+
+    {{-- Users --}}
+    @case('users')
+        <svg {{ $attributes->merge(['class' => 'w-5 h-5']) }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  d="M17 20h5V4H2v16h5m10 0v-2a4 4 0 00-8 0v2m8 0H9m4-10a4 4 0 110-8 4 4 0 010 8z"/>
+        </svg>
+    @break
+
+
+    {{-- Shield --}}
+    @case('shield')
+        <svg {{ $attributes->merge(['class' => 'w-5 h-5']) }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 2l8 4v6c0 5-3.5 9.5-8 10-4.5-.5-8-5-8-10V6l8-4z"/>
+        </svg>
+    @break
+
+
+    {{-- Key --}}
+    @case('key')
+        <svg {{ $attributes->merge(['class' => 'w-5 h-5']) }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  d="M15 7a4 4 0 11-7.9 1H3v4h4v4h4v-4h1.1A4 4 0 0115 7z"/>
+        </svg>
+    @break
+
+
+    {{-- Building / Department --}}
+    @case('building')
+        <svg {{ $attributes->merge(['class' => 'w-5 h-5']) }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  d="M3 21h18M9 8h6M9 12h6M9 16h6M5 21V3h14v18"/>
+        </svg>
+    @break
+
+
+    {{-- Doctor --}}
+    @case('user-md')
+        <svg {{ $attributes->merge(['class' => 'w-5 h-5']) }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 14v7m-7-7v7m14-7v7M5 10h14M12 3v4m-4 0h8"/>
+        </svg>
+    @break
+
+
+    {{-- Patient --}}
+    @case('user')
+        <svg {{ $attributes->merge(['class' => 'w-5 h-5']) }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  d="M5.121 17.804A9 9 0 1118.364 4.56 9 9 0 015.121 17.804z"/>
+        </svg>
+    @break
+
+
+    {{-- Calendar --}}
+    @case('calendar')
+        <svg {{ $attributes->merge(['class' => 'w-5 h-5']) }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/>
+            <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/>
+            <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/>
+        </svg>
+    @break
+
+
+    {{-- Bed --}}
+    @case('bed')
+        <svg {{ $attributes->merge(['class' => 'w-5 h-5']) }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  d="M3 7h18v10H3zM7 7V5h4v2"/>
+        </svg>
+    @break
+
+
+    {{-- Clipboard --}}
+    @case('clipboard')
+        <svg {{ $attributes->merge(['class' => 'w-5 h-5']) }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="9" y="2" width="6" height="4" rx="1" stroke-width="2"/>
+            <path stroke-width="2" d="M5 6h14v16H5z"/>
+        </svg>
+    @break
+
+
+    {{-- Invoice / Cash --}}
+    @case('cash')
+        <svg {{ $attributes->merge(['class' => 'w-5 h-5']) }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="2" y="6" width="20" height="12" rx="2" stroke-width="2"/>
+            <circle cx="12" cy="12" r="3" stroke-width="2"/>
+        </svg>
+    @break
+
+@endswitch

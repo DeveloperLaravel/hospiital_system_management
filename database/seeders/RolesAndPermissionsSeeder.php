@@ -81,6 +81,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'medications-create',
             'medications-edit',
             'medications-delete',
+            // Invoices permissions
+            'invoices-view',
+            'invoices-create',
+            'invoices-edit',
+            'invoices-delete',
         ];
 
         foreach ($permissions as $permission) {

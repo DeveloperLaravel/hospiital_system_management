@@ -1,25 +1,29 @@
 <?php
 
-// app/Http/Controllers/InvoiceItemController.php
-
-// app/Http/Controllers/InvoiceItemController.php
-
 namespace App\Http\Controllers;
 
+use App\Http\Requests\InvoiceItemRequest;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
-use Illuminate\Http\Request;
+use App\Services\InvoiceItemService;
 
 class InvoiceItemController extends Controller
 {
+    protected $service;
+
+    public function __construct(InvoiceItemService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * عرض كل الخدمات الخاصة بفاتورة معينة
      */
     public function index(Invoice $invoice)
     {
-        $invoice->load('items');
+        $items = $invoice->items()->latest()->get();
 
-        return view('hospital.invoice_items.index', compact('invoice'));
+        return view('hospital.invoice_items.index', compact('invoice', 'items'));
     }
 
     /**
@@ -32,30 +36,23 @@ class InvoiceItemController extends Controller
             return back()->with('error', 'لا يمكن تعديل فاتورة مدفوعة');
         }
 
-        return view('hospital.invoice_items.form', compact('invoice'));
+        return view('hospital.invoice_items.create', compact('invoice'));
     }
 
     /**
      * حفظ الخدمة
      */
-    public function store(Request $request, Invoice $invoice)
+    public function store(InvoiceItemRequest $request, Invoice $invoice)
     {
-        if ($invoice->status === 'paid') {
-            return back()->with('error', 'لا يمكن تعديل فاتورة مدفوعة');
+        try {
+            $this->service->create($invoice, $request->validated());
+
+            return redirect()
+                ->route('invoices.items.index', $invoice)
+                ->with('success', 'تم إضافة الخدمة بنجاح');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
-
-        $data = $request->validate([
-            'service' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-        ]);
-
-        $invoice->items()->create($data);
-
-        $invoice->updateTotal(); // 🔥 تحديث المجموع
-
-        return redirect()
-            ->route('invoices.items.index', $invoice)
-            ->with('success', 'تم إضافة الخدمة بنجاح');
     }
 
     /**
@@ -73,24 +70,17 @@ class InvoiceItemController extends Controller
     /**
      * تحديث الخدمة
      */
-    public function update(Request $request, Invoice $invoice, InvoiceItem $item)
+    public function update(InvoiceItemRequest $request, Invoice $invoice, InvoiceItem $item)
     {
-        if ($invoice->status === 'paid') {
-            return back()->with('error', 'لا يمكن تعديل فاتورة مدفوعة');
+        try {
+            $this->service->update($item, $request->validated());
+
+            return redirect()
+                ->route('invoices.items.index', $invoice)
+                ->with('success', 'تم تعديل الخدمة بنجاح');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
-
-        $data = $request->validate([
-            'service' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-        ]);
-
-        $item->update($data);
-
-        $invoice->updateTotal(); // 🔥 تحديث المجموع
-
-        return redirect()
-            ->route('invoices.items.index', $invoice)
-            ->with('success', 'تم تعديل الخدمة بنجاح');
     }
 
     /**
@@ -98,14 +88,34 @@ class InvoiceItemController extends Controller
      */
     public function destroy(Invoice $invoice, InvoiceItem $item)
     {
-        if ($invoice->status === 'paid') {
-            return back()->with('error', 'لا يمكن تعديل فاتورة مدفوعة');
+        try {
+            $this->service->delete($item);
+
+            return back()->with('success', 'تم حذف الخدمة بنجاح');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
+    }
 
-        $item->delete();
+    /**
+     * Get items as JSON for AJAX
+     */
+    public function getItems(Invoice $invoice)
+    {
+        $items = $this->service->getFormattedItems($invoice);
 
-        $invoice->updateTotal(); // 🔥 تحديث المجموع
+        return response()->json([
+            'success' => true,
+            'items' => $items,
+            'total' => number_format($invoice->total, 2),
+        ]);
+    }
 
-        return back()->with('success', 'تم حذف الخدمة');
+    /**
+     * عرض عنصر محدد من الفاتورة
+     */
+    public function show(Invoice $invoice, InvoiceItem $item)
+    {
+        return view('hospital.invoice_items.show', compact('invoice', 'item'));
     }
 }

@@ -5,6 +5,8 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\MedicineTransactionController;
@@ -111,6 +113,74 @@ Route::middleware(['auth'])->group(function () {
 
         // Medicine Transactions
         Route::resource('medicine-transactions', MedicineTransactionController::class);
+
+        // ========================================
+        // الفواتير - Invoice Routes
+        // ========================================
+        Route::resource('invoices', InvoiceController::class);
+
+        // إجراءات الفاتورة - Invoice Actions
+        Route::post('/invoices/{invoice}/mark-as-paid', [InvoiceController::class, 'markAsPaid'])
+            ->name('invoices.markAsPaid');
+
+        Route::post('/invoices/{invoice}/mark-as-unpaid', [InvoiceController::class, 'markAsUnpaid'])
+            ->name('invoices.markAsUnpaid');
+
+        Route::get('/invoices/{invoice}/export-pdf', [InvoiceController::class, 'exportPdf'])
+            ->name('invoices.exportPdf');
+
+        // ========================================
+        // عناصر الفاتورة - Invoice Items Routes (متداخلة)
+        // ========================================
+        Route::controller(InvoiceItemController::class)->group(function () {
+            // عرض عناصر الفاتورة
+            Route::get('/invoices/{invoice}/items', 'index')
+                ->name('invoices.items.index');
+
+            // نموذج إضافة عنصر جديد
+            Route::get('/invoices/{invoice}/items/create', 'create')
+                ->name('invoices.items.create');
+
+            // حفظ العنصر الجديد
+            Route::post('/invoices/{invoice}/items', 'store')
+                ->name('invoices.items.store');
+
+            // عرض عنصر محدد
+            Route::get('/invoices/{invoice}/items/{item}', 'show')
+                ->name('invoices.items.show');
+
+            // نموذج تعديل العنصر
+            Route::get('/invoices/{invoice}/items/{item}/edit', 'edit')
+                ->name('invoices.items.edit');
+
+            // تحديث العنصر
+            Route::put('/invoices/{invoice}/items/{item}', 'update')
+                ->name('invoices.items.update');
+
+            // حذف العنصر
+            Route::delete('/invoices/{invoice}/items/{item}', 'destroy')
+                ->name('invoices.items.destroy');
+
+            // AJAX: Get items as JSON
+            Route::get('/invoices/{invoice}/items/json', 'getItems')
+                ->name('invoices.items.json');
+        });
+
+        // ========================================
+        // API Routes للفواتير
+        // ========================================
+        Route::get('/api/invoices/unpaid', [InvoiceController::class, 'getUnpaid'])
+            ->name('api.invoices.unpaid');
+
+        Route::get('/api/invoices/overdue', [InvoiceController::class, 'getOverdue'])
+            ->name('api.invoices.overdue');
+
+        Route::get('/api/invoices/statistics', [InvoiceController::class, 'getStatistics'])
+            ->name('api.invoices.statistics');
+
+        // API: Get invoice items as JSON
+        Route::get('/api/invoices/{invoice}/items', [InvoiceItemController::class, 'getItems'])
+            ->name('api.invoices.items');
 
         Route::post('/rooms/{room}/admit', [RoomController::class, 'admit'])
             ->name('rooms.admit');
