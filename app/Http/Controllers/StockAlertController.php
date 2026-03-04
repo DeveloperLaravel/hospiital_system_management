@@ -3,128 +3,67 @@
 namespace App\Http\Controllers;
 
 use App\Models\Medication;
-use App\Models\StockAlerts;
+use App\Models\StockAlert;
 use Illuminate\Http\Request;
 
 class StockAlertController extends Controller
 {
     public function index(Request $request)
     {
-
         $medications = Medication::all();
 
-        $alerts = StockAlerts::with('medication')
-
+        $alerts = StockAlert::with('medication')
             ->when($request->search, function ($q) use ($request) {
-
                 $q->whereHas('medication', function ($qq) use ($request) {
-
-                    $qq->where(
-                        'name',
-                        'like',
-                        "%$request->search%"
-                    );
-
+                    $qq->where('name', 'like', "%$request->search%");
                 });
-
             })
-
             ->when($request->status, function ($q) use ($request) {
-
-                $q->where(
-                    'status',
-                    $request->status
-                );
-
+                $q->where('status', $request->status);
             })
-
             ->latest()
-
             ->paginate(10);
 
-        return view(
-            'stock_alerts.index',
-            compact(
-                'alerts',
-                'medications'
-            )
-        );
-
+        return view('hospital.stock_alerts.index', compact('alerts', 'medications'));
     }
 
     public function store(Request $request)
     {
-
         $request->validate([
-
             'medication_id' => 'required',
-
             'current_stock' => 'required',
-
             'min_stock' => 'required',
-
             'status' => 'required',
-
         ]);
 
-        StockAlerts::create([
-
+        StockAlert::create([
             'medication_id' => $request->medication_id,
-
             'current_stock' => $request->current_stock,
-
             'min_stock' => $request->min_stock,
-
             'status' => $request->status,
-
             'alert_date' => now(),
-
             'notes' => $request->notes,
-
         ]);
 
-        return back()->with(
-            'success',
-            'Alert created'
-        );
-
+        return back()->with('success', 'تم إنشاء التنبيه بنجاح');
     }
 
-    public function update(
-        Request $request,
-        StockAlerts $stockAlert
-    ) {
+    public function update(Request $request, StockAlert $stockAlert)
+    {
+        $stockAlert->update($request->only([
+            'current_stock',
+            'min_stock',
+            'status',
+            'notes',
+        ]));
 
-        $stockAlert->update(
-
-            $request->only(
-
-                'current_stock',
-                'min_stock',
-                'status',
-                'notes'
-
-            )
-
-        );
-
-        return back()->with(
-            'success',
-            'Alert updated'
-        );
-
+        return back()->with('success', 'تم تحديث التنبيه بنجاح');
     }
 
-    public function destroy(
-        StockAlerts $stockAlert
-    ) {
-
+    public function destroy(StockAlert $stockAlert)
+    {
         $stockAlert->delete();
 
-        return back()->with(
-            'success',
-            'Alert deleted'
-        );
-
+        return back()->with('success', 'تم حذف التنبيه بنجاح');
     }
 }

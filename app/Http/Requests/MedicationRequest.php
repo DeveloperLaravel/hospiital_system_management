@@ -11,7 +11,7 @@ class MedicationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,6 +21,8 @@ class MedicationRequest extends FormRequest
      */
     public function rules(): array
     {
+        $medicationId = $this->route('medication');
+
         return [
             'name' => 'required|string|max:255',
             'type' => 'nullable|string|max:100',
@@ -28,10 +30,23 @@ class MedicationRequest extends FormRequest
             'quantity' => 'required|integer|min:0',
             'min_stock' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
-            'barcode' => 'nullable|string|unique:medications,barcode,'.$this->medication,
-            'qr_code' => 'nullable|string|unique:medications,qr_code,'.$this->medication,
+            'barcode' => 'nullable|string|unique:medications,barcode,'.$medicationId,
+            'qr_code' => 'nullable|string|unique:medications,qr_code,'.$medicationId,
             'expiry_date' => 'nullable|date',
             'is_active' => 'boolean',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'اسم الدواء مطلوب',
+            'quantity.required' => 'الكمية مطلوبة',
+            'price.required' => 'السعر مطلوب',
+            'min_stock.required' => 'الحد الأدنى للمخزون مطلوب',
         ];
     }
 }

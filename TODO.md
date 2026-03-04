@@ -1,29 +1,18 @@
-# Patient System Fix Plan - Completed
+# TODO - Prescription Items & Medicine Transactions CRUD Fix
 
-## 1. Patient Model - Fixed ✓
-- [x] Removed unnecessary HasRoles trait
-- [x] Added Arabic translations for gender and blood types
-- [x] Added accessors for formatted financial data
-- [x] Added scopes for filtering
-- [x] Added better relationships
-- [x] Added status helper methods
+## Completed Tasks:
+- [x] 1. Fix migration - consolidate medication_id into main migration
+- [x] 2. Create PrescriptionItemRequest for validation
+- [x] 3. Create PrescriptionItemService
+- [x] 4. Update PrescriptionItemController with full CRUD
+- [x] 5. Update PrescriptionItem Model with Scopes and Accessors
+- [x] 6. Improve Views (index, pdf templates)
+- [x] 7. Add API Routes
+- [x] 8. Create MedicineTransactionRequest
+- [x] 9. Create MedicineTransactionService
+- [x] 10. Create MedicineTransactionController with full CRUD
+- [x] 11. Update MedicineTransaction Model with Scopes and Accessors
+- [x] 12. Create Views for Medicine Transactions (index, create, edit, show)
+- [x] 13. Add Routes for Medicine Transactions
 
-## 2. PatientService - Enhanced ✓
-- [x] Added search functionality by name, national_id, phone
-- [x] Added filter by gender
-- [x] Added filter by financial status
-- [x] Added statistics methods
-
-## 3. PatientController - Updated ✓
-- [x] Added search method
-- [x] Added filter method
-- [x] Added show method for detailed view
-
-## 4. View - Professional UI ✓
-- [x] Added search bar
-- [x] Added filter dropdowns
-- [x] Added statistics cards
-- [x] Improved styling
-
-## 5. Routes - Updated ✓
-- [x] Added new routes for search, filter, show
+## Status: COMPLETED ✅

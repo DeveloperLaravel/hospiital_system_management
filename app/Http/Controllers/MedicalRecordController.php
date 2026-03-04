@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MedicalRecordRequest;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\MedicalRecord;
@@ -16,40 +17,24 @@ class MedicalRecordController extends Controller
 
     public function __construct(MedicalRecordService $medicalRecordService)
     {
-        // $this->medicalRecordService = $medicalRecordService;
+        $this->medicalRecordService = $medicalRecordService;
 
-        $this->middleware('permission:medical-records-view')->only('index');
-        $this->middleware('permission:medical-records-create')->only('store');
-        $this->middleware('permission:medical-records-edit')->only('update');
+        $this->middleware('permission:medical-records-view')->only(['index', 'show', 'history']);
+        $this->middleware('permission:medical-records-create')->only(['store', 'create']);
+        $this->middleware('permission:medical-records-edit')->only(['edit', 'update']);
         $this->middleware('permission:medical-records-delete')->only('destroy');
     }
 
+    /**
+     * Display a listing of the resource.
+     */
     public function index(Request $request)
     {
-        // $records = $this->medicalRecordService->getAll();
-        // $patients = $this->medicalRecordService->getPatients();
-        // $doctors = $this->medicalRecordService->getDoctors();
-        // $records = MedicalRecord::with([
-        //     'patient',
-        //     'doctor',
-        //     'appointment',
-        // ])->latest()->paginate(10);
-
-        // $patients = Patient::all();
-        // $doctors = Doctor::all();
-        // $appointments = Appointment::all();
-        $records = MedicalRecord::with([
-            'patient:id,name',
-            'doctor:id,name',
-        ])
+        $records = MedicalRecord::with(['patient:id,name', 'doctor:id,name'])
             ->when($request->search, function ($q) use ($request) {
-                $q->whereHas('patient', fn ($qq) => $qq->where('name', 'like', "%{$request->search}%")
-                )
-                    ->orWhereHas('doctor', fn ($qq) => $qq->where('name', 'like', "%{$request->search}%")
-                    )
-                    ->orWhere('diagnosis', 'like', "%{$request->search}%");
+                $q->search($request->search);
             })
-            ->latest()
+            ->latestFirst()
             ->paginate(10);
 
         $patients = Patient::pluck('name', 'id');
@@ -58,89 +43,99 @@ class MedicalRecordController extends Controller
         return view('hospital.medical_records.index', compact('records', 'patients', 'doctors'));
     }
 
-    public function store(Request $request)
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
     {
-        $data = $request->validate([
-            'patient_id' => 'required',
-            'doctor_id' => 'required',
-            'visit_date' => 'nullable|date',
-            'diagnosis' => 'nullable',
-            'treatment' => 'nullable',
-            'notes' => 'nullable',
-        ]);
+        $patients = Patient::pluck('name', 'id');
+        $doctors = Doctor::pluck('name', 'id');
+        $appointments = Appointment::whereIn('status', ['pending', 'confirmed'])
+            ->with(['patient', 'doctor'])
+            ->get();
 
-        MedicalRecord::create($data);
-
-        return back()->with('success', 'تم إضافة السجل بنجاح');
+        return view('hospital.medical_records.create', compact('patients', 'doctors', 'appointments'));
     }
 
-    public function update(Request $request, MedicalRecord $medical_record)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(MedicalRecordRequest $request)
     {
-        $data = $request->validate([
-            'patient_id' => 'required',
-            'doctor_id' => 'required',
-            'visit_date' => 'nullable|date',
-            'diagnosis' => 'nullable',
-            'treatment' => 'nullable',
-            'notes' => 'nullable',
-        ]);
+        $this->medicalRecordService->create($request->validated());
 
-        $medical_record->update($data);
-
-        return back()->with('success', 'تم التحديث');
+        return redirect()->route('medical-records.index')
+            ->with('success', 'تم إضافة السجل الطبي بنجاح');
     }
 
-    public function destroy(MedicalRecord $medical_record)
-    {
-        $medical_record->delete();
-
-        return back()->with('success', 'تم الحذف');
-    }
-
+    /**
+     * Display the specified resource.
+     */
     public function show(MedicalRecord $medical_record)
     {
-        $medical_record->load([
-            'patient',
-            'doctor',
-            'prescriptions.medication',
-        ]);
+        $medical_record->load(['patient', 'doctor', 'prescriptions.medication']);
 
         return view('hospital.medical_records.show', compact('medical_record'));
     }
 
-    public function history(Patient $patient)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(MedicalRecord $medical_record)
     {
-        $records = $patient
-            ->medicalRecords()
-            ->with('doctor')
-            ->orderByDesc('visit_date')
-            ->get();
+        $patients = Patient::pluck('name', 'id');
+        $doctors = Doctor::pluck('name', 'id');
 
-        return view(
-            'hospital.medical_records.history',
-            compact('patient', 'records')
-        );
+        return view('hospital.medical_records.edit', compact('medical_record', 'patients', 'doctors'));
     }
 
-    public function historyPdf(Patient $patient)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(MedicalRecordRequest $request, MedicalRecord $medical_record)
     {
-        $records = $patient
-            ->medicalRecords()
+        $this->medicalRecordService->update($medical_record, $request->validated());
+
+        return redirect()->route('medical-records.index')
+            ->with('success', 'تم تحديث السجل الطبي بنجاح');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(MedicalRecord $medical_record)
+    {
+        $this->medicalRecordService->delete($medical_record);
+
+        return redirect()->route('medical-records.index')
+            ->with('success', 'تم حذف السجل الطبي بنجاح');
+    }
+
+    /**
+     * Display patient's medical history.
+     */
+    public function history(Patient $patient)
+    {
+        $records = $patient->medicalRecords()
             ->with('doctor')
-            ->orderByDesc('visit_date')
+            ->latestFirst()
             ->get();
 
-        $pdf = Pdf::loadView(
-            'medical_records.history_pdf',
-            compact('patient', 'records')
-        );
+        return view('hospital.medical_records.history', compact('patient', 'records'));
+    }
 
-        return $pdf->download(
-            'medical-history-'.$patient->id.'.pdf'
-        );
+    /**
+     * Generate PDF for patient's medical history.
+     */
+    public function historyPdf(Patient $patient)
+    {
+        $records = $patient->medicalRecords()
+            ->with('doctor')
+            ->latestFirst()
+            ->get();
 
-        // return $pdf->stream(
-        //     'medical-history-'.$patient->id.'.pdf'
-        // );
+        $pdf = Pdf::loadView('hospital.medical_records.history_pdf', compact('patient', 'records'));
+
+        return $pdf->download('medical-history-'.$patient->id.'.pdf');
     }
 }

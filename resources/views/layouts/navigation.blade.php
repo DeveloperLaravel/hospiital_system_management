@@ -107,6 +107,16 @@
                 💉
                 <span x-show="!sidebarCollapsed">الأدوية</span>
             </a>
+   <a href="{{ route('prescription-items.index') }}"
+               class="sidebar-item {{ request()->routeIs('prescription-items.*') ? 'sidebar-active' : '' }}">
+                 💊
+                <span x-show="!sidebarCollapsed"> الوصفات الطبية</span>
+            </a>
+              <a href="{{ route('medicine-transactions.index') }}"
+               class="sidebar-item {{ request()->routeIs('medicine-transactions.*') ? 'sidebar-active' : '' }}">
+                🏥
+                <span x-show="!sidebarCollapsed"> حركات الدواء</span>
+            </a>
 
         </div>
     </div>

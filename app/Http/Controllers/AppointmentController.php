@@ -2,90 +2,132 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AppointmentRequest;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Services\AppointmentService;
-use App\Services\PatientService;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
     protected $appointmentService;
 
-    protected $patientService;
-
-    public function __construct(AppointmentService $appointmentService, PatientService $patientService)
+    public function __construct(AppointmentService $appointmentService)
     {
         $this->appointmentService = $appointmentService;
-        $this->patientService = $patientService;
 
-        $this->middleware('permission:appointments-view')->only('index');
+        $this->middleware('permission:appointments-view')->only(['index', 'show']);
         $this->middleware('permission:appointments-create')->only(['create', 'store']);
         $this->middleware('permission:appointments-edit')->only(['edit', 'update']);
         $this->middleware('permission:appointments-delete')->only('destroy');
     }
 
+    /**
+     * Display a listing of the resource.
+     */
     public function index(Request $request)
     {
-        // $search = $request->query('search');
-
-        // $appointments = $this->appointmentService->getAll($search);
         $search = $request->input('search');
 
-        $appointments = Appointment::with(['patient', 'doctor'])
-            ->when($search, function ($q) use ($search) {
-                $q->whereHas('patient', fn ($q) => $q->where('name', 'like', "%$search%"));
-            })
-            ->latest()
-            ->paginate(10);
-
-        // المرضى الذين لا يملكون موعد بالفعل
-        $takenPatientIds = Appointment::pluck('patient_id')->toArray();
-        $patients = Patient::whereNotIn('id', $takenPatientIds)->get();
-
-        $doctors = Doctor::all();
+        $appointments = $this->appointmentService->getAllAppointments($search);
+        $patients = $this->appointmentService->getAvailablePatients();
+        $doctors = $this->appointmentService->getAllDoctors();
 
         return view('hospital.appointments.index', compact('appointments', 'patients', 'doctors', 'search'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
-        return view('hospital.appointments.create', [
-            'patients' => \App\Models\Patient::orderBy('name', 'asc')->get(),
-            'doctors' => Doctor::all(),
-        ]);
+        $patients = $this->appointmentService->getAvailablePatients();
+        $doctors = $this->appointmentService->getAllDoctors();
+
+        return view('hospital.appointments.create', compact('patients', 'doctors'));
     }
 
-    public function store(Request $request)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(AppointmentRequest $request)
     {
-        $validated = $this->validateAppointment($request);
+        // Check for conflicts
+        if ($this->appointmentService->hasConflict(
+            $request->doctor_id,
+            $request->date,
+            $request->time
+        )) {
+            return redirect()->back()
+                ->with('error', 'يوجد موعد آخر للطبيب في نفس الوقت والتاريخ')
+                ->withInput();
+        }
 
-        $this->appointmentService->create($validated);
+        if ($this->appointmentService->hasPatientConflict(
+            $request->patient_id,
+            $request->date,
+            $request->time
+        )) {
+            return redirect()->back()
+                ->with('error', 'المريض لديه موعد آخر في نفس الوقت والتاريخ')
+                ->withInput();
+        }
+
+        $this->appointmentService->create($request->validated());
 
         return redirect()->route('appointments.index')
             ->with('message', 'تم إضافة الموعد بنجاح');
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     */
     public function edit(Appointment $appointment)
     {
-        return view('hospital.appointments.create', [
-            'appointment' => $appointment,
-            'patients' => \App\Models\Patient::orderBy('name', 'asc')->get(),
-            'doctors' => Doctor::all(),
-        ]);
+        $patients = Patient::orderBy('name', 'asc')->get();
+        $doctors = Doctor::orderBy('name', 'asc')->get();
+
+        return view('hospital.appointments.create', compact('appointment', 'patients', 'doctors'));
     }
 
-    public function update(Request $request, Appointment $appointment)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(AppointmentRequest $request, Appointment $appointment)
     {
-        $validated = $this->validateAppointment($request);
+        // Check for conflicts excluding current appointment
+        if ($this->appointmentService->hasConflict(
+            $request->doctor_id,
+            $request->date,
+            $request->time,
+            $appointment->id
+        )) {
+            return redirect()->back()
+                ->with('error', 'يوجد موعد آخر للطبيب في نفس الوقت والتاريخ')
+                ->withInput();
+        }
 
-        $this->appointmentService->update($appointment, $validated);
+        if ($this->appointmentService->hasPatientConflict(
+            $request->patient_id,
+            $request->date,
+            $request->time,
+            $appointment->id
+        )) {
+            return redirect()->back()
+                ->with('error', 'المريض لديه موعد آخر في نفس الوقت والتاريخ')
+                ->withInput();
+        }
+
+        $this->appointmentService->update($appointment, $request->validated());
 
         return redirect()->route('appointments.index')
             ->with('message', 'تم تحديث الموعد بنجاح');
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(Appointment $appointment)
     {
         $this->appointmentService->delete($appointment);
@@ -94,14 +136,46 @@ class AppointmentController extends Controller
             ->with('message', 'تم حذف الموعد بنجاح');
     }
 
-    private function validateAppointment(Request $request)
+    /**
+     * Confirm an appointment
+     */
+    public function confirm(Appointment $appointment)
     {
-        return $request->validate([
-            'patient_id' => 'required|exists:patients,id',
-            'doctor_id' => 'required|exists:doctors,id',
-            'date' => 'required|date',
-            'time' => 'required',
-            'status' => 'required|in:pending,confirmed,completed,cancelled',
-        ]);
+        if (! $appointment->canEdit()) {
+            return redirect()->back()
+                ->with('error', 'لا يمكن تأكيد هذا الموعد');
+        }
+
+        $this->appointmentService->confirm($appointment);
+
+        return redirect()->route('appointments.index')
+            ->with('message', 'تم تأكيد الموعد بنجاح');
+    }
+
+    /**
+     * Complete an appointment
+     */
+    public function complete(Appointment $appointment)
+    {
+        $this->appointmentService->complete($appointment);
+
+        return redirect()->route('appointments.index')
+            ->with('message', 'تم إكمال الموعد بنجاح');
+    }
+
+    /**
+     * Cancel an appointment
+     */
+    public function cancel(Appointment $appointment)
+    {
+        if (! $appointment->canCancel()) {
+            return redirect()->back()
+                ->with('error', 'لا يمكن إلغاء هذا الموعد');
+        }
+
+        $this->appointmentService->cancel($appointment);
+
+        return redirect()->route('appointments.index')
+            ->with('message', 'تم إلغاء الموعد بنجاح');
     }
 }

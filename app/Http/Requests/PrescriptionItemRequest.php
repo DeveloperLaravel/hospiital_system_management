@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class MedicineTransactionRequest extends FormRequest
+class PrescriptionItemRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,13 @@ class MedicineTransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'prescription_id' => 'required|exists:prescriptions,id',
             'medication_id' => 'required|exists:medications,id',
-            'type' => 'required|in:in,out',
+            'dosage' => 'required|string|max:255',
+            'frequency' => 'required|string|max:255',
+            'duration' => 'required|integer|min:1',
             'quantity' => 'required|integer|min:1',
+            'instructions' => 'nullable|string|max:1000',
         ];
     }
 
@@ -34,12 +38,15 @@ class MedicineTransactionRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'prescription_id.required' => 'الوصفة الطبية مطلوبة',
+            'prescription_id.exists' => 'الوصفة الطبية غير موجودة',
             'medication_id.required' => 'الدواء مطلوب',
             'medication_id.exists' => 'الدواء غير موجود',
-            'type.required' => 'نوع الحركة مطلوب',
-            'type.in' => 'نوع الحركة يجب أن يكون إدخال أو إخراج',
+            'dosage.required' => 'الجرعة مطلوبة',
+            'frequency.required' => 'التكرار مطلوب',
+            'duration.required' => 'المدة مطلوبة',
+            'duration.min' => 'المدة يجب أن تكون يوم واحد على الأقل',
             'quantity.required' => 'الكمية مطلوبة',
-            'quantity.integer' => 'الكمية يجب أن تكون رقماً',
             'quantity.min' => 'الكمية يجب أن تكون 1 على الأقل',
         ];
     }
@@ -50,9 +57,13 @@ class MedicineTransactionRequest extends FormRequest
     public function attributes(): array
     {
         return [
+            'prescription_id' => 'الوصفة الطبية',
             'medication_id' => 'الدواء',
-            'type' => 'نوع الحركة',
+            'dosage' => 'الجرعة',
+            'frequency' => 'التكرار',
+            'duration' => 'المدة',
             'quantity' => 'الكمية',
+            'instructions' => 'التعليمات',
         ];
     }
 }

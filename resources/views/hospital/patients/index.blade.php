@@ -280,6 +280,14 @@
                         </button>
                         @endcan
 
+                        @can('medical-records-view')
+                        <a href="{{ route('patients.medical-history', $patient->id) }}"
+                            class="px-3 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl shadow-md transition flex items-center gap-1"
+                            title="السجل الطبي">
+                            <i class="fa-solid fa-file-medical"></i>
+                        </a>
+                        @endcan
+
                         @can('patients-edit')
                         <button onclick='openEditModal(@json($patient))'
                             class="px-3 py-2 bg-yellow-400 hover:bg-yellow-500 text-white rounded-xl shadow-md transition flex items-center gap-1">

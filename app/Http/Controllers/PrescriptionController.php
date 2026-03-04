@@ -2,54 +2,65 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Doctor;
 use App\Models\MedicalRecord;
 use App\Models\Medication;
 use App\Models\Prescription;
-use App\Models\User;
+use App\Services\PrescriptionService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PrescriptionController extends Controller
 {
+    protected $prescriptionService;
+
+    public function __construct(PrescriptionService $prescriptionService)
+    {
+        $this->prescriptionService = $prescriptionService;
+
+        $this->middleware('permission:prescriptions-view')->only('index', 'show');
+        $this->middleware('permission:prescriptions-create')->only('create', 'store');
+        $this->middleware('permission:prescriptions-edit')->only('edit', 'update');
+        $this->middleware('permission:prescriptions-delete')->only('destroy');
+    }
+
     public function index(Request $request)
     {
-        $records = MedicalRecord::with('patient')->orderByDesc('id')->get();
-        $doctors = User::where('role', 'doctor')->get();
+        $search = $request->input('search');
+
+        $prescriptions = Prescription::withRelations()
+            ->search($search)
+            ->latest()
+            ->paginate(10);
+
+        $medicalRecords = MedicalRecord::with('patient')->orderByDesc('id')->get();
+        $doctors = Doctor::all();
         $medications = Medication::orderBy('name')->get();
-
-        // AJAX load table
-        if ($request->ajax) {
-            $prescriptions = Prescription::with(['items.medication', 'medicalRecord.patient', 'doctor'])
-                ->when($request->search, function ($q) use ($request) {
-                    $q->whereHas('items.medication', function ($q2) use ($request) {
-                        $q2->where('name', 'like', "%{$request->search}%");
-                    });
-                })
-                ->latest()->paginate(10);
-
-            return view('hospital.prescriptions.partials.table', compact('records', 'doctors', 'medications'))->render();
-        }
 
         return view('hospital.prescriptions.index', compact(
             'prescriptions',
+            'medicalRecords',
+            'doctors',
+            'medications',
+            'search'
         ));
     }
 
     public function create()
     {
         $medicalRecords = MedicalRecord::with('patient')->orderByDesc('id')->get();
-        $doctors = User::where('role', 'doctor')->get();
+        $doctors = Doctor::all();
         $medications = Medication::orderBy('name')->get();
 
-        return view('prescriptions.create', compact('medicalRecords', 'doctors', 'medications'));
+        return view('hospital.prescriptions.create', compact('medicalRecords', 'doctors', 'medications'));
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validated = $request->validate([
             'medical_record_id' => 'required|exists:medical_records,id',
-            'doctor_id' => 'required|exists:users,id',
+            'doctor_id' => 'required|exists:doctors,id',
             'notes' => 'nullable|string',
+            'items' => 'required|array|min:1',
             'items.*.medication_id' => 'required|exists:medications,id',
             'items.*.dosage' => 'required|string|max:255',
             'items.*.frequency' => 'required|string|max:255',
@@ -58,49 +69,37 @@ class PrescriptionController extends Controller
             'items.*.instructions' => 'nullable|string|max:255',
         ]);
 
-        DB::transaction(function () use ($data) {
-            $prescription = Prescription::create([
-                'medical_record_id' => $data['medical_record_id'],
-                'doctor_id' => $data['doctor_id'],
-                'notes' => $data['notes'] ?? null,
-            ]);
+        $this->prescriptionService->create($validated);
 
-            foreach ($data['items'] as $item) {
-                $prescription->items()->create($item);
-            }
-        });
-
-        return response()->json(['message' => 'تم حفظ الوصفة بنجاح']);
+        return redirect()->route('prescriptions.index')
+            ->with('message', 'تم إضافة الوصفة الطبية بنجاح');
     }
 
-    public function show(Prescription $prescription, Request $request)
+    public function show(Prescription $prescription)
     {
         $prescription->load('items.medication', 'medicalRecord.patient', 'doctor');
 
-        if ($request->print) {
-            return view('hospital.prescriptions.print', compact('prescription'));
-        }
-
-        return response()->json($prescription);
+        return view('hospital.prescriptions.show', compact('prescription'));
     }
 
-    // public function edit(Prescription $prescription)
-    // {
-    //     $medicalRecords = MedicalRecord::with('patient')->orderByDesc('id')->get();
-    //     $doctors = User::where('role', 'doctor')->get();
-    //     $medications = Medication::orderBy('name')->get();
+    public function edit(Prescription $prescription)
+    {
+        $medicalRecords = MedicalRecord::with('patient')->orderByDesc('id')->get();
+        $doctors = Doctor::all();
+        $medications = Medication::orderBy('name')->get();
 
-    //     $prescription->load('items');
+        $prescription->load('items');
 
-    //     return view('prescriptions.edit', compact('prescription', 'medicalRecords', 'doctors', 'medications'));
-    // }
+        return view('hospital.prescriptions.edit', compact('prescription', 'medicalRecords', 'doctors', 'medications'));
+    }
 
     public function update(Request $request, Prescription $prescription)
     {
-        $data = $request->validate([
+        $validated = $request->validate([
             'medical_record_id' => 'required|exists:medical_records,id',
-            'doctor_id' => 'required|exists:users,id',
+            'doctor_id' => 'required|exists:doctors,id',
             'notes' => 'nullable|string',
+            'items' => 'required|array|min:1',
             'items.*.medication_id' => 'required|exists:medications,id',
             'items.*.dosage' => 'required|string|max:255',
             'items.*.frequency' => 'required|string|max:255',
@@ -109,27 +108,24 @@ class PrescriptionController extends Controller
             'items.*.instructions' => 'nullable|string|max:255',
         ]);
 
-        DB::transaction(function () use ($data, $prescription) {
-            $prescription->update([
-                'medical_record_id' => $data['medical_record_id'],
-                'doctor_id' => $data['doctor_id'],
-                'notes' => $data['notes'] ?? null,
-            ]);
+        $this->prescriptionService->update($prescription, $validated);
 
-            $prescription->items()->delete();
-
-            foreach ($data['items'] as $item) {
-                $prescription->items()->create($item);
-            }
-        });
-
-        return response()->json(['message' => 'تم تحديث الوصفة بنجاح']);
+        return redirect()->route('prescriptions.index')
+            ->with('message', 'تم تحديث الوصفة الطبية بنجاح');
     }
 
     public function destroy(Prescription $prescription)
     {
-        $prescription->delete();
+        $this->prescriptionService->delete($prescription);
 
-        return response()->json(['message' => 'تم حذف الوصفة بنجاح']);
+        return redirect()->route('prescriptions.index')
+            ->with('message', 'تم حذف الوصفة الطبية بنجاح');
+    }
+
+    public function print(Prescription $prescription)
+    {
+        $prescription->load('items.medication', 'medicalRecord.patient', 'doctor');
+
+        return view('hospital.prescriptions.print', compact('prescription'));
     }
 }

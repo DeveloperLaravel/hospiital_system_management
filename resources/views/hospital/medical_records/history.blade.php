@@ -8,9 +8,9 @@
         <h1 class="text-2xl font-bold mb-2">
             الملف الطبي
         </h1>
-<a href="{{ route('patients.prescriptions.pdf', $patient->id) }}"
+<a href="{{ route('patients.medical-history.pdf', $patient->id) }}"
    class="bg-green-700 text-white px-4 py-2 rounded mb-4 inline-block">
-   تحميل جميع الوصفات PDF
+   تحميل PDF
 </a>
         <div class="text-gray-700">
 

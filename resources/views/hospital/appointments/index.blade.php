@@ -8,6 +8,22 @@
         </div>
     @endif
 
+    {{-- رسالة الخطأ --}}
+    @if(session()->has('error'))
+        <div class="mb-6 flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-5 py-3 rounded-xl shadow-sm">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @php
+    $statuses = [
+        'pending' => 'قيد الانتظار',
+        'confirmed' => 'مؤكد',
+        'completed' => 'مكتمل',
+        'cancelled' => 'ملغي'
+    ];
+    @endphp
+
     <div class="flex flex-col lg:flex-row gap-6">
 
         {{-- Form Add / Edit --}}

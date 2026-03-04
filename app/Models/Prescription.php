@@ -9,12 +9,6 @@ class Prescription extends Model
 {
     use HasFactory;
 
-    // protected $fillable = [
-    //     'medical_record_id',
-    //     'medication_id',
-    //     'dosage',
-    //     'duration',
-    // ];
     protected $fillable = [
         'medical_record_id',
         'doctor_id',
@@ -25,13 +19,16 @@ class Prescription extends Model
     {
         return $this->belongsTo(MedicalRecord::class);
     }
-    // علاقة العناصر التفصيلية
+
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class);
+    }
 
     public function items()
     {
         return $this->hasMany(PrescriptionItems::class);
     }
-    // علاقة الأدوية لتقارير سريعة
 
     public function medications()
     {
@@ -48,8 +45,38 @@ class Prescription extends Model
             ]);
     }
 
-    // ملاحظة: يمكن عمل دوال مساعدة للحصول على وصفة جاهزة للطباعة
-    public function formattedItems()
+    // Scopes
+    public function scopeWithRelations($query)
+    {
+        return $query->with(['items.medication', 'medicalRecord.patient', 'doctor']);
+    }
+
+    public function scopeByDoctor($query, $doctorId)
+    {
+        return $query->where('doctor_id', $doctorId);
+    }
+
+    public function scopeByPatient($query, $patientId)
+    {
+        return $query->whereHas('medicalRecord', function ($q) use ($patientId) {
+            $q->where('patient_id', $patientId);
+        });
+    }
+
+    public function scopeByDate($query, $date)
+    {
+        return $query->whereDate('created_at', $date);
+    }
+
+    public function scopeSearch($query, $search)
+    {
+        return $query->whereHas('items.medication', function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%");
+        });
+    }
+
+    // Accessors
+    public function getFormattedItemsAttribute()
     {
         return $this->items()->with('medication')->get()->map(function ($item) {
             return [
@@ -61,5 +88,36 @@ class Prescription extends Model
                 'instructions' => $item->instructions,
             ];
         });
+    }
+
+    public function getPatientNameAttribute()
+    {
+        return $this->medicalRecord?->patient?->name ?? '-';
+    }
+
+    public function getDoctorNameAttribute()
+    {
+        return $this->doctor?->name ?? '-';
+    }
+
+    public function getItemsCountAttribute()
+    {
+        return $this->items()->count();
+    }
+
+    public function getTotalQuantityAttribute()
+    {
+        return $this->items()->sum('quantity');
+    }
+
+    // Check if can be edited (only if no items dispensed)
+    public function canEdit()
+    {
+        return true;
+    }
+
+    public function canDelete()
+    {
+        return true;
     }
 }
