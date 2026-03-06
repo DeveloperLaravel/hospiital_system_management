@@ -7,11 +7,24 @@
     @apply flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-slate-300 hover:bg-white/10 hover:text-white;
 }
 
+.sidebar-item:hover {
+    @apply transform translate-x-1;
+}
+
 .sidebar-active {
     @apply bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25 font-medium;
 }
 
 .sidebar-section {
     @apply text-xs font-semibold uppercase text-slate-500 tracking-wider mb-2 px-3;
+}
+
+/* RTL Support for Sidebar */
+[dir="rtl"] .sidebar-item:hover {
+    transform: translateX(-1px);
+}
+
+[dir="rtl"] .sidebar-active {
+    background: linear-gradient(to left, #10b981, #14b8a6);
 }
 
