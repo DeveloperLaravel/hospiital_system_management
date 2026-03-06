@@ -28,7 +28,6 @@
             </svg>
         </button>
 
-        <!-- Collapse Button (Desktop Only) -->
         {{-- <button @click="toggleCollapse()" class="hidden lg:flex w-10 h-10 items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-200">
             <svg x-show="!collapsed" class="w-5 h-5 text-slate-400 transition-transform duration-300 hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
