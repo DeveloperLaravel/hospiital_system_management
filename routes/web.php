@@ -3,7 +3,6 @@
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceItemController;
@@ -50,14 +49,22 @@ Route::middleware(['auth'])->group(function () {
     });
 
     /*
-     |--------------------------------------------------------------------------
-     | Admin + Supervisor
-     |--------------------------------------------------------------------------
-     */
+    |--------------------------------------------------------------------------
+    | Admin + Supervisor
+    |--------------------------------------------------------------------------
+    */
     Route::middleware(['role:Admin|Supervisor'])->group(function () {
+        // مسارات الأقسام - Department Routes (Livewire)
+        Route::get('departments', \App\Livewire\DepartmentManager::class)->name('departments.index');
+
+        // API Routes للأقسام
+        Route::get('api/departments', function () {
+            return response()->json(\App\Models\Department::all(['id', 'name', 'salary']));
+        })->name('api.departments.index');
+
         Route::resource('appointments', AppointmentController::class);
 
-        Route::resource('departments', DepartmentController::class);
+        // Route::resource('departments', DepartmentController::class);
         Route::resource('doctors', DoctorController::class);
 
         // مسارات المرضى

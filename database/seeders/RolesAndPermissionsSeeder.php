@@ -116,6 +116,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'departments-view',
             'departments-create',
             'departments-edit',
+            'departments-delete',
             // Medical Records
             'medical-records-view',
             'medical-records-create',

@@ -4,4 +4,4 @@ import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
 
-Alpine.start();
+// Don't start Alpine here - let Livewire handle it
