@@ -5,10 +5,12 @@
         <div class="flex items-center gap-4">
             <!-- Mobile Menu Button -->
             <button
-                @click="sidebarOpen = true"
+                x-data
+                @click="$dispatch('toggle-sidebar')"
                 class="md:hidden inline-flex items-center justify-center w-10 h-10
-                       rounded-lg bg-blue-600 text-white hover:bg-blue-700
-                       transition-colors"
+                       rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white
+                       hover:from-emerald-600 hover:to-teal-700 transition-all duration-200
+                       shadow-lg shadow-emerald-500/20"
             >
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -25,12 +27,12 @@
         <!-- Right Side -->
         <div class="flex items-center gap-3">
             <!-- User Info -->
-            <div class="hidden sm:flex items-center gap-3 px-3 py-2 bg-gray-50 rounded-lg">
-                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                    <span class="text-xs font-bold text-white">{{ substr(auth()->user()->name, 0, 1) }}</span>
+            <div class="hidden sm:flex items-center gap-3 px-4 py-2 bg-gray-50 rounded-2xl border border-gray-100">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                    <span class="text-sm font-bold text-white">{{ substr(auth()->user()->name, 0, 1) }}</span>
                 </div>
                 <div class="text-sm">
-                    <p class="font-medium text-gray-700">{{ auth()->user()->name }}</p>
+                    <p class="font-semibold text-gray-700">{{ auth()->user()->name }}</p>
                     <p class="text-xs text-gray-500">{{ auth()->user()->getRoleNames()->first() }}</p>
                 </div>
 
@@ -39,8 +41,9 @@
                 @csrf
                 <button
                     type="submit"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-red-500 text-white
-                           rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600
+                           text-white rounded-xl hover:from-red-600 hover:to-red-700
+                           transition-all duration-200 text-sm font-medium shadow-lg shadow-red-500/20"
                 >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -51,3 +54,5 @@
             </form>
         </div>
 </header>
+
+
