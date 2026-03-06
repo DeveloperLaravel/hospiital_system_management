@@ -3,11 +3,10 @@
     x-init="init()"
     @toggle-sidebar.window="toggle()"
     :class="[
-        isOpen ? 'translate-x-0' : '-translate-x-full',
-        'lg:translate-x-0',
-        collapsed ? 'w-20' : 'w-72'
+        isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+        collapsed ? 'lg:w-20' : 'lg:w-72'
     ]"
-    class="fixed lg:sticky top-0 z-50 h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white transition-all duration-300 ease-in-out flex flex-col shadow-2xl"
+    class="fixed lg:sticky top-0 left-0 z-50 h-screen bg-slate-900 text-white transition-all duration-300 flex flex-col shadow-2xl"
 >
     <!-- Header -->
     <div class="h-20 flex items-center justify-between px-4 border-b border-white/10 bg-gradient-to-r from-slate-800/50 to-slate-900/50">
