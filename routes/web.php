@@ -1,14 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\MedicineTransactionController;
-use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\PrescriptionItemController;
@@ -64,7 +62,8 @@ Route::middleware(['auth'])->group(function () {
             return response()->json(\App\Models\Department::all(['id', 'name', 'salary']));
         })->name('api.departments.index');
 
-        Route::resource('appointments', AppointmentController::class);
+        // مسارات المواعيد - Appointments Routes (Livewire)
+        Route::get('appointments', \App\Livewire\AppointmentManager::class)->name('appointments.index');
         // مسارات المرضى - Patients Routes (Livewire)
         Route::get('patients', \App\Livewire\PatientManager::class)->name('patients.index');
 

@@ -38,9 +38,12 @@ class AppointmentRequest extends FormRequest
             'time' => 'required',
             'status' => [
                 'required',
-                Rule::in(['pending', 'confirmed', 'completed', 'cancelled']),
+                Rule::in(['pending', 'confirmed', 'completed', 'cancelled', 'no_show']),
             ],
             'notes' => 'nullable|string|max:1000',
+            'appointment_type' => 'nullable|in:checkup,followup,emergency,consultation',
+            'is_emergency' => 'nullable|boolean',
+            'duration' => 'nullable|integer|min:15|max:180',
         ];
     }
 

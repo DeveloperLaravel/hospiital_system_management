@@ -16,6 +16,14 @@ class Appointment extends Model
         'time',
         'status',
         'notes',
+        'appointment_type',
+        'is_emergency',
+        'duration',
+    ];
+
+    protected $casts = [
+        'is_emergency' => 'boolean',
+        'duration' => 'integer',
     ];
 
     // علاقة بالمريض
