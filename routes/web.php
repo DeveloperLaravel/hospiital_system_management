@@ -71,8 +71,10 @@ Route::middleware(['auth'])->group(function () {
         // مسارات الأطباء - Doctors Routes (Livewire)
         Route::get('doctors', \App\Livewire\DoctorManager::class)->name('doctors.index');
 
-        // مسارات المرضى
-        Route::resource('patients', PatientController::class);
+        // مسارات المرضى - Patients Routes (Livewire)
+        Route::get('patients', \App\Livewire\PatientManager::class)->name('patients.index');
+
+        // ملاحظة: باقي مسارات patients (payment, charge, search, medical-history) تبقى في PatientController
 
         // مسارات الدفع والرسوم للمرضى
         Route::post('/patients/{patient}/payment', [PatientController::class, 'addPayment'])
