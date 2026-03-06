@@ -1,4 +1,4 @@
-<nav class="flex-1 p-4 space-y-6 text-sm overflow-y-auto" x-data="{ collapsed: false }" x-init="$watch('$el.closest(`aside`).__x.$data.collapsed', v => collapsed = v)">
+<nav class="flex-1 p-4 space-y-6 text-sm overflow-y-auto" x-data="navigation()" @click="handleLinkClick($event)">
 
     {{-- Dashboard --}}
     <div>
