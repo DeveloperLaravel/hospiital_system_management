@@ -245,8 +245,7 @@ class AppointmentManager extends Component
             ->when($this->dateRangeEnd, function ($query) {
                 $query->whereDate('date', '<=', $this->dateRangeEnd);
             })
-            ->orderBy('date', 'desc')
-            ->orderBy('time', 'desc')
+            ->orderBy('id', 'desc')
             ->paginate(15);
 
         // Get patients and doctors for dropdowns

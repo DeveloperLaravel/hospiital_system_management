@@ -13,6 +13,10 @@ class Room extends Model
         'room_number',
         'type',
         'status',
+        'floor',
+        'beds_count',
+        'price',
+        'notes',
     ];
 
     public function scopeAvailable($query)

@@ -17,6 +17,8 @@ class MedicalRecord extends Model
         'visit_date',
         'diagnosis',
         'treatment',
+        'symptoms',
+        'vital_signs',
         'notes',
     ];
 

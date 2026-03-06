@@ -87,13 +87,22 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/patients/{patient}/medical-history/pdf', [MedicalRecordController::class, 'historyPdf'])
             ->name('patients.medical-history.pdf');
 
-        Route::resource('rooms', RoomController::class);
-        Route::resource('medical-records', MedicalRecordController::class);
+        // مسارات الغرف - Rooms Routes (Livewire)
+        Route::get('rooms', \App\Livewire\RoomManager::class)->name('rooms.index');
 
-        // الوصفات الطبية
-        Route::resource('prescriptions', PrescriptionController::class);
-        Route::get('/prescriptions/{prescription}/print', [PrescriptionController::class, 'print'])
-            ->name('prescriptions.print');
+        // مسارات الوصفات الطبية - Prescriptions Routes (Livewire)
+        Route::get('prescriptions', \App\Livewire\PrescriptionManager::class)->name('prescriptions.index');
+
+        // مسارات السجلات الطبية - Medical Records Routes (Livewire)
+        Route::get('medical-records', \App\Livewire\MedicalRecordManager::class)->name('medical-records.index');
+
+        // مسارات الوصفات الطبية - Livewire
+        Route::get('prescriptions', \App\Livewire\PrescriptionManager::class)->name('prescriptions.index');
+
+        // ملاحظة: التحويل بين إدخال وإخراج المرضى يتم عبر Livewire
+
+        // Route::get('/prescriptions/{prescription}/print', [PrescriptionController::class, 'print'])
+        // ->name('prescriptions.print');
 
         // عناصر الوصفات الطبية - مسارات احترافية
         Route::resource('prescription-items', PrescriptionItemController::class);
