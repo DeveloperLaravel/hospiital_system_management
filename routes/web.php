@@ -77,15 +77,15 @@ Route::middleware(['auth'])->group(function () {
         // ملاحظة: باقي مسارات patients (payment, charge, search, medical-history) تبقى في PatientController
 
         // مسارات الدفع والرسوم للمرضى
-        Route::post('/patients/{patient}/payment', [PatientController::class, 'addPayment'])
-            ->name('patients.payment');
+        // Route::post('/patients/{patient}/payment', [PatientController::class, 'addPayment'])
+        //     ->name('patients.payment');
 
-        Route::post('/patients/{patient}/charge', [PatientController::class, 'addCharge'])
-            ->name('patients.charge');
+        // Route::post('/patients/{patient}/charge', [PatientController::class, 'addCharge'])
+        //     ->name('patients.charge');
 
-        // البحث السريع (AJAX)
-        Route::get('/patients/search', [PatientController::class, 'search'])
-            ->name('patients.search');
+        // // البحث السريع (AJAX)
+        // Route::get('/patients/search', [PatientController::class, 'search'])
+        //     ->name('patients.search');
 
         // مسارات السجلات الطبية للمريض
         Route::get('/patients/{patient}/medical-history', [MedicalRecordController::class, 'history'])
