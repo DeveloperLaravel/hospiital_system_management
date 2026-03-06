@@ -2,8 +2,6 @@
 
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
@@ -109,14 +107,13 @@ Route::middleware(['auth'])->group(function () {
         // ========================================
         Route::get('invoices', \App\Livewire\InvoiceManager::class)->name('invoices.index');
 
+        // Invoice Items Routes (Livewire)
+        Route::get('invoice-items', \App\Livewire\InvoiceItemManager::class)->name('invoice-items.index');
+
         // ========================================
         // Invoice API Routes (kept for compatibility)
         // ========================================
 
-        Route::get('/api/invoices/unpaid', [InvoiceController::class, 'getUnpaid'])->name('api.invoices.unpaid');
-        Route::get('/api/invoices/overdue', [InvoiceController::class, 'getOverdue'])->name('api.invoices.overdue');
-        Route::get('/api/invoices/statistics', [InvoiceController::class, 'getStatistics'])->name('api.invoices.statistics');
-        Route::get('/api/invoices/{invoice}/items', [InvoiceItemController::class, 'getItems'])->name('api.invoices.items');
     });
 
     /*

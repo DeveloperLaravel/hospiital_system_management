@@ -109,6 +109,11 @@
                 <x-icon name="cash" />
                 <span x-show="!collapsed" class="whitespace-nowrap">الفواتير</span>
             </a>
+
+            <a href="{{ route('invoice-items.index') }}" class="sidebar-item {{ request()->routeIs('invoice-items.*') ? 'sidebar-active' : '' }}">
+                <x-icon name="clipboard-check" />
+                <span x-show="!collapsed" class="whitespace-nowrap">عناصر الفواتير</span>
+            </a>
         </div>
     </div>
 
