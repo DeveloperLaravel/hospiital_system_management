@@ -51,16 +51,6 @@
 
 
     {{-- ===================== الإدارة الطبية ===================== --}}
-    {{-- @canany([
-        'view-departments',
-        'view-doctors',
-        'view-patients',
-        'view-appointments',
-        'view-rooms',
-        'view-medical-records',
-        'view-prescriptions',
-        'view-medications'
-    ]) --}}
     <div>
 
         <p class="sidebar-section" x-show="!sidebarCollapsed">
@@ -69,78 +59,68 @@
 
         <div class="space-y-1">
 
-            {{-- @can('view-departments') --}}
+            {{-- الأقسام --}}
             <a href="{{ route('departments.index') }}"
-               class="sidebar-item {{ request()->routeIs('departments.*') ? 'sidebar-active' : '' }}">
+               class="sidebar-item {{ request()->routeIs('departments.index') ? 'sidebar-active' : '' }}">
                 <x-icon name="building" />
                 <span x-show="!sidebarCollapsed">الأقسام</span>
             </a>
-            {{-- @endcan --}}
 
-            {{-- @can('view-doctors') --}}
+            {{-- الأطباء --}}
             <a href="{{ route('doctors.index') }}"
-               class="sidebar-item {{ request()->routeIs('doctors.*') ? 'sidebar-active' : '' }}">
+               class="sidebar-item {{ request()->routeIs('doctors.index') ? 'sidebar-active' : '' }}">
                 <x-icon name="user-md" />
                 <span x-show="!sidebarCollapsed">الأطباء</span>
             </a>
-            {{-- @endcan --}}
 
-            {{-- @can('view-patients') --}}
+            {{-- المرضى --}}
             <a href="{{ route('patients.index') }}"
                class="sidebar-item {{ request()->routeIs('patients.*') ? 'sidebar-active' : '' }}">
                 <x-icon name="user" />
                 <span x-show="!sidebarCollapsed">المرضى</span>
             </a>
-            {{-- @endcan --}}
 
-            {{-- @can('view-appointments') --}}
+            {{-- المواعيد --}}
             <a href="{{ route('appointments.index') }}"
                class="sidebar-item {{ request()->routeIs('appointments.*') ? 'sidebar-active' : '' }}">
                 <x-icon name="calendar" />
                 <span x-show="!sidebarCollapsed">المواعيد</span>
             </a>
-            {{-- @endcan --}}
 
-            {{-- @can('view-rooms') --}}
+            {{-- الغرف --}}
             <a href="{{ route('rooms.index') }}"
                class="sidebar-item {{ request()->routeIs('rooms.*') ? 'sidebar-active' : '' }}">
                 <x-icon name="bed" />
                 <span x-show="!sidebarCollapsed">الغرف</span>
             </a>
-            {{-- @endcan --}}
 
-            {{-- @can('view-medical-records') --}}
+            {{-- السجل الطبي --}}
             <a href="{{ route('medical-records.index') }}"
                class="sidebar-item {{ request()->routeIs('medical-records.*') ? 'sidebar-active' : '' }}">
                 <x-icon name="clipboard" />
                 <span x-show="!sidebarCollapsed">السجل الطبي</span>
             </a>
-            {{-- @endcan --}}
 
-            {{-- @can('view-prescriptions') --}}
+            {{-- الوصفات --}}
             <a href="{{ route('prescriptions.index') }}"
                class="sidebar-item {{ request()->routeIs('prescriptions.*') ? 'sidebar-active' : '' }}">
                 <x-icon name="file-medical" />
                 <span x-show="!sidebarCollapsed">الوصفات</span>
             </a>
-            {{-- @endcan --}}
 
-            {{-- @can('view-medications') --}}
+            {{-- الأدوية --}}
             <a href="{{ route('medications.index') }}"
                class="sidebar-item {{ request()->routeIs('medications.*') ? 'sidebar-active' : '' }}">
                 <x-icon name="capsule" />
                 <span x-show="!sidebarCollapsed">الأدوية</span>
             </a>
-            {{-- @endcan --}}
 
         </div>
     </div>
-    {{-- @endcanany --}}
 
 
 
     {{-- ===================== الإدارة المالية ===================== --}}
-    {{-- @can('view-invoices') --}}
     <div>
 
         <p class="sidebar-section" x-show="!sidebarCollapsed">
@@ -157,6 +137,6 @@
 
         </div>
     </div>
-    {{-- @endcan --}}
 
 </nav>
+

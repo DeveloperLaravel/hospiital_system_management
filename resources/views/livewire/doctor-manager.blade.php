@@ -5,24 +5,24 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div class="flex items-center gap-4">
-                        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 p-3 rounded-xl shadow-lg">
+                        <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-3 rounded-xl shadow-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </div>
                         <div>
-                            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">إدارة الأقسام</h1>
-                            <p class="text-sm text-gray-500 mt-1">إضافة وتعديل وحذف الأقسام</p>
+                            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">إدارة الأطباء</h1>
+                            <p class="text-sm text-gray-500 mt-1">إضافة وتعديل وحذف الأطباء</p>
                         </div>
                     </div>
                     <button
                         wire:click="create"
-                        class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+                        class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        <span class="hidden sm:inline">إضافة قسم جديد</span>
+                        <span class="hidden sm:inline">إضافة طبيب جديد</span>
                         <span class="sm:hidden">إضافة</span>
                     </button>
                 </div>
@@ -67,8 +67,8 @@
                         <input
                             type="text"
                             wire:model.live="search"
-                            placeholder="البحث بالاسم أو الوصف..."
-                            class="w-full pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 text-gray-700 placeholder-gray-400"
+                            placeholder="البحث بالاسم أو الهاتف أو التخصص..."
+                            class="w-full pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 placeholder-gray-400"
                         />
                     </div>
                     <button
@@ -89,14 +89,27 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
                     <div class="flex items-center gap-3">
-                        <div class="bg-emerald-100 p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        <div class="bg-blue-100 p-2 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-500">إجمالي الأقسام</p>
-                            <p class="text-xl font-bold text-gray-800">{{ $departments->total() }}</p>
+                            <p class="text-xs text-gray-500">إجمالي الأطباء</p>
+                            <p class="text-xl font-bold text-gray-800">{{ $doctors->total() }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-green-100 p-2 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">الأقسام</p>
+                            <p class="text-xl font-bold text-gray-800">{{ $departments->count() }}</p>
                         </div>
                     </div>
                 </div>
@@ -111,55 +124,53 @@
                         <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
                             <tr>
                                 <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">#</th>
-                                <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">اسم القسم</th>
-                                <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider hidden md:table-cell">الوصف</th>
-                                <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">الراتب</th>
-                                <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">الأطباء</th>
-                                <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">الممرضين</th>
+                                <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">الاسم</th>
+                                <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider hidden md:table-cell">الهاتف</th>
+                                <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">التخصص</th>
+                                <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">الترخيص</th>
+                                <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">القسم</th>
                                 <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">التحكم</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
-                            @forelse($departments as $department)
-                            <tr class="hover:bg-emerald-50/50 transition-colors duration-150">
+                            @forelse($doctors as $doctor)
+                            <tr class="hover:bg-blue-50/50 transition-colors duration-150">
                                 <td class="px-4 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center justify-center w-8 h-8 bg-emerald-100 text-emerald-700 text-sm font-bold rounded-full">
-                                        {{ $department->id }}
+                                    <span class="inline-flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-700 text-sm font-bold rounded-full">
+                                        {{ $doctor->id }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="bg-gradient-to-br from-emerald-400 to-teal-500 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold">
-                                            {{ substr($department->name, 0, 1) }}
+                                        <div class="bg-gradient-to-br from-indigo-400 to-blue-500 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold">
+                                            {{ substr($doctor->name, 0, 1) }}
                                         </div>
                                         <div>
-                                            <p class="font-semibold text-gray-800">{{ $department->name }}</p>
-                                            <p class="text-xs text-gray-500 md:hidden">{{ $department->description ?? '-' }}</p>
+                                            <p class="font-semibold text-gray-800">{{ $doctor->name }}</p>
+                                            <p class="text-xs text-gray-500 md:hidden">{{ $doctor->phone ?? '-' }}</p>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-4 py-4 hidden md:table-cell">
-                                    <span class="text-gray-600 text-sm">{{ Str::limit($department->description, 50) ?? '-' }}</span>
+                                <td class="px-4 py-4 whitespace-nowrap hidden md:table-cell">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                                        {{ $doctor->phone ?? '-' }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap hidden lg:table-cell">
+                                    <span class="text-gray-700">{{ $doctor->specialization }}</span>
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap hidden lg:table-cell">
+                                    <span class="text-gray-500 text-sm">{{ $doctor->license_number ?? '-' }}</span>
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                                        {{ number_format($department->salary, 2) }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 whitespace-nowrap hidden lg:table-cell">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
-                                        {{ $department->doctors()->count() }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 whitespace-nowrap hidden lg:table-cell">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-700">
-                                        {{ $department->nurses()->count() }}
+                                        {{ $doctor->department->name ?? '-' }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-2">
                                         <button
-                                            wire:click="edit({{ $department->id }})"
+                                            wire:click="edit({{ $doctor->id }})"
                                             class="p-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-lg transition-colors duration-200"
                                             title="تعديل"
                                         >
@@ -168,8 +179,8 @@
                                             </svg>
                                         </button>
                                         <button
-                                            wire:click="delete({{ $department->id }})"
-                                            onclick="confirm('هل أنت متأكد من حذف هذا القسم؟') || event.stopImmediatePropagation()"
+                                            wire:click="delete({{ $doctor->id }})"
+                                            onclick="confirm('هل أنت متأكد من حذف هذا الطبيب؟') || event.stopImmediatePropagation()"
                                             class="p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors duration-200"
                                             title="حذف"
                                         >
@@ -185,10 +196,10 @@
                                 <td colspan="7" class="px-4 py-16">
                                     <div class="text-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                         </svg>
-                                        <p class="text-gray-500 text-lg">لا توجد أقسام مسجلة</p>
-                                        <p class="text-gray-400 text-sm mt-1">قم بإضافة قسم جديد للبدء</p>
+                                        <p class="text-gray-500 text-lg">لا يوجد أطباء مسجلون</p>
+                                        <p class="text-gray-400 text-sm mt-1">قم بإضافة طبيب جديد للبدء</p>
                                     </div>
                                 </td>
                             </tr>
@@ -198,9 +209,9 @@
                 </div>
 
                 {{-- Pagination --}}
-                @if($departments->hasPages())
+                @if($doctors->hasPages())
                 <div class="bg-gray-50 px-4 py-4 border-t border-gray-100">
-                    {{ $departments->links() }}
+                    {{ $doctors->links() }}
                 </div>
                 @endif
             </div>
@@ -215,10 +226,10 @@
 
                 <div class="inline-block align-bottom bg-white rounded-2xl text-right overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
                     {{-- Modal Header --}}
-                    <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-4">
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
                         <div class="flex items-center justify-between">
                             <h3 class="text-lg font-bold text-white" id="modal-title">
-                                {{ $isEditMode ? 'تعديل قسم' : 'إضافة قسم جديد' }}
+                                {{ $isEditMode ? 'تعديل طبيب' : 'إضافة طبيب جديد' }}
                             </h3>
                             <button wire:click="closeModal" class="text-white hover:bg-white/20 rounded-lg p-1 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -234,51 +245,83 @@
                             {{-- Name --}}
                             <div>
                                 <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    اسم القسم <span class="text-red-500">*</span>
+                                    اسم الطبيب <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     id="name"
                                     wire:model="name"
-                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
-                                    placeholder="أدخل اسم القسم"
+                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                    placeholder="أدخل اسم الطبيب"
                                 />
                                 @error('name')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            {{-- Description --}}
+                            {{-- Phone --}}
                             <div>
-                                <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    الوصف
+                                <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    الهاتف
                                 </label>
-                                <textarea
-                                    id="description"
-                                    wire:model="description"
-                                    rows="3"
-                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
-                                    placeholder="أدخل وصف القسم (اختياري)"
-                                ></textarea>
+                                <input
+                                    type="text"
+                                    id="phone"
+                                    wire:model="phone"
+                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                    placeholder="أدخل رقم الهاتف"
+                                />
                             </div>
 
-                            {{-- Salary --}}
+                            {{-- Specialization --}}
                             <div>
-                                <label for="salary" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    الراتب الأساسي
+                                <label for="specialization" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    التخصص <span class="text-red-500">*</span>
                                 </label>
-                                <div class="relative">
-                                    <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">$</span>
-                                    <input
-                                        type="number"
-                                        id="salary"
-                                        wire:model="salary"
-                                        min="0"
-                                        step="0.01"
-                                        class="w-full pr-8 pl-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
-                                        placeholder="0.00"
-                                    />
-                                </div>
+                                <input
+                                    type="text"
+                                    id="specialization"
+                                    wire:model="specialization"
+                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                    placeholder="أدخل التخصص"
+                                />
+                                @error('specialization')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- License Number --}}
+                            <div>
+                                <label for="license_number" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    رقم الترخيص
+                                </label>
+                                <input
+                                    type="text"
+                                    id="license_number"
+                                    wire:model="license_number"
+                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                    placeholder="أدخل رقم الترخيص"
+                                />
+                            </div>
+
+                            {{-- Department --}}
+                            <div>
+                                <label for="department_id" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    القسم <span class="text-red-500">*</span>
+                                </label>
+                                <select
+                                    id="department_id"
+                                    wire:model="department_id"
+                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                >
+                                    <option value="">اختر القسم</option>
+                                    @foreach($departments as $id => $name)
+                                        <option value="{{ $id }}">{{ $name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('department_id')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -295,9 +338,9 @@
                         <button
                             wire:click="store"
                             type="button"
-                            class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
+                            class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
                         >
-                            {{ $isEditMode ? 'حفظ التغييرات' : 'إضافة القسم' }}
+                            {{ $isEditMode ? 'حفظ التغييرات' : 'إضافة الطبيب' }}
                         </button>
                     </div>
                 </div>
