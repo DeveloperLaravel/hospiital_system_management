@@ -81,6 +81,9 @@ Route::middleware(['auth'])->group(function () {
         // Medical Records
         Route::get('medical-records', \App\Livewire\MedicalRecordManager::class)->name('medical-records.index');
 
+        // Stock Alerts
+        Route::get('stock-alerts', \App\Livewire\StockAlertManager::class)->name('stock-alerts.index');
+
         // ========================================
         // API Routes
         // ========================================

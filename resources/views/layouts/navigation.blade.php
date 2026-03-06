@@ -95,6 +95,11 @@
                 <x-icon name="exchange" />
                 <span x-show="!collapsed" class="whitespace-nowrap">المعاملات الدوائية</span>
             </a>
+
+            <a href="{{ route('stock-alerts.index') }}" class="sidebar-item {{ request()->routeIs('stock-alerts.*') ? 'sidebar-active' : '' }}">
+                <x-icon name="exclamation" />
+                <span x-show="!collapsed" class="whitespace-nowrap">تنبيهات المخزون</span>
+            </a>
         </div>
     </div>
 
