@@ -1,10 +1,7 @@
 <?php
 
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,9 +32,13 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::middleware(['role:Admin'])->group(function () {
-        Route::resource('users', UserController::class);
-        Route::resource('roles', RoleController::class);
-        Route::resource('permissions', PermissionController::class);
+        // Users (Livewire)
+        Route::get('users', \App\Livewire\UserManager::class)->name('users.index');
+        // Roles (Livewire)
+        Route::get('roles', \App\Livewire\RoleManager::class)->name('roles.index');
+        // Permissions (Livewire)
+        Route::get('permissions', \App\Livewire\PermissionManager::class)->name('permissions.index');
+
     });
 
     /*

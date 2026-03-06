@@ -14,7 +14,6 @@ class UserService
 
     public function createUser(array $data): User
     {
-
         // التحقق من البيانات مع رسائل عربية
         $user = User::create([
             'name' => $data['name'],
@@ -23,8 +22,8 @@ class UserService
             'status' => $data['status'],
         ]);
 
-        $user->syncRoles($request->roles ?? []);
-        $user->syncPermissions($request->permissions ?? []);
+        $user->syncRoles($data['roles'] ?? []);
+        $user->syncPermissions($data['permissions'] ?? []);
 
         return $user;
     }
@@ -39,7 +38,7 @@ class UserService
 
         if (! empty($data['password'])) {
             $user->update([
-                'password' => bcrypt($data['password']),
+                'password' => Hash::make($data['password']),
             ]);
         }
 

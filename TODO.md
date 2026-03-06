@@ -1,10 +1,9 @@
-# TODO - Stock Alert CRUD Implementation
+# TODO - Convert UserController to Livewire
 
-## Plan:
-1. [x] Update StockAlert Model - Add fillable, relationships, scopes
-2. [x] Create StockAlertManager Livewire Component - Full CRUD
-3. [x] Create stock-alert-manager.blade.php View - Professional UI
-4. [x] Add Route in web.php
-
-## Status: Completed ✅
+## Tasks:
+- [x] 1. Create UserManager Livewire Component (app/Livewire/UserManager.php)
+- [x] 2. Create user-manager.blade.php view (resources/views/livewire/user-manager.blade.php)
+- [x] 3. Update routes/web.php to use Livewire
+- [x] 4. Delete old UserController.php
+- [x] 5. Delete old views in resources/views/system/user/
 
