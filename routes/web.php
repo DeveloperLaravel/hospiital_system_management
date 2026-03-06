@@ -65,12 +65,6 @@ Route::middleware(['auth'])->group(function () {
         })->name('api.departments.index');
 
         Route::resource('appointments', AppointmentController::class);
-
-        // Route::resource('departments', DepartmentController::class);
-
-        // مسارات الأطباء - Doctors Routes (Livewire)
-        Route::get('doctors', \App\Livewire\DoctorManager::class)->name('doctors.index');
-
         // مسارات المرضى - Patients Routes (Livewire)
         Route::get('patients', \App\Livewire\PatientManager::class)->name('patients.index');
 
