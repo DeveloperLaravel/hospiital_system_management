@@ -4,15 +4,9 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceItemController;
-use App\Http\Controllers\MedicalRecordController;
-use App\Http\Controllers\MedicationController;
-use App\Http\Controllers\MedicineTransactionController;
 use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\PrescriptionController;
-use App\Http\Controllers\PrescriptionItemController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,7 +21,10 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+    // Dashboard
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+    // Profile Routes
     Route::controller(ProfileController::class)->group(function () {
         Route::get('/profile', 'edit')->name('profile.edit');
         Route::patch('/profile', 'update')->name('profile.update');
@@ -36,7 +33,7 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Admin فقط
+    | Admin Routes
     |--------------------------------------------------------------------------
     */
     Route::middleware(['role:Admin'])->group(function () {
@@ -47,183 +44,87 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Admin + Supervisor
+    | Admin + Supervisor Routes
     |--------------------------------------------------------------------------
     */
     Route::middleware(['role:Admin|Supervisor'])->group(function () {
-        // مسارات الأقسام - Department Routes (Livewire)
+
+        // ========================================
+        // Livewire Components
+        // ========================================
+
+        // Departments
         Route::get('departments', \App\Livewire\DepartmentManager::class)->name('departments.index');
 
-        // مسارات الأطباء - Doctors Routes (Livewire)
+        // Doctors
         Route::get('doctors', \App\Livewire\DoctorManager::class)->name('doctors.index');
 
-        // API Routes للأقسام
+        // Patients
+        Route::get('patients', \App\Livewire\PatientManager::class)->name('patients.index');
+
+        // Appointments
+        Route::get('appointments', \App\Livewire\AppointmentManager::class)->name('appointments.index');
+
+        // Rooms
+        Route::get('rooms', \App\Livewire\RoomManager::class)->name('rooms.index');
+
+        // Prescriptions
+        Route::get('prescriptions', \App\Livewire\PrescriptionManager::class)->name('prescriptions.index');
+
+        // Prescription Items
+        Route::get('prescription-items', \App\Livewire\PrescriptionItemManager::class)->name('prescription-items.index');
+
+        // Medications
+        Route::get('medications', \App\Livewire\MedicationManager::class)->name('medications.index');
+
+        // Medicine Transactions
+        Route::get('medicine-transactions', \App\Livewire\MedicineTransactionManager::class)->name('medicine-transactions.index');
+
+        // Medical Records
+        Route::get('medical-records', \App\Livewire\MedicalRecordManager::class)->name('medical-records.index');
+
+        // ========================================
+        // API Routes
+        // ========================================
+
+        // Departments API
         Route::get('api/departments', function () {
             return response()->json(\App\Models\Department::all(['id', 'name', 'salary']));
         })->name('api.departments.index');
 
-        // مسارات المواعيد - Appointments Routes (Livewire)
-        Route::get('appointments', \App\Livewire\AppointmentManager::class)->name('appointments.index');
-        // مسارات المرضى - Patients Routes (Livewire)
-        Route::get('patients', \App\Livewire\PatientManager::class)->name('patients.index');
+        // ========================================
+        // Patient Medical History
+        // ========================================
 
-        // ملاحظة: باقي مسارات patients (payment, charge, search, medical-history) تبقى في PatientController
+        // ========================================
+        // Room Actions
+        // ========================================
 
-        // مسارات الدفع والرسوم للمرضى
-        // Route::post('/patients/{patient}/payment', [PatientController::class, 'addPayment'])
-        //     ->name('patients.payment');
-
-        // Route::post('/patients/{patient}/charge', [PatientController::class, 'addCharge'])
-        //     ->name('patients.charge');
-
-        // // البحث السريع (AJAX)
-        // Route::get('/patients/search', [PatientController::class, 'search'])
-        //     ->name('patients.search');
-
-        // مسارات السجلات الطبية للمريض
-        Route::get('/patients/{patient}/medical-history', [MedicalRecordController::class, 'history'])
-            ->name('patients.medical-history');
-
-        Route::get('/patients/{patient}/medical-history/pdf', [MedicalRecordController::class, 'historyPdf'])
-            ->name('patients.medical-history.pdf');
-
-        // مسارات الغرف - Rooms Routes (Livewire)
-        Route::get('rooms', \App\Livewire\RoomManager::class)->name('rooms.index');
-
-        // مسارات الوصفات الطبية - Prescriptions Routes (Livewire)
-        Route::get('prescriptions', \App\Livewire\PrescriptionManager::class)->name('prescriptions.index');
-
-        // مسارات السجلات الطبية - Medical Records Routes (Livewire)
-        Route::get('medical-records', \App\Livewire\MedicalRecordManager::class)->name('medical-records.index');
-
-        // مسارات الوصفات الطبية - Livewire
-        Route::get('prescriptions', \App\Livewire\PrescriptionManager::class)->name('prescriptions.index');
-
-        // ملاحظة: التحويل بين إدخال وإخراج المرضى يتم عبر Livewire
-
-        // Route::get('/prescriptions/{prescription}/print', [PrescriptionController::class, 'print'])
-        // ->name('prescriptions.print');
-
-        // عناصر الوصفات الطبية - مسارات احترافية
-        Route::resource('prescription-items', PrescriptionItemController::class);
-
-        // تصدير PDF
-        Route::get('/prescriptions/{prescription}/items/pdf', [PrescriptionItemController::class, 'exportPdf'])
-            ->name('prescriptions.items.pdf');
-
-        Route::get('/patients/{patient}/prescriptions/pdf', [PrescriptionItemController::class, 'exportAllPrescriptionsPdf'])
-            ->name('patients.prescriptions.pdf');
-
-        // API-like routes for AJAX
-        Route::get('/prescriptions/{prescription}/items', [PrescriptionItemController::class, 'getByPrescription'])
-            ->name('api.prescriptions.items');
-
-        Route::get('/prescription-items/{prescriptionItem}/details', [PrescriptionItemController::class, 'getDetails'])
-            ->name('api.prescription-items.details');
-
-        Route::post('/prescription-items/check-medication', [PrescriptionItemController::class, 'checkMedication'])
-            ->name('api.prescription-items.check');
-
-        Route::resource('medications', MedicationController::class);
-
+        // ========================================
         // Medicine Transactions
-        Route::resource('medicine-transactions', MedicineTransactionController::class);
+        // ========================================
 
         // ========================================
-        // الفواتير - Invoice Routes
+        // Invoice Routes (Livewire)
         // ========================================
-        Route::resource('invoices', InvoiceController::class);
-
-        // إجراءات الفاتورة - Invoice Actions
-        Route::post('/invoices/{invoice}/mark-as-paid', [InvoiceController::class, 'markAsPaid'])
-            ->name('invoices.markAsPaid');
-
-        Route::post('/invoices/{invoice}/mark-as-unpaid', [InvoiceController::class, 'markAsUnpaid'])
-            ->name('invoices.markAsUnpaid');
-
-        Route::get('/invoices/{invoice}/export-pdf', [InvoiceController::class, 'exportPdf'])
-            ->name('invoices.exportPdf');
+        Route::get('invoices', \App\Livewire\InvoiceManager::class)->name('invoices.index');
 
         // ========================================
-        // عناصر الفاتورة - Invoice Items Routes (متداخلة)
+        // Invoice API Routes (kept for compatibility)
         // ========================================
-        Route::controller(InvoiceItemController::class)->group(function () {
-            // عرض عناصر الفاتورة
-            Route::get('/invoices/{invoice}/items', 'index')
-                ->name('invoices.items.index');
 
-            // نموذج إضافة عنصر جديد
-            Route::get('/invoices/{invoice}/items/create', 'create')
-                ->name('invoices.items.create');
-
-            // حفظ العنصر الجديد
-            Route::post('/invoices/{invoice}/items', 'store')
-                ->name('invoices.items.store');
-
-            // عرض عنصر محدد
-            Route::get('/invoices/{invoice}/items/{item}', 'show')
-                ->name('invoices.items.show');
-
-            // نموذج تعديل العنصر
-            Route::get('/invoices/{invoice}/items/{item}/edit', 'edit')
-                ->name('invoices.items.edit');
-
-            // تحديث العنصر
-            Route::put('/invoices/{invoice}/items/{item}', 'update')
-                ->name('invoices.items.update');
-
-            // حذف العنصر
-            Route::delete('/invoices/{invoice}/items/{item}', 'destroy')
-                ->name('invoices.items.destroy');
-
-            // AJAX: Get items as JSON
-            Route::get('/invoices/{invoice}/items/json', 'getItems')
-                ->name('invoices.items.json');
-        });
-
-        // ========================================
-        // API Routes للفواتير
-        // ========================================
-        Route::get('/api/invoices/unpaid', [InvoiceController::class, 'getUnpaid'])
-            ->name('api.invoices.unpaid');
-
-        Route::get('/api/invoices/overdue', [InvoiceController::class, 'getOverdue'])
-            ->name('api.invoices.overdue');
-
-        Route::get('/api/invoices/statistics', [InvoiceController::class, 'getStatistics'])
-            ->name('api.invoices.statistics');
-
-        // API: Get invoice items as JSON
-        Route::get('/api/invoices/{invoice}/items', [InvoiceItemController::class, 'getItems'])
-            ->name('api.invoices.items');
-
-        Route::post('/rooms/{room}/admit', [RoomController::class, 'admit'])
-            ->name('rooms.admit');
-
-        Route::post('/rooms/{room}/discharge', [RoomController::class, 'discharge'])
-            ->name('rooms.discharge');
+        Route::get('/api/invoices/unpaid', [InvoiceController::class, 'getUnpaid'])->name('api.invoices.unpaid');
+        Route::get('/api/invoices/overdue', [InvoiceController::class, 'getOverdue'])->name('api.invoices.overdue');
+        Route::get('/api/invoices/statistics', [InvoiceController::class, 'getStatistics'])->name('api.invoices.statistics');
+        Route::get('/api/invoices/{invoice}/items', [InvoiceItemController::class, 'getItems'])->name('api.invoices.items');
     });
 
     /*
     |--------------------------------------------------------------------------
-    | Admin + Receptionist
+    | Admin + Receptionist Routes
     |--------------------------------------------------------------------------
     */
-    Route::middleware(['role:Admin|Receptionist'])->group(function () {
-
-        Route::post('/rooms/{room}/admit', [RoomController::class, 'admit'])
-            ->name('rooms.admit');
-
-        Route::post('/rooms/{room}/discharge', [RoomController::class, 'discharge'])
-            ->name('rooms.discharge');
-    });
-
-    /*
-     |--------------------------------------------------------------------------
-     | Admin + Doctor
-     |--------------------------------------------------------------------------
-     */
-    // appointments route moved to Admin|Supervisor group to avoid duplicate
+    Route::middleware(['role:Admin|Receptionist'])->group(function () {});
 });
 
 require __DIR__.'/auth.php';

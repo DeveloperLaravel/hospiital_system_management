@@ -81,9 +81,19 @@
                 <span x-show="!collapsed" class="whitespace-nowrap">الوصفات</span>
             </a>
 
+            <a href="{{ route('prescription-items.index') }}" class="sidebar-item {{ request()->routeIs('prescription-items.*') ? 'sidebar-active' : '' }}">
+                <x-icon name="clipboard-list" />
+                <span x-show="!collapsed" class="whitespace-nowrap">عناصر الوصفات</span>
+            </a>
+
             <a href="{{ route('medications.index') }}" class="sidebar-item {{ request()->routeIs('medications.*') ? 'sidebar-active' : '' }}">
                 <x-icon name="capsule" />
                 <span x-show="!collapsed" class="whitespace-nowrap">الأدوية</span>
+            </a>
+
+            <a href="{{ route('medicine-transactions.index') }}" class="sidebar-item {{ request()->routeIs('medicine-transactions.*') ? 'sidebar-active' : '' }}">
+                <x-icon name="exchange" />
+                <span x-show="!collapsed" class="whitespace-nowrap">المعاملات الدوائية</span>
             </a>
         </div>
     </div>

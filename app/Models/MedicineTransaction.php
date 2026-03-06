@@ -19,6 +19,10 @@ class MedicineTransaction extends Model
         'type',
         'quantity',
         'user_id',
+        'reference_number',
+        'notes',
+        'transaction_date',
+        'prescription_id',
     ];
 
     /**
@@ -28,6 +32,7 @@ class MedicineTransaction extends Model
      */
     protected $casts = [
         'quantity' => 'integer',
+        'transaction_date' => 'date',
     ];
 
     /**
@@ -44,6 +49,14 @@ class MedicineTransaction extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the prescription associated with the transaction.
+     */
+    public function prescription()
+    {
+        return $this->belongsTo(Prescription::class);
     }
 
     /**
