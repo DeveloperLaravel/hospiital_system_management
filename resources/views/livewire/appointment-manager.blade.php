@@ -30,6 +30,66 @@
                 </div>
 
                 <div class="flex items-center gap-3">
+                    {{-- User Role & Permissions Display --}}
+                    <div class="hidden lg:flex items-center gap-2">
+                        {{-- Role Badge --}}
+                        <div class="px-3 py-1.5 rounded-lg text-xs font-bold {{ $this->isAdmin() ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' : ($this->isSupervisor() ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white' : ($this->isDoctor() ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white' : ($this->isReceptionist() ? 'bg-gradient-to-r from-orange-500 to-yellow-500 text-white' : 'bg-gradient-to-r from-gray-500 to-slate-500 text-white'))) }}">
+                            @if($this->isAdmin())
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            @elseif($this->isSupervisor())
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            @elseif($this->isDoctor())
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            @elseif($this->isReceptionist())
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                            @else
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            @endif
+                            {{ $this->getUserRole() }}
+                        </div>
+                    </div>
+
+                    {{-- Quick Permissions Info --}}
+                    <div class="hidden md:flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-lg text-xs">
+                        @if($this->canViewAll())
+                        <span class="w-2 h-2 bg-purple-500 rounded-full" title="يمكن عرض كل المواعيد"></span>
+                        @else
+                        <span class="w-2 h-2 bg-blue-400 rounded-full" title="يمكن عرض المواعيد"></span>
+                        @endif
+
+                        @if($this->canCreate())
+                        <span class="w-2 h-2 bg-green-500 rounded-full" title="يمكن إنشاء مواعيد"></span>
+                        @else
+                        <span class="w-2 h-2 bg-red-300 rounded-full" title="لا يمكن إنشاء مواعيد"></span>
+                        @endif
+
+                        @if(auth()->user()->can('appointments-edit'))
+                        <span class="w-2 h-2 bg-green-500 rounded-full" title="يمكن تعديل مواعيد"></span>
+                        @else
+                        <span class="w-2 h-2 bg-red-300 rounded-full" title="لا يمكن تعديل مواعيد"></span>
+                        @endif
+
+                        @if(auth()->user()->can('appointments-delete'))
+                        <span class="w-2 h-2 bg-green-500 rounded-full" title="يمكن حذف مواعيد"></span>
+                        @else
+                        <span class="w-2 h-2 bg-red-300 rounded-full" title="لا يمكن حذف مواعيد"></span>
+                        @endif
+
+                        @if($this->canExport())
+                        <span class="w-2 h-2 bg-indigo-500 rounded-full" title="يمكن تصدير المواعيد"></span>
+                        @endif
+                    </div>
+
                     {{-- View Toggle --}}
                     <div class="bg-gray-100 p-1 rounded-xl flex">
                         <button wire:click="setViewMode('table')" class="px-4 py-2 rounded-lg text-sm font-medium transition-all {{ $viewMode === 'table' ? 'bg-white text-blue-600 shadow-md' : 'text-gray-500 hover:text-gray-700' }}">
@@ -46,8 +106,12 @@
                         </button>
                     </div>
 
-                    <button wire:click="create" class="group relative inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 hover:from-blue-600 hover:via-indigo-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:shadow-indigo-500/30 transition-all duration-300 transform hover:-translate-y-1">
+                    <button wire:click="create" class="group relative inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 hover:from-blue-600 hover:via-indigo-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:shadow-indigo-500/30 transition-all duration-300 transform hover:-translate-y-1" {{ ! $this->canCreate() ? 'disabled' : '' }}>
+                        @if(!$this->canCreate())
+                        <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl opacity-0"></span>
+                        @else
                         <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl opacity-0 group-hover:opacity-50 transition-opacity duration-300 blur-lg"></span>
+                        @endif
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 relative" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
@@ -234,7 +298,9 @@
                             <th class="px-4 py-5 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">التاريخ والوقت</th>
                             <th class="px-4 py-5 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">النوع</th>
                             <th class="px-4 py-5 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">الحالة</th>
+                            @canany(['appointments-edit', 'appointments-delete'])
                             <th class="px-4 py-5 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">التحكم</th>
+                            @endcanany
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -277,7 +343,7 @@
                                     </span>
                                     <span class="inline-flex items-center gap-1 mt-1 text-gray-500 text-sm">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 9 0 0 9 0118 0z" />
                                         </svg>
                                         {{ \Carbon\Carbon::parse($appointment->time)->format('h:i A') }}
                                     </span>
@@ -320,9 +386,10 @@
                                         @break
                                 @endswitch
                             </td>
+                            @canany(['appointments-edit', 'appointments-delete'])
                             <td class="px-4 py-5 whitespace-nowrap">
                                 <div class="flex items-center gap-1.5">
-                                    @if(in_array($appointment->status, ['pending', 'confirmed']))
+                                    @if(in_array($appointment->status, ['pending', 'confirmed']) && $this->canEdit($appointment))
                                     <button wire:click="edit({{ $appointment->id }})" class="p-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105" title="تعديل">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -330,7 +397,7 @@
                                     </button>
                                     @endif
 
-                                    @if($appointment->status == 'pending')
+                                    @if($appointment->status == 'pending' && $this->canConfirmAppointment($appointment))
                                     <button wire:click="confirm({{ $appointment->id }})" onclick="confirm('تأكيد الموعد؟') || event.stopImmediatePropagation()" class="p-2.5 bg-gradient-to-r from-blue-400 to-indigo-500 hover:from-blue-500 hover:to-indigo-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105" title="تأكيد">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -338,7 +405,7 @@
                                     </button>
                                     @endif
 
-                                    @if($appointment->status == 'confirmed')
+                                    @if($appointment->status == 'confirmed' && $this->canCompleteAppointment($appointment))
                                     <button wire:click="complete({{ $appointment->id }})" class="p-2.5 bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105" title="إكمال">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -346,7 +413,7 @@
                                     </button>
                                     @endif
 
-                                    @if(in_array($appointment->status, ['pending', 'confirmed']))
+                                    @if(in_array($appointment->status, ['pending', 'confirmed']) && $this->canCancelAppointment($appointment))
                                     <button wire:click="cancel({{ $appointment->id }})" onclick="confirm('إلغاء الموعد؟') || event.stopImmediatePropagation()" class="p-2.5 bg-gradient-to-r from-orange-400 to-red-500 hover:from-orange-500 hover:to-red-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105" title="إلغاء">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -354,7 +421,7 @@
                                     </button>
                                     @endif
 
-                                    @if($appointment->status != 'completed')
+                                    @if($appointment->status != 'completed' && $this->canDelete($appointment))
                                     <button wire:click="delete({{ $appointment->id }})" onclick="confirm('حذف الموعد؟') || event.stopImmediatePropagation()" class="p-2.5 bg-gradient-to-r from-red-400 to-rose-600 hover:from-red-500 hover:to-rose-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105" title="حذف">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -363,10 +430,24 @@
                                     @endif
                                 </div>
                             </td>
+                            @endcanany
                         </tr>
                         @empty
                         <tr>
+                            @if(!$this->canView())
                             <td colspan="7" class="px-4 py-20">
+                                <div class="text-center">
+                                    <div class="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-red-100 to-orange-100 rounded-full flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-red-500 text-lg font-bold">لا توجد لديك صلاحية viewing المواعيد</p>
+                                    <p class="text-red-400 text-sm mt-1">يرجى التواصل مع المدير للحصول على الصلاحية</p>
+                                </div>
+                            </td>
+                            @else
+                            <td colspan="6" class="px-4 py-20">
                                 <div class="text-center">
                                     <div class="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -377,6 +458,7 @@
                                     <p class="text-gray-400 text-sm mt-1">أضف موعد جديد للبدء</p>
                                 </div>
                             </td>
+                            @endif
                         </tr>
                         @endforelse
                     </tbody>

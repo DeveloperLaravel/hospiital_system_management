@@ -15,16 +15,62 @@
                             <p class="text-sm text-gray-500 mt-1">إضافة وتعديل وحذف الأقسام</p>
                         </div>
                     </div>
-                    <button
-                        wire:click="create"
-                        class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        <span class="hidden sm:inline">إضافة قسم جديد</span>
-                        <span class="sm:hidden">إضافة</span>
-                    </button>
+
+                    <div class="flex items-center gap-3">
+                        {{-- User Role Badge --}}
+                        <div class="hidden lg:flex items-center gap-2">
+                            <div class="px-3 py-1.5 rounded-lg text-xs font-bold {{ $this->isAdmin() ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' : ($this->isSupervisor() ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white' : 'bg-gradient-to-r from-gray-500 to-slate-500 text-white') }}">
+                                @if($this->isAdmin())
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                @elseif($this->isSupervisor())
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                                @else
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                @endif
+                                {{ $this->getUserRole() }}
+                            </div>
+                        </div>
+
+                        {{-- Quick Permissions Indicators --}}
+                        <div class="hidden md:flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-lg text-xs">
+                            @if($this->canCreate())
+                            <span class="w-2 h-2 bg-green-500 rounded-full" title="يمكن إنشاء أقسام"></span>
+                            @else
+                            <span class="w-2 h-2 bg-red-300 rounded-full" title="لا يمكن إنشاء أقسام"></span>
+                            @endif
+
+                            @if(auth()->user()->can('departments-edit'))
+                            <span class="w-2 h-2 bg-green-500 rounded-full" title="يمكن تعديل أقسام"></span>
+                            @else
+                            <span class="w-2 h-2 bg-red-300 rounded-full" title="لا يمكن تعديل أقسام"></span>
+                            @endif
+
+                            @if(auth()->user()->can('departments-delete'))
+                            <span class="w-2 h-2 bg-green-500 rounded-full" title="يمكن حذف أقسام"></span>
+                            @else
+                            <span class="w-2 h-2 bg-red-300 rounded-full" title="لا يمكن حذف أقسام"></span>
+                            @endif
+                        </div>
+
+                        @if($this->canCreate())
+                        <button
+                            wire:click="create"
+                            class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span class="hidden sm:inline">إضافة قسم جديد</span>
+                            <span class="sm:hidden">إضافة</span>
+                        </button>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -116,7 +162,9 @@
                                 <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">الراتب</th>
                                 <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">الأطباء</th>
                                 <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">الممرضين</th>
+                                @canany(['departments-edit', 'departments-delete'])
                                 <th class="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">التحكم</th>
+                                @endcanany
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
@@ -157,7 +205,9 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap">
+                                    @canany(['departments-edit', 'departments-delete'])
                                     <div class="flex items-center gap-2">
+                                        @can('departments-edit')
                                         <button
                                             wire:click="edit({{ $department->id }})"
                                             class="p-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-lg transition-colors duration-200"
@@ -167,8 +217,12 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
                                         </button>
+                                        @endcan
+
+                                        @can('departments-delete')
+                                        @if($department->doctors()->count() == 0 && $department->nurses()->count() == 0)
                                         <button
-                                            wire:click="delete({{ $department->id }})"
+                                            wire:click="destroy({{ $department->id }})"
                                             onclick="confirm('هل أنت متأكد من حذف هذا القسم؟') || event.stopImmediatePropagation()"
                                             class="p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors duration-200"
                                             title="حذف"
@@ -177,12 +231,24 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                         </button>
+                                        @endif
+                                        @endcan
                                     </div>
+                                    @endcanany
                                 </td>
                             </tr>
                             @empty
                             <tr>
                                 <td colspan="7" class="px-4 py-16">
+                                    @if(!$hasPermission)
+                                    <div class="text-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-red-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                        </svg>
+                                        <p class="text-red-500 text-lg font-bold">لا توجد لديك صلاحية viewing الأقسام</p>
+                                        <p class="text-red-400 text-sm mt-1">يرجى التواصل مع المدير للحصول على الصلاحية</p>
+                                    </div>
+                                    @else
                                     <div class="text-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -190,6 +256,7 @@
                                         <p class="text-gray-500 text-lg">لا توجد أقسام مسجلة</p>
                                         <p class="text-gray-400 text-sm mt-1">قم بإضافة قسم جديد للبدء</p>
                                     </div>
+                                    @endif
                                 </td>
                             </tr>
                             @endforelse

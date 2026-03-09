@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Department;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -40,6 +41,105 @@ class DepartmentManager extends Component
         'salary.min' => 'الراتب يجب أن يكون رقماً موجباً',
     ];
 
+    // ============================================
+    // Role & Permission Check Methods
+    // ============================================
+
+    /**
+     * Check if user can view departments
+     */
+    public function canView(): bool
+    {
+        return Auth::user()->can('departments-view');
+    }
+
+    /**
+     * Check if user can create departments
+     */
+    public function canCreate(): bool
+    {
+        return Auth::user()->can('departments-create');
+    }
+
+    /**
+     * Check if user can edit departments
+     */
+    public function canEdit($department = null): bool
+    {
+        if (! $department) {
+            return Auth::user()->can('departments-edit');
+        }
+
+        return Auth::user()->can('departments-edit');
+    }
+
+    /**
+     * Check if user can delete departments
+     */
+    public function canDelete($department = null): bool
+    {
+        if (! $department) {
+            return Auth::user()->can('departments-delete');
+        }
+
+        // Cannot delete if has related doctors or nurses
+        if ($department->doctors()->count() > 0 || $department->nurses()->count() > 0) {
+            return false;
+        }
+
+        return Auth::user()->can('departments-delete');
+    }
+
+    /**
+     * Get user's role name
+     */
+    public function getUserRole(): string
+    {
+        return Auth::user()->getRoleNames()->first() ?? 'Guest';
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return Auth::user()->hasRole('Admin');
+    }
+
+    /**
+     * Check if user is supervisor
+     */
+    public function isSupervisor(): bool
+    {
+        return Auth::user()->hasRole('Supervisor');
+    }
+
+    /**
+     * Check if user is doctor
+     */
+    public function isDoctor(): bool
+    {
+        return Auth::user()->hasRole('Doctor');
+    }
+
+    /**
+     * Check if user is receptionist
+     */
+    public function isReceptionist(): bool
+    {
+        return Auth::user()->hasRole('Receptionist');
+    }
+
+    /**
+     * Check if user is nurse
+     */
+    public function isNurse(): bool
+    {
+        return Auth::user()->hasRole('Nurse');
+    }
+
+    // ============================================
+
     // تحديث عند تغيير البحث
     public function updatedSearch()
     {
@@ -49,6 +149,12 @@ class DepartmentManager extends Component
     // فتح الـ Modal للإضافة
     public function create()
     {
+        if (! $this->canCreate()) {
+            session()->flash('error', 'ليس لديك صلاحية لإنشاء أقسام');
+
+            return;
+        }
+
         $this->resetInputFields();
         $this->isEditMode = false;
         $this->isOpen = true;
@@ -58,6 +164,13 @@ class DepartmentManager extends Component
     public function edit($id)
     {
         $department = Department::findOrFail($id);
+
+        if (! $this->canEdit($department)) {
+            session()->flash('error', 'ليس لديك صلاحية لتعديل هذا القسم');
+
+            return;
+        }
+
         $this->department_id = $id;
         $this->name = $department->name;
         $this->description = $department->description;
@@ -69,6 +182,18 @@ class DepartmentManager extends Component
     // حفظ البيانات (إضافة أو تعديل)
     public function store()
     {
+        if (! $this->canCreate() && ! $this->isEditMode) {
+            session()->flash('error', 'ليس لديك صلاحية لإنشاء أقسام');
+
+            return;
+        }
+
+        if ($this->isEditMode && ! $this->canEdit()) {
+            session()->flash('error', 'ليس لديك صلاحية لتعديل الأقسام');
+
+            return;
+        }
+
         $this->validate();
 
         $data = [
@@ -89,9 +214,15 @@ class DepartmentManager extends Component
     }
 
     // حذف القسم
-    public function delete($id)
+    public function destroy($id)
     {
         $department = Department::find($id);
+
+        if (! $this->canDelete($department)) {
+            session()->flash('error', 'ليس لديك صلاحية لحذف هذا القسم');
+
+            return;
+        }
 
         if ($department->doctors()->count() > 0 || $department->nurses()->count() > 0) {
             session()->flash('error', 'لا يمكن حذف القسم لوجود أطباء أو ممرضين مرتبطين به');
@@ -123,6 +254,14 @@ class DepartmentManager extends Component
     // عرض الصفحة
     public function render()
     {
+        // Check if user has view permission
+        if (! $this->canView()) {
+            return view('livewire.department-manager', [
+                'departments' => collect([]),
+                'hasPermission' => false,
+            ]);
+        }
+
         $departments = Department::when($this->search, function ($query) {
             $query->where('name', 'like', '%'.$this->search.'%')
                 ->orWhere('description', 'like', '%'.$this->search.'%');
@@ -132,6 +271,7 @@ class DepartmentManager extends Component
 
         return view('livewire.department-manager', [
             'departments' => $departments,
+            'hasPermission' => true,
         ]);
     }
 }

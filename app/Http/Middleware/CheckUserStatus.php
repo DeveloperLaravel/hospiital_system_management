@@ -16,11 +16,19 @@ class CheckUserStatus
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && ! Auth::user()->status) {
-            Auth::logout();
+        if (Auth::check()) {
+            $user = Auth::user();
 
-            return redirect()->route('login')
-                ->withErrors(['email' => 'الحساب موقوف. الرجاء الاتصال بالمسؤول.']);
+            // Check if user status is inactive (0)
+            if ($user->status == 0) {
+                Auth::logout();
+
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return redirect()->route('login')
+                    ->with('error', 'الحساب موقوف. الرجاء الاتصال بالمسؤول.');
+            }
         }
 
         return $next($request);

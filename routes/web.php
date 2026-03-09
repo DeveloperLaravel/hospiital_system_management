@@ -52,8 +52,10 @@ Route::middleware(['auth'])->group(function () {
         // Livewire Components
         // ========================================
 
-        // Departments
-        Route::get('departments', \App\Livewire\DepartmentManager::class)->name('departments.index');
+        // Departments (with permission check)
+        Route::get('departments', \App\Livewire\DepartmentManager::class)
+            ->name('departments.index')
+            ->middleware('permission:departments-view');
 
         // Doctors
         Route::get('doctors', \App\Livewire\DoctorManager::class)->name('doctors.index');
@@ -61,8 +63,13 @@ Route::middleware(['auth'])->group(function () {
         // Patients
         Route::get('patients', \App\Livewire\PatientManager::class)->name('patients.index');
 
-        // Appointments
-        Route::get('appointments', \App\Livewire\AppointmentManager::class)->name('appointments.index');
+        // Appointments (with permission check)
+        Route::get('appointments', \App\Livewire\AppointmentManager::class)
+            ->name('appointments.index')
+            ->middleware('permission:appointments-view');
+
+        // Shifts
+        Route::get('shifts', \App\Livewire\ShiftManager::class)->name('shifts.index');
 
         // Rooms
         Route::get('rooms', \App\Livewire\RoomManager::class)->name('rooms.index');
@@ -95,18 +102,6 @@ Route::middleware(['auth'])->group(function () {
         })->name('api.departments.index');
 
         // ========================================
-        // Patient Medical History
-        // ========================================
-
-        // ========================================
-        // Room Actions
-        // ========================================
-
-        // ========================================
-        // Medicine Transactions
-        // ========================================
-
-        // ========================================
         // Invoice Routes (Livewire)
         // ========================================
         Route::get('invoices', \App\Livewire\InvoiceManager::class)->name('invoices.index');
@@ -119,6 +114,7 @@ Route::middleware(['auth'])->group(function () {
         // ========================================
 
     });
+    Route::middleware(['role:Admin|Doctor'])->group(function () {});
 
     /*
     |--------------------------------------------------------------------------

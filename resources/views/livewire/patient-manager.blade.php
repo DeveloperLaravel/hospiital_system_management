@@ -15,20 +15,63 @@
                         <p class="text-sm text-gray-500 mt-1">إضافة وتعديل وحذف المرضى</p>
                     </div>
                 </div>
-                <button
-                    wire:click="create"
-                    class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                    </svg>
-                    <span class="hidden sm:inline">إضافة مريض جديد</span>
-                    <span class="sm:hidden">إضافة</span>
-                </button>
+
+                  <div class="flex items-center gap-3">
+                        {{-- User Role Badge --}}
+                        <div class="hidden lg:flex items-center gap-2">
+                            <div class="px-3 py-1.5 rounded-lg text-xs font-bold {{ $this->isAdmin() ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' : ($this->isSupervisor() ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white' : 'bg-gradient-to-r from-gray-500 to-slate-500 text-white') }}">
+                                @if($this->isAdmin())
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                @elseif($this->isSupervisor())
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                                @else
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                @endif
+                                {{ $this->getUserRole() }}
+                            </div>
+                          {{-- Quick Permissions Indicators --}}
+                        <div class="hidden md:flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-lg text-xs">
+                            @if($this->canCreate())
+                            <span class="w-2 h-2 bg-green-500 rounded-full" title="يمكن إنشاء مريض"></span>
+                            @else
+                            <span class="w-2 h-2 bg-red-300 rounded-full" title="لا يمكن إنشاء مريض"></span>
+                            @endif
+
+                            @if(auth()->user()->can('patients-edit'))
+                            <span class="w-2 h-2 bg-green-500 rounded-full" title="يمكن تعديل مريض"></span>
+                            @else
+                            <span class="w-2 h-2 bg-red-300 rounded-full" title="لا يمكن تعديل مريض"></span>
+                            @endif
+
+                            @if(auth()->user()->can('patients-delete'))
+                            <span class="w-2 h-2 bg-green-500 rounded-full" title="يمكن حذف مريض"></span>
+                            @else
+                            <span class="w-2 h-2 bg-red-300 rounded-full" title="لا يمكن حذف مريض"></span>
+                            @endif
+                        </div>
+                         </div>
+                @if(isset($hasPermission) && $hasPermission && $this->canCreate())
+                    <button
+                        wire:click="create"
+                        class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                        <span class="hidden sm:inline">إضافة مريض جديد</span>
+                        <span class="sm:hidden">إضافة</span>
+                    </button>
+                @endif
             </div>
         </div>
     </div>
-
+ </div>
     {{-- Messages --}}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         @if(session()->has('success'))
@@ -282,25 +325,29 @@
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-2">
-                                    <button
-                                        wire:click="edit({{ $patient->id }})"
-                                        class="p-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-lg transition-colors duration-200"
-                                        title="تعديل"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                        </svg>
-                                    </button>
-                                    <button
-                                        wire:click="delete({{ $patient->id }})"
-                                        onclick="confirm('هل أنت متأكد من حذف هذا المريض؟') || event.stopImmediatePropagation()"
-                                        class="p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors duration-200"
-                                        title="حذف"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button>
+                                    @if($this->canEdit())
+                                        <button
+                                            wire:click="edit({{ $patient->id }})"
+                                            class="p-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-lg transition-colors duration-200"
+                                            title="تعديل"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        </button>
+                                    @endif
+                                    @if($this->canDelete())
+                                        <button
+                                            wire:click="delete({{ $patient->id }})"
+                                            onclick="confirm('هل أنت متأكد من حذف هذا المريض؟') || event.stopImmediatePropagation()"
+                                            class="p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors duration-200"
+                                            title="حذف"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

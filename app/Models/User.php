@@ -58,6 +58,14 @@ class User extends Authenticatable
         return $this->hasMany(MedicalRecord::class, 'doctor_id');
     }
 
+    /**
+     * Get the doctor associated with this user (if user is a doctor)
+     */
+    public function doctor()
+    {
+        return $this->hasOne(Doctor::class, 'user_id');
+    }
+
     public function getAllUsers($perPage = 10)
     {
         return User::with('roles')

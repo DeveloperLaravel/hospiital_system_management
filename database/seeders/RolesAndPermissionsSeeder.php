@@ -17,12 +17,29 @@ class RolesAndPermissionsSeeder extends Seeder
         // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
+        // Create permissions for shifts
+        $shiftPermissions = [
+            'shifts-view',
+            'shifts-create',
+            'shifts-edit',
+            'shifts-delete',
+        ];
+
+        foreach ($shiftPermissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
+        }
+
         // Create permissions for appointments
         $appointmentPermissions = [
             'appointments-view',
+            'appointments-view-all',
             'appointments-create',
             'appointments-edit',
             'appointments-delete',
+            'appointments-confirm',
+            'appointments-complete',
+            'appointments-cancel',
+            'appointments-export',
         ];
 
         foreach ($appointmentPermissions as $permission) {
@@ -101,11 +118,21 @@ class RolesAndPermissionsSeeder extends Seeder
         // Supervisor role
         $supervisorRole = Role::firstOrCreate(['name' => 'Supervisor', 'guard_name' => 'web']);
         $supervisorRole->givePermissionTo([
-            // Appointments
+            // Shifts
+            'shifts-view',
+            'shifts-create',
+            'shifts-edit',
+            'shifts-delete',
+            // Appointments - Full access with granular permissions
             'appointments-view',
+            'appointments-view-all',
             'appointments-create',
             'appointments-edit',
             'appointments-delete',
+            'appointments-confirm',
+            'appointments-complete',
+            'appointments-cancel',
+            'appointments-export',
             // Patients
             'patients-view',
             'patients-create',
@@ -138,10 +165,15 @@ class RolesAndPermissionsSeeder extends Seeder
         // Doctor role
         $doctorRole = Role::firstOrCreate(['name' => 'Doctor', 'guard_name' => 'web']);
         $doctorRole->givePermissionTo([
-            // Appointments
+            // Shifts
+            'shifts-view',
+            'shifts-edit',
+            // Appointments - Can view own, create, edit own, confirm, complete
             'appointments-view',
             'appointments-create',
             'appointments-edit',
+            'appointments-confirm',
+            'appointments-complete',
             // Patients
             'patients-view',
             // Medical Records
@@ -159,10 +191,12 @@ class RolesAndPermissionsSeeder extends Seeder
         // Receptionist role
         $receptionistRole = Role::firstOrCreate(['name' => 'Receptionist', 'guard_name' => 'web']);
         $receptionistRole->givePermissionTo([
-            // Appointments
+            // Appointments - Can view all, create, edit, confirm
             'appointments-view',
+            'appointments-view-all',
             'appointments-create',
             'appointments-edit',
+            'appointments-confirm',
             // Patients
             'patients-view',
             'patients-create',
@@ -173,6 +207,12 @@ class RolesAndPermissionsSeeder extends Seeder
         // Nurse role
         $nurseRole = Role::firstOrCreate(['name' => 'Nurse', 'guard_name' => 'web']);
         $nurseRole->givePermissionTo([
+            // Shifts
+            'shifts-view',
+            'shifts-edit',
+            // Appointments - Can view all, complete
+            'appointments-view',
+            'appointments-complete',
             // Patients
             'patients-view',
             // Medical Records

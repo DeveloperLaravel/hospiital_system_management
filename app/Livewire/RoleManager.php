@@ -63,13 +63,7 @@ class RoleManager extends Component
     // فتح الـ Modal للتعديل
     public function edit($id)
     {
-        $role = Role::find($id);
-        // التحقق من وجود مستخدمين مرتبطين بالدور
-        if ($role->users()->count() > 0) {
-            session()->flash('error', 'لا يمكن حذف الدور لوجود مستخدمين مرتبطين به');
 
-            return;
-        }
         $role = Role::with('permissions')->findOrFail($id);
         $this->role_id = $id;
         $this->name = $role->name;

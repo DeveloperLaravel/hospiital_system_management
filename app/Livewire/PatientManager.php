@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Patient;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -61,6 +62,101 @@ class PatientManager extends Component
         'credit_limit' => 'nullable|numeric|min:0',
     ];
 
+    // ============================================
+    // Role & Permission Check Methods
+    // ============================================
+
+    /**
+     * Check if user can view patients
+     */
+    public function canView(): bool
+    {
+        return Auth::user()->can('patients-view');
+    }
+
+    /**
+     * Check if user can create patients
+     */
+    public function canCreate(): bool
+    {
+        return Auth::user()->can('patients-create');
+    }
+
+    /**
+     * Check if user can edit patients
+     */
+    public function canEdit($patient = null): bool
+    {
+        return Auth::user()->can('patients-edit');
+    }
+
+    /**
+     * Check if user can delete patients
+     */
+    public function canDelete($patient = null): bool
+    {
+        if (! $patient) {
+            return Auth::user()->can('patients-delete');
+        }
+
+        // Check if patient has related records
+        if ($patient->medicalRecords()->count() > 0 ||
+            $patient->invoices()->count() > 0 ||
+            $patient->appointments()->count() > 0) {
+            return false;
+        }
+
+        return Auth::user()->can('patients-delete');
+    }
+
+    /**
+     * Get user's role name
+     */
+    public function getUserRole(): string
+    {
+        return Auth::user()->getRoleNames()->first() ?? 'Guest';
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return Auth::user()->hasRole('Admin');
+    }
+
+    /**
+     * Check if user is supervisor
+     */
+    public function isSupervisor(): bool
+    {
+        return Auth::user()->hasRole('Supervisor');
+    }
+
+    /**
+     * Check if user is doctor
+     */
+    public function isDoctor(): bool
+    {
+        return Auth::user()->hasRole('Doctor');
+    }
+
+    /**
+     * Check if user is receptionist
+     */
+    public function isReceptionist(): bool
+    {
+        return Auth::user()->hasRole('Receptionist');
+    }
+
+    /**
+     * Check if user is nurse
+     */
+    public function isNurse(): bool
+    {
+        return Auth::user()->hasRole('Nurse');
+    }
+
     // Real-time search
     public function updatedSearch()
     {
@@ -85,6 +181,16 @@ class PatientManager extends Component
     // Render the view
     public function render()
     {
+        // التحقق من صلاحية العرض
+        if (! $this->canView()) {
+            return view('livewire.patient-manager', [
+                'patients' => collect([]),
+                'stats' => [],
+                'bloodTypes' => [],
+                'hasPermission' => false,
+            ]);
+        }
+
         $patients = Patient::when($this->search, function ($query) {
             $query->search($this->search);
         })
@@ -122,12 +228,19 @@ class PatientManager extends Component
             'patients' => $patients,
             'stats' => $stats,
             'bloodTypes' => $bloodTypes,
+            'hasPermission' => true,
         ]);
     }
 
     // Open modal for creating
     public function create()
     {
+        if (! $this->canCreate()) {
+            session()->flash('error', 'ليس لديك صلاحية لإضافة مريض');
+
+            return;
+        }
+
         $this->resetForm();
         $this->isOpen = true;
         $this->isEditMode = false;
@@ -136,6 +249,12 @@ class PatientManager extends Component
     // Open modal for editing
     public function edit($id)
     {
+        if (! $this->canEdit()) {
+            session()->flash('error', 'ليس لديك صلاحية لتعديل مريض');
+
+            return;
+        }
+
         $patient = Patient::findOrFail($id);
 
         $this->patientId = $patient->id;
@@ -180,6 +299,19 @@ class PatientManager extends Component
     // Store (create or update)
     public function store()
     {
+        // التحقق من الصلاحيات
+        if ($this->isEditMode && ! $this->canEdit()) {
+            session()->flash('error', 'ليس لديك صلاحية لتعديل مريض');
+
+            return;
+        }
+
+        if (! $this->isEditMode && ! $this->canCreate()) {
+            session()->flash('error', 'ليس لديك صلاحية لإضافة مريض');
+
+            return;
+        }
+
         $this->validate();
 
         $data = [
@@ -210,6 +342,12 @@ class PatientManager extends Component
     // Delete patient
     public function delete($id)
     {
+        if (! $this->canDelete()) {
+            session()->flash('error', 'ليس لديك صلاحية لحذف مريض');
+
+            return;
+        }
+
         $patient = Patient::findOrFail($id);
 
         // Check if patient has related records

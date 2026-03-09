@@ -1,9 +1,30 @@
-# TODO - Convert UserController to Livewire
+# TODO - AppointmentManager Permissions Enhancement
 
-## Tasks:
-- [x] 1. Create UserManager Livewire Component (app/Livewire/UserManager.php)
-- [x] 2. Create user-manager.blade.php view (resources/views/livewire/user-manager.blade.php)
-- [x] 3. Update routes/web.php to use Livewire
-- [x] 4. Delete old UserController.php
-- [x] 5. Delete old views in resources/views/system/user/
+## Task
+Add granular permissions and role-based filtering to AppointmentManager.php professionally
+
+## Steps:
+1. [x] Add new granular permissions to RolesAndPermissionsSeeder.php
+   - appointments-confirm
+   - appointments-complete
+   - appointments-cancel
+   - appointments-view-all
+   - appointments-export
+
+2. [x] Enhance AppointmentManager.php with:
+   - More granular permission methods
+   - Role-based data filtering (doctors see only their appointments)
+   - Enhanced permission logic with business rules
+   - Better Arabic error messages
+
+3. [x] Update appointment-manager.blade.php view with enhanced permission UI
+
+## Notes:
+- Admin sees all appointments
+- Supervisors see all appointments
+- Doctors see only their own appointments
+- Receptionists can create/edit but not delete
+- Use granular permissions for confirm/complete/cancel actions
+- Run seeder after deployment: `php artisan db:seed --class=RolesAndPermissionsSeeder`
+
 
