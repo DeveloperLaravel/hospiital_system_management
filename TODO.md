@@ -1,20 +1,20 @@
-# TODO - Fix room-manager.blade.php Syntax Error
+# TODO - إضافة الصلاحيات للسجلات الطبية
 
-## Analysis Phase
-- [x] Read the file room-manager.blade.php 
-- [x] Identify the exact issue with @forelse/@endforelse
-- [x] Add missing @endforelse statement
-- [x] Fix duplicate @if($viewMode === 'table') issue
-- [x] Verify fix
+## [x] الخطوة 1: تحديث MedicalRecordManager.php
+- [x] إضافة use Auth
+- [x] إضافة دالة canView()
+- [x] إضافة دالة canCreate()
+- [x] إضافة دالة canEdit($record)
+- [x] إضافة دالة canDelete($record)
+- [x] تحديث دالة render()
+- [x] تحديث دالة create()
+- [x] تحديث دالة edit()
+- [x] تحديث دالة store()
+- [x] تحديث دالة delete()
 
-## Issue Details
-- File: resources/views/livewire/room-manager.blade.php
-- Problem: @forelse at line 326 had no @endforelse closing
-- Solution: Added @endforelse and fixed the Table View section
-
-## Fix Applied
-1. Added missing closing tags for @forelse loop in Grid View
-2. Fixed duplicate @if($viewMode === 'table') - removed the extra one
-3. Added complete Table View section with proper @if/@endif
-4. The file now has both Grid View and Table View functionality
+## [x] الخطوة 2: تحديث medical-record-manager.blade.php
+- [x] إخفاء زر "سجل جديد" إذا لا توجد صلاحية
+- [x] إخفاء زر التعديل إذا لا توجد صلاحية
+- [x] إخفاء زر الحذف إذا لا توجد صلاحية
+- [x] عرض رسالة عند عدم وجود صلاحية
 
