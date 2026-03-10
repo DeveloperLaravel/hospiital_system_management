@@ -4,25 +4,34 @@ namespace App\Livewire;
 
 use App\Models\Patient;
 use App\Models\Room;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Spatie\Permission\Traits\HasRoles;
 
 class RoomManager extends Component
 {
-    use WithPagination;
+    use HasRoles, WithPagination;
 
+    // ============================================
     // Properties
+    // ============================================
+
+    // Search & Filters
     public $search = '';
 
+    public $filterStatus = '';
+
+    public $filterType = '';
+
+    // Modal States
     public $isOpen = false;
 
     public $isEditMode = false;
 
+    // Form Fields
     public $roomId = null;
 
-    public $viewMode = 'grid'; // grid, table
-
-    // Form fields
     public $room_number = '';
 
     public $type = 'single';
@@ -46,12 +55,13 @@ class RoomManager extends Component
 
     public $selectedPatient = null;
 
-    // Filters
-    public $filterStatus = '';
+    // View Mode
+    public $viewMode = 'grid'; // grid, table
 
-    public $filterType = '';
+    // ============================================
+    // Validation Rules
+    // ============================================
 
-    // Validation rules
     protected $rules = [
         'room_number' => 'required|string|max:20',
         'type' => 'required|in:single,double,icu,vip,emergency',
@@ -62,7 +72,10 @@ class RoomManager extends Component
         'notes' => 'nullable|string|max:500',
     ];
 
-    // Room types
+    // ============================================
+    // Room Types Labels
+    // ============================================
+
     public $roomTypes = [
         'single' => 'غرفة مفردة',
         'double' => 'غرفة مزدوجة',
@@ -71,7 +84,6 @@ class RoomManager extends Component
         'emergency' => 'طوارئ',
     ];
 
-    // Room statuses
     public $roomStatuses = [
         'available' => 'متاحة',
         'occupied' => 'مشغولة',
@@ -79,7 +91,132 @@ class RoomManager extends Component
         'cleaning' => 'تنظيف',
     ];
 
-    // Real-time search
+    // ============================================
+    // Permission Methods
+    // ============================================
+
+    /**
+     * Check if user can view rooms
+     */
+    public function canView(): bool
+    {
+        return Auth::user()->can('rooms-view');
+    }
+
+    /**
+     * Check if user can create rooms
+     */
+    public function canCreate(): bool
+    {
+        return Auth::user()->can('rooms-create');
+    }
+
+    /**
+     * Check if user can edit rooms
+     */
+    public function canEdit($room = null): bool
+    {
+        if (! $room) {
+            return Auth::user()->can('rooms-edit');
+        }
+
+        // Can't edit if room is occupied
+        if ($room->status === 'occupied') {
+            return false;
+        }
+
+        return Auth::user()->can('rooms-edit');
+    }
+
+    /**
+     * Check if user can delete rooms
+     */
+    public function canDelete($room = null): bool
+    {
+        if (! $room) {
+            return Auth::user()->can('rooms-delete');
+        }
+
+        // Can't delete if room is occupied
+        if ($room->status === 'occupied') {
+            return false;
+        }
+
+        return Auth::user()->can('rooms-delete');
+    }
+
+    /**
+     * Check if user can admit patients
+     */
+    public function canAdmit(): bool
+    {
+        return Auth::user()->can('rooms-edit');
+    }
+
+    /**
+     * Check if user can discharge patients
+     */
+    public function canDischarge(): bool
+    {
+        return Auth::user()->can('rooms-edit');
+    }
+
+    // ============================================
+    // Role Check Methods
+    // ============================================
+
+    /**
+     * Get current user role
+     */
+    public function getUserRole(): string
+    {
+        return Auth::user()->getRoleNames()->first() ?? 'Guest';
+    }
+
+    /**
+     * Check if user is Admin
+     */
+    public function isAdmin(): bool
+    {
+        return Auth::user()->hasRole('Admin');
+    }
+
+    /**
+     * Check if user is Supervisor
+     */
+    public function isSupervisor(): bool
+    {
+        return Auth::user()->hasRole('Supervisor');
+    }
+
+    /**
+     * Check if user is Doctor
+     */
+    public function isDoctor(): bool
+    {
+        return Auth::user()->hasRole('Doctor');
+    }
+
+    /**
+     * Check if user is Nurse
+     */
+    public function isNurse(): bool
+    {
+        return Auth::user()->hasRole('Nurse');
+    }
+
+    /**
+     * Check if user is Receptionist
+     */
+    public function isReceptionist(): bool
+    {
+        return Auth::user()->hasRole('Receptionist');
+    }
+
+    // ============================================
+    // Search & Filter Methods
+    // ============================================
+
     public function updatedSearch()
     {
         $this->resetPage();
@@ -95,54 +232,55 @@ class RoomManager extends Component
         $this->resetPage();
     }
 
-    // Render
-    public function render()
+    public function clearFilters()
     {
-        $rooms = Room::with(['patients' => function ($q) {
-            $q->wherePivotNull('discharged_at');
-        }])
-            ->when($this->search, function ($query) {
-                $query->where('room_number', 'like', '%'.$this->search.'%');
-            })
-            ->when($this->filterStatus, function ($query) {
-                $query->where('status', $this->filterStatus);
-            })
-            ->when($this->filterType, function ($query) {
-                $query->where('type', $this->filterType);
-            })
-            ->orderBy('id', 'desc')
-            ->paginate(12);
-
-        // Statistics
-        $stats = [
-            'total' => Room::count(),
-            'available' => Room::where('status', 'available')->count(),
-            'occupied' => Room::where('status', 'occupied')->count(),
-            'maintenance' => Room::where('status', 'maintenance')->count(),
-        ];
-
-        // Available patients for admit - get all patients
-        $availablePatients = Patient::orderBy('name', 'asc')->get();
-
-        return view('livewire.room-manager', [
-            'rooms' => $rooms,
-            'stats' => $stats,
-            'availablePatients' => $availablePatients,
-        ]);
+        $this->search = '';
+        $this->filterStatus = '';
+        $this->filterType = '';
+        $this->resetPage();
     }
 
-    // Open modal for creating
+    // ============================================
+    // View Methods
+    // ============================================
+
+    public function setViewMode($mode)
+    {
+        $this->viewMode = $mode;
+    }
+
+    // ============================================
+    // CRUD Operations
+    // ============================================
+
+    /**
+     * Open modal for creating
+     */
     public function create()
     {
+        if (! $this->canCreate()) {
+            session()->flash('error', 'ليس لديك صلاحية لإنشاء غرف');
+
+            return;
+        }
+
         $this->resetForm();
         $this->isOpen = true;
         $this->isEditMode = false;
     }
 
-    // Open modal for editing
+    /**
+     * Open modal for editing
+     */
     public function edit($id)
     {
         $room = Room::findOrFail($id);
+
+        if (! $this->canEdit($room)) {
+            session()->flash('error', 'ليس لديك صلاحية لتعديل هذه الغرفة');
+
+            return;
+        }
 
         $this->roomId = $room->id;
         $this->room_number = $room->room_number;
@@ -157,7 +295,9 @@ class RoomManager extends Component
         $this->isEditMode = true;
     }
 
-    // Close modal
+    /**
+     * Close modal
+     */
     public function closeModal()
     {
         $this->isOpen = false;
@@ -166,7 +306,9 @@ class RoomManager extends Component
         $this->resetForm();
     }
 
-    // Reset form
+    /**
+     * Reset form
+     */
     public function resetForm()
     {
         $this->roomId = null;
@@ -181,9 +323,25 @@ class RoomManager extends Component
         $this->selectedPatient = null;
     }
 
-    // Store (create or update)
+    /**
+     * Store (create or update)
+     */
     public function store()
     {
+        // Permission check for create
+        if (! $this->canCreate() && ! $this->isEditMode) {
+            session()->flash('error', 'ليس لديك صلاحية لإنشاء غرف');
+
+            return;
+        }
+
+        // Permission check for edit
+        if ($this->isEditMode && ! $this->canEdit()) {
+            session()->flash('error', 'ليس لديك صلاحية لتعديل الغرف');
+
+            return;
+        }
+
         $this->validate();
 
         $data = [
@@ -208,10 +366,18 @@ class RoomManager extends Component
         $this->closeModal();
     }
 
-    // Delete room
+    /**
+     * Delete room
+     */
     public function delete($id)
     {
         $room = Room::findOrFail($id);
+
+        if (! $this->canDelete($room)) {
+            session()->flash('error', 'ليس لديك صلاحية لحذف هذه الغرفة');
+
+            return;
+        }
 
         if ($room->status === 'occupied') {
             session()->flash('error', 'لا يمكن حذف غرفة مشغولة');
@@ -223,23 +389,51 @@ class RoomManager extends Component
         session()->flash('success', 'تم حذف الغرفة بنجاح');
     }
 
-    // Open admit modal
+    // ============================================
+    // Patient Admission Methods
+    // ============================================
+
+    /**
+     * Open admit modal
+     */
     public function openAdmitModal($roomId)
     {
+        if (! $this->canAdmit()) {
+            session()->flash('error', 'ليس لديك صلاحية لإدخال المرضى');
+
+            return;
+        }
+
         $this->selectedRoom = Room::findOrFail($roomId);
         $this->admitModalOpen = true;
     }
 
-    // Open discharge modal
+    /**
+     * Open discharge modal
+     */
     public function openDischargeModal($roomId)
     {
+        if (! $this->canDischarge()) {
+            session()->flash('error', 'ليس لديك صلاحية لإخراج المرضى');
+
+            return;
+        }
+
         $this->selectedRoom = Room::findOrFail($roomId);
         $this->dischargeModalOpen = true;
     }
 
-    // Admit patient
+    /**
+     * Admit patient
+     */
     public function admitPatient()
     {
+        if (! $this->canAdmit()) {
+            session()->flash('error', 'ليس لديك صلاحية لإدخال المرضى');
+
+            return;
+        }
+
         if (! $this->selectedRoom || ! $this->selectedPatient) {
             session()->flash('error', 'يرجى اختيار المريض');
 
@@ -262,9 +456,17 @@ class RoomManager extends Component
         $this->closeModal();
     }
 
-    // Discharge patient
+    /**
+     * Discharge patient
+     */
     public function dischargePatient()
     {
+        if (! $this->canDischarge()) {
+            session()->flash('error', 'ليس لديك صلاحية لإخراج المرضى');
+
+            return;
+        }
+
         if (! $this->selectedRoom) {
             return;
         }
@@ -289,22 +491,13 @@ class RoomManager extends Component
         $this->closeModal();
     }
 
-    // View toggle
-    public function setViewMode($mode)
-    {
-        $this->viewMode = $mode;
-    }
+    // ============================================
+    // Helper Methods
+    // ============================================
 
-    // Clear filters
-    public function clearFilters()
-    {
-        $this->search = '';
-        $this->filterStatus = '';
-        $this->filterType = '';
-        $this->resetPage();
-    }
-
-    // Get status color
+    /**
+     * Get status color
+     */
     public function getStatusColor($status)
     {
         $colors = [
@@ -317,7 +510,9 @@ class RoomManager extends Component
         return $colors[$status] ?? 'gray';
     }
 
-    // Get type icon
+    /**
+     * Get type icon
+     */
     public function getTypeIcon($type)
     {
         $icons = [
@@ -329,5 +524,75 @@ class RoomManager extends Component
         ];
 
         return $icons[$type] ?? $icons['single'];
+    }
+
+    // ============================================
+    // Lifecycle Methods
+    // ============================================
+
+    /**
+     * Livewire lifecycle hook - called when component is being removed
+     */
+    public static function destroying(): void
+    {
+        // Cleanup when component is removed
+    }
+
+    /**
+     * Alias for backward compatibility
+     */
+    public static function deleting(): void
+    {
+        self::destroying();
+    }
+
+    // ============================================
+    // Render Method
+    // ============================================
+
+    public function render()
+    {
+        // Check if user has view permission
+        if (! $this->canView()) {
+            return view('livewire.room-manager', [
+                'rooms' => collect([]),
+                'stats' => [],
+                'availablePatients' => collect([]),
+                'hasPermission' => false,
+            ]);
+        }
+
+        $rooms = Room::with(['patients' => function ($q) {
+            $q->wherePivotNull('discharged_at');
+        }])
+            ->when($this->search, function ($query) {
+                $query->where('room_number', 'like', '%'.$this->search.'%');
+            })
+            ->when($this->filterStatus, function ($query) {
+                $query->where('status', $this->filterStatus);
+            })
+            ->when($this->filterType, function ($query) {
+                $query->where('type', $this->filterType);
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(12);
+
+        // Statistics
+        $stats = [
+            'total' => Room::count(),
+            'available' => Room::where('status', 'available')->count(),
+            'occupied' => Room::where('status', 'occupied')->count(),
+            'maintenance' => Room::where('status', 'maintenance')->count(),
+        ];
+
+        // Available patients for admit
+        $availablePatients = Patient::orderBy('name', 'asc')->get();
+
+        return view('livewire.room-manager', [
+            'rooms' => $rooms,
+            'stats' => $stats,
+            'availablePatients' => $availablePatients,
+            'hasPermission' => true,
+        ]);
     }
 }

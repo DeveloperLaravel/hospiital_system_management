@@ -29,13 +29,94 @@
                     </div>
                 </div>
 
-                <button wire:click="create" class="group relative inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-600 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-300 transform hover:-translate-y-1">
-                    <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-indigo-400 to-pink-500 rounded-xl opacity-0 group-hover:opacity-50 transition-opacity duration-300 blur-lg"></span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 relative" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    <span class="relative">وردية جديدة</span>
-                </button>
+                <div class="flex items-center gap-3">
+                    {{-- User Role & Permissions Display --}}
+                    <div class="hidden lg:flex items-center gap-2">
+                        <div class="px-3 py-1.5 rounded-lg text-xs font-bold {{ $this->isAdmin() ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' : ($this->isSupervisor() ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white' : ($this->isDoctor() ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white' : ($this->isReceptionist() ? 'bg-gradient-to-r from-orange-500 to-yellow-500 text-white' : 'bg-gradient-to-r from-gray-500 to-slate-500 text-white'))) }}">
+                            @if($this->isAdmin())
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            @elseif($this->isSupervisor())
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            @elseif($this->isDoctor())
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            @elseif($this->isReceptionist())
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                            @else
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            @endif
+                            {{ $this->getUserRole() }}
+                        </div>
+                    </div>
+
+                    {{-- Quick Permissions Info --}}
+                    <div class="hidden md:flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-lg text-xs">
+                        @if($this->canViewAll())
+                        <span class="w-2 h-2 bg-purple-500 rounded-full" title="يمكن عرض كل الورديات"></span>
+                        @else
+                        <span class="w-2 h-2 bg-indigo-400 rounded-full" title="يمكن عرض الورديات"></span>
+                        @endif
+
+                        @if($this->canCreate())
+                        <span class="w-2 h-2 bg-green-500 rounded-full" title="يمكن إنشاء ورديات"></span>
+                        @else
+                        <span class="w-2 h-2 bg-red-300 rounded-full" title="لا يمكن إنشاء ورديات"></span>
+                        @endif
+
+                        @if(auth()->user()->can('shifts-edit'))
+                        <span class="w-2 h-2 bg-green-500 rounded-full" title="يمكن تعديل ورديات"></span>
+                        @else
+                        <span class="w-2 h-2 bg-red-300 rounded-full" title="لا يمكن تعديل ورديات"></span>
+                        @endif
+
+                        @if(auth()->user()->can('shifts-delete'))
+                        <span class="w-2 h-2 bg-green-500 rounded-full" title="يمكن حذف ورديات"></span>
+                        @else
+                        <span class="w-2 h-2 bg-red-300 rounded-full" title="لا يمكن حذف ورديات"></span>
+                        @endif
+
+                        @if($this->canExport())
+                        <span class="w-2 h-2 bg-indigo-500 rounded-full" title="يمكن تصدير الورديات"></span>
+                        @endif
+                    </div>
+
+                    {{-- View Toggle --}}
+                    <div class="bg-gray-100 p-1 rounded-xl flex">
+                        <button wire:click="setViewMode('table')" class="px-4 py-2 rounded-lg text-sm font-medium transition-all {{ $viewMode === 'table' ? 'bg-white text-indigo-600 shadow-md' : 'text-gray-500 hover:text-gray-700' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                            </svg>
+                            قائمة
+                        </button>
+                        <button wire:click="setViewMode('calendar')" class="px-4 py-2 rounded-lg text-sm font-medium transition-all {{ $viewMode === 'calendar' ? 'bg-white text-indigo-600 shadow-md' : 'text-gray-500 hover:text-gray-700' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            تقويم
+                        </button>
+                    </div>
+
+                    <button wire:click="create" class="group relative inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-600 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-300 transform hover:-translate-y-1" {{ ! $this->canCreate() ? 'disabled' : '' }}>
+                        @if(!$this->canCreate())
+                        <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-indigo-400 to-pink-500 rounded-xl opacity-0"></span>
+                        @else
+                        <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-indigo-400 to-pink-500 rounded-xl opacity-0 group-hover:opacity-50 transition-opacity duration-300 blur-lg"></span>
+                        @endif
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 relative" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span class="relative">وردية جديدة</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -77,7 +158,7 @@
                     </div>
                     <div>
                         <p class="text-xs text-gray-500 font-medium">إجمالي الورديات</p>
-                        <p class="text-2xl font-bold text-gray-800">{{ $stats['total'] }}</p>
+                        <p class="text-2xl font-bold text-gray-800">{{ $stats['total'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -91,7 +172,7 @@
                     </div>
                     <div>
                         <p class="text-xs text-gray-500 font-medium">مجدولة</p>
-                        <p class="text-2xl font-bold text-blue-600">{{ $stats['scheduled'] }}</p>
+                        <p class="text-2xl font-bold text-blue-600">{{ $stats['scheduled'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -105,7 +186,7 @@
                     </div>
                     <div>
                         <p class="text-xs text-gray-500 font-medium">قيد التنفيذ</p>
-                        <p class="text-2xl font-bold text-yellow-600">{{ $stats['in_progress'] }}</p>
+                        <p class="text-2xl font-bold text-yellow-600">{{ $stats['in_progress'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -119,7 +200,7 @@
                     </div>
                     <div>
                         <p class="text-xs text-gray-500 font-medium">مكتملة</p>
-                        <p class="text-2xl font-bold text-green-600">{{ $stats['completed'] }}</p>
+                        <p class="text-2xl font-bold text-green-600">{{ $stats['completed'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -133,7 +214,7 @@
                     </div>
                     <div>
                         <p class="text-xs text-gray-500 font-medium">ملغية</p>
-                        <p class="text-2xl font-bold text-red-600">{{ $stats['cancelled'] }}</p>
+                        <p class="text-2xl font-bold text-red-600">{{ $stats['cancelled'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -147,7 +228,7 @@
                     </div>
                     <div>
                         <p class="text-xs text-gray-500 font-medium">غائب</p>
-                        <p class="text-2xl font-bold text-gray-600">{{ $stats['absent'] }}</p>
+                        <p class="text-2xl font-bold text-gray-600">{{ $stats['absent'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -166,7 +247,7 @@
                     </div>
                     <div>
                         <p class="text-indigo-100 text-sm font-medium">ورديات اليوم</p>
-                        <p class="text-4xl font-bold">{{ $stats['today'] }} <span class="text-xl font-normal">وردية</span></p>
+                        <p class="text-4xl font-bold">{{ $stats['today'] ?? 0 }} <span class="text-xl font-normal">وردية</span></p>
                     </div>
                 </div>
                 <div class="hidden md:block text-right">
@@ -190,7 +271,7 @@
                     <input type="text" wire:model.live="search" placeholder="البحث..." class="w-full pr-12 py-3.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-gray-700 placeholder-gray-400 font-medium" />
                 </div>
 
-                <select wire:model.live="filter_status" class="px-5 py-3.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-medium">
+                <select wire:model.live="filterStatus" class="px-5 py-3.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-medium">
                     <option value="">كل الحالات</option>
                     <option value="scheduled">مجدول</option>
                     <option value="in_progress">قيد التنفيذ</option>
@@ -199,7 +280,7 @@
                     <option value="absent">غائب</option>
                 </select>
 
-                <select wire:model.live="filter_shift_type" class="px-5 py-3.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-medium">
+                <select wire:model.live="filterShiftType" class="px-5 py-3.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-medium">
                     <option value="">كل الأنواع</option>
                     <option value="morning">صباحي</option>
                     <option value="evening">مسائي</option>
@@ -208,14 +289,14 @@
                     <option value="on_call">حضور طوارئ</option>
                 </select>
 
-                <select wire:model.live="filter_department" class="px-5 py-3.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-medium">
+                <select wire:model.live="filterDepartment" class="px-5 py-3.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-medium">
                     <option value="">كل الأقسام</option>
                     @foreach($departments as $department)
                         <option value="{{ $department->id }}">{{ $department->name }}</option>
                     @endforeach
                 </select>
 
-                <input type="date" wire:model.live="filter_date" class="px-5 py-3.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-medium" />
+                <input type="date" wire:model.live="filterDate" class="px-5 py-3.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-medium" />
 
                 <button wire:click="clearFilters" class="px-6 py-3.5 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -227,6 +308,40 @@
         </div>
     </div>
 
+    {{-- Bulk Actions Bar --}}
+    @if(count($selectedShifts) > 0)
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="text-indigo-700 font-medium">{{ count($selectedShifts) }} عنصر محدد</span>
+                <button wire:click="$set('selectAll', true)" class="text-indigo-600 hover:text-indigo-800 text-sm underline">تحديد الكل</button>
+                <button wire:click="$set('selectedShifts', [])" class="text-gray-500 hover:text-gray-700 text-sm underline">إلغاء التحديد</button>
+            </div>
+            <div class="flex items-center gap-2">
+                @if($this->canBulkUpdateStatus())
+                <select wire:change="bulkUpdateStatus($event.target.value)" class="px-4 py-2 bg-white border border-indigo-200 rounded-lg text-sm font-medium">
+                    <option value="">تغيير الحالة...</option>
+                    <option value="scheduled">مجدول</option>
+                    <option value="in_progress">قيد التنفيذ</option>
+                    <option value="completed">مكتمل</option>
+                    <option value="cancelled">ملغي</option>
+                    <option value="absent">غائب</option>
+                </select>
+                @endif
+
+                @if($this->canBulkDelete())
+                <button wire:click="bulkDelete" onclick="confirm('حذف الورديات المحددة؟') || event.stopImmediatePropagation()" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    حذف
+                </button>
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
+
     {{-- Table Section --}}
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 mb-8">
         <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
@@ -234,6 +349,11 @@
                 <table class="w-full">
                     <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
                         <tr>
+                            @if($this->canBulkUpdateStatus() || $this->canBulkDelete())
+                            <th class="px-4 py-5 text-right">
+                                <input type="checkbox" wire:model="selectAll" class="w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500" />
+                            </th>
+                            @endif
                             <th class="px-4 py-5 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">#</th>
                             <th class="px-4 py-5 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">اسم الوردية</th>
                             <th class="px-4 py-5 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">الموظف</th>
@@ -241,12 +361,19 @@
                             <th class="px-4 py-5 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">النوع</th>
                             <th class="px-4 py-5 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">القسم</th>
                             <th class="px-4 py-5 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">الحالة</th>
+                            @canany(['shifts-edit', 'shifts-delete'])
                             <th class="px-4 py-5 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">التحكم</th>
+                            @endcanany
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse($shifts as $shift)
-                        <tr class="hover:bg-indigo-50/50 transition-all duration-200 group">
+                        <tr class="hover:bg-indigo-50/50 transition-all duration-200 group {{ in_array($shift->id, $selectedShifts) ? 'bg-indigo-50' : '' }}">
+                            @if($this->canBulkUpdateStatus() || $this->canBulkDelete())
+                            <td class="px-4 py-5">
+                                <input type="checkbox" value="{{ $shift->id }}" wire:model="selectedShifts" class="w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500" />
+                            </td>
+                            @endif
                             <td class="px-4 py-5 whitespace-nowrap">
                                 <span class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-600 text-white text-sm font-bold rounded-xl shadow-lg">
                                     {{ $shift->id }}
@@ -340,15 +467,18 @@
                                         @break
                                 @endswitch
                             </td>
+                            @canany(['shifts-edit', 'shifts-delete'])
                             <td class="px-4 py-5 whitespace-nowrap">
                                 <div class="flex items-center gap-1.5">
+                                    @if(in_array($shift->status, ['scheduled', 'in_progress']) && $this->canEdit($shift))
                                     <button wire:click="edit({{ $shift->id }})" class="p-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105" title="تعديل">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </button>
+                                    @endif
 
-                                    @if($shift->status === 'scheduled')
+                                    @if($shift->status === 'scheduled' && $this->canUpdateStatus($shift))
                                     <button wire:click="updateStatus({{ $shift->id }}, 'in_progress')" class="p-2.5 bg-gradient-to-r from-blue-400 to-indigo-500 hover:from-blue-500 hover:to-indigo-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105" title="بدء التنفيذ">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -357,7 +487,7 @@
                                     </button>
                                     @endif
 
-                                    @if($shift->status === 'in_progress')
+                                    @if($shift->status === 'in_progress' && $this->canUpdateStatus($shift))
                                     <button wire:click="updateStatus({{ $shift->id }}, 'completed')" class="p-2.5 bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105" title="إكمال">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -365,7 +495,7 @@
                                     </button>
                                     @endif
 
-                                    @if(in_array($shift->status, ['scheduled', 'in_progress']))
+                                    @if(in_array($shift->status, ['scheduled', 'in_progress']) && $this->canUpdateStatus($shift))
                                     <button wire:click="updateStatus({{ $shift->id }}, 'cancelled')" class="p-2.5 bg-gradient-to-r from-orange-400 to-red-500 hover:from-orange-500 hover:to-red-600 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105" title="إلغاء">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -373,17 +503,33 @@
                                     </button>
                                     @endif
 
+                                    @if($shift->status != 'completed' && $this->canDelete($shift))
                                     <button wire:click="delete({{ $shift->id }})" onclick="confirm('حذف الوردية؟') || event.stopImmediatePropagation()" class="p-2.5 bg-gradient-to-r from-red-400 to-rose-600 hover:from-red-500 hover:to-rose-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105" title="حذف">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
                                     </button>
+                                    @endif
                                 </div>
                             </td>
+                            @endcanany
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="px-4 py-20">
+                            @if(!$this->canView())
+                            <td colspan="{{ $this->canBulkUpdateStatus() || $this->canBulkDelete() ? 9 : 8 }}" class="px-4 py-20">
+                                <div class="text-center">
+                                    <div class="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-red-100 to-orange-100 rounded-full flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-red-500 text-lg font-bold">لا توجد لديك صلاحية viewing الورديات</p>
+                                    <p class="text-red-400 text-sm mt-1">يرجى التواصل مع المدير للحصول على الصلاحية</p>
+                                </div>
+                            </td>
+                            @else
+                            <td colspan="{{ $this->canBulkUpdateStatus() || $this->canBulkDelete() ? 8 : 7 }}" class="px-4 py-20">
                                 <div class="text-center">
                                     <div class="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -394,6 +540,7 @@
                                     <p class="text-gray-400 text-sm mt-1">أضف وردية جديدة للبدء</p>
                                 </div>
                             </td>
+                            @endif
                         </tr>
                         @endforelse
                     </tbody>

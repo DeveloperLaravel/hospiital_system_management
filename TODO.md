@@ -1,30 +1,20 @@
-# TODO - AppointmentManager Permissions Enhancement
+# TODO - Fix room-manager.blade.php Syntax Error
 
-## Task
-Add granular permissions and role-based filtering to AppointmentManager.php professionally
+## Analysis Phase
+- [x] Read the file room-manager.blade.php 
+- [x] Identify the exact issue with @forelse/@endforelse
+- [x] Add missing @endforelse statement
+- [x] Fix duplicate @if($viewMode === 'table') issue
+- [x] Verify fix
 
-## Steps:
-1. [x] Add new granular permissions to RolesAndPermissionsSeeder.php
-   - appointments-confirm
-   - appointments-complete
-   - appointments-cancel
-   - appointments-view-all
-   - appointments-export
+## Issue Details
+- File: resources/views/livewire/room-manager.blade.php
+- Problem: @forelse at line 326 had no @endforelse closing
+- Solution: Added @endforelse and fixed the Table View section
 
-2. [x] Enhance AppointmentManager.php with:
-   - More granular permission methods
-   - Role-based data filtering (doctors see only their appointments)
-   - Enhanced permission logic with business rules
-   - Better Arabic error messages
-
-3. [x] Update appointment-manager.blade.php view with enhanced permission UI
-
-## Notes:
-- Admin sees all appointments
-- Supervisors see all appointments
-- Doctors see only their own appointments
-- Receptionists can create/edit but not delete
-- Use granular permissions for confirm/complete/cancel actions
-- Run seeder after deployment: `php artisan db:seed --class=RolesAndPermissionsSeeder`
-
+## Fix Applied
+1. Added missing closing tags for @forelse loop in Grid View
+2. Fixed duplicate @if($viewMode === 'table') - removed the extra one
+3. Added complete Table View section with proper @if/@endif
+4. The file now has both Grid View and Table View functionality
 
